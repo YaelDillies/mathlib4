@@ -1215,6 +1215,7 @@ public import Mathlib.Algebra.Polynomial.HasseDeriv
 public import Mathlib.Algebra.Polynomial.Homogenize
 public import Mathlib.Algebra.Polynomial.Identities
 public import Mathlib.Algebra.Polynomial.Inductions
+public import Mathlib.Algebra.Polynomial.Interlace
 public import Mathlib.Algebra.Polynomial.Laurent
 public import Mathlib.Algebra.Polynomial.Laurent.Roots
 public import Mathlib.Algebra.Polynomial.Lifts
