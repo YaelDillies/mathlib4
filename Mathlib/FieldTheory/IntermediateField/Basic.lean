@@ -573,6 +573,7 @@ theorem coe_val : ⇑S.val = ((↑) : S → L) :=
 theorem val_mk {x : L} (hx : x ∈ S) : S.val ⟨x, hx⟩ = x :=
   rfl
 
+@[simp]
 theorem range_val : S.val.range = S.toSubalgebra :=
   S.toSubalgebra.range_val
 

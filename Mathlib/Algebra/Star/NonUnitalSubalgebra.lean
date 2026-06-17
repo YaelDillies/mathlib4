@@ -973,6 +973,7 @@ instance _root_.NonUnitalStarAlgHom.subsingleton [Subsingleton (NonUnitalStarSub
 
 end StarSubalgebra
 
+@[simp]
 theorem range_val : NonUnitalStarAlgHom.range (NonUnitalStarSubalgebraClass.subtype S) = S :=
   ext <| Set.ext_iff.1 <|
     (NonUnitalStarAlgHom.coe_range (NonUnitalStarSubalgebraClass.subtype S)).trans Subtype.range_val

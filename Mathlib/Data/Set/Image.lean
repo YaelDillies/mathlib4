@@ -1175,40 +1175,38 @@ theorem coe_image_of_subset {s t : Set α} (h : t ⊆ s) : (↑) '' { x : ↥s |
   rw [mem_image]
   exact ⟨fun ⟨_, hx', hx⟩ => hx ▸ hx', fun hx => ⟨⟨x, h hx⟩, hx, rfl⟩⟩
 
-theorem range_coe {s : Set α} : range ((↑) : s → α) = s := by
+-- We want this to have higher priority than `
+@[simp high]
+theorem range_val_set (s : Set α) : range (Subtype.val : s → α) = s := by
   rw [← image_univ]
   simp [-image_univ, coe_image]
 
-/-- A variant of `range_coe`. Try to use `range_coe` if possible.
-  This version is useful when defining a new type that is defined as the subtype of something.
-  In that case, the coercion doesn't fire anymore. -/
-theorem range_val {s : Set α} : range (Subtype.val : s → α) = s :=
-  range_coe
+@[deprecated (since := "2026-06-17")] alias range_coe := range_val_set
 
 /-- We make this the simp lemma instead of `range_coe`. The reason is that if we write
   for `s : Set α` the function `(↑) : s → α`, then the inferred implicit arguments of `(↑)` are
   `↑α (fun x ↦ x ∈ s)`. -/
 @[simp]
-theorem range_coe_subtype {p : α → Prop} : range ((↑) : Subtype p → α) = { x | p x } :=
-  range_coe
+theorem range_val (p : α → Prop) : range ((↑) : Subtype p → α) = {x | p x} := range_val_set _
+
+@[deprecated (since := "2026-06-17")] alias range_coe_subtype := range_val
 
 @[simp]
 theorem coe_preimage_self (s : Set α) : ((↑) : s → α) ⁻¹' s = univ := by
-  rw [← preimage_range, range_coe]
+  rw [← preimage_range, range_val_set]
 
 theorem range_val_subtype {p : α → Prop} : range (Subtype.val : Subtype p → α) = { x | p x } :=
-  range_coe
+  range_val _
 
 theorem coe_image_subset (s : Set α) (t : Set s) : ((↑) : s → α) '' t ⊆ s :=
   fun x ⟨y, _, yvaleq⟩ => by
   rw [← yvaleq]; exact y.property
 
-theorem coe_image_univ (s : Set α) : ((↑) : s → α) '' Set.univ = s :=
-  image_univ.trans range_coe
+theorem coe_image_univ (s : Set α) : ((↑) : s → α) '' Set.univ = s := by simp
 
 @[simp]
-theorem image_preimage_coe (s t : Set α) : ((↑) : s → α) '' ((↑) : s → α) ⁻¹' t = s ∩ t :=
-  image_preimage_eq_range_inter.trans <| congr_arg (· ∩ t) range_coe
+theorem image_preimage_coe (s t : Set α) : ((↑) : s → α) '' ((↑) : s → α) ⁻¹' t = s ∩ t := by
+  simp [image_preimage_eq_range_inter]
 
 theorem image_preimage_val (s t : Set α) : (Subtype.val : s → α) '' Subtype.val ⁻¹' t = s ∩ t :=
   image_preimage_coe s t
@@ -1240,11 +1238,11 @@ lemma preimage_val_subset_preimage_val_iff (s t u : Set α) :
 
 theorem exists_set_subtype {t : Set α} (p : Set α → Prop) :
     (∃ s : Set t, p (((↑) : t → α) '' s)) ↔ ∃ s : Set α, s ⊆ t ∧ p s := by
-  rw [← exists_subset_range_and_iff, range_coe]
+  rw [← exists_subset_range_and_iff, range_val_set]
 
 theorem forall_set_subtype {t : Set α} (p : Set α → Prop) :
     (∀ s : Set t, p (((↑) : t → α) '' s)) ↔ ∀ s : Set α, s ⊆ t → p s := by
-  rw [← forall_subset_range_iff, range_coe]
+  rw [← forall_subset_range_iff, range_val_set]
 
 theorem preimage_coe_nonempty {s t : Set α} :
     (((↑) : s → α) ⁻¹' t).Nonempty ↔ (s ∩ t).Nonempty := by
