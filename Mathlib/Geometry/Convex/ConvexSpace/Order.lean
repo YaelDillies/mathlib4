@@ -23,6 +23,12 @@ combinations is monotone.
   namely `w₁ ≤ w₂` iff `w₁` puts less mass than `w₂` on every upper set.
 * `Convexity.IsOrderedConvexSpace`: Typeclass for a convex space over a partial order in which
   `sConvexComb` is monotone for stochastic dominance.
+
+## Implementation notes
+
+`IsOrderedConvexSpace` is its own order dual, but `StdSimplex.upperMass` is *not* dualisable: its
+dual is the lower mass function, which defines the same stochastic dominance order, hence we do not
+define it.
 -/
 
 open Finsupp Set
