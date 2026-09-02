@@ -505,6 +505,10 @@ section iConvexComb
 lemma sConvexComb_map (w : StdSimplex R I) (f : I → M) :
     sConvexComb (w.map f) = iConvexComb w f := rfl
 
+lemma iConvexComb_duple (i j : I) (a b : R) (ha hb hab) (x : I → M) :
+    iConvexComb (.duple i j ha hb hab) x = convexCombPair a b ha hb hab (x i) (x j) := by
+  simp [iConvexComb, convexCombPair]
+
 @[simp] lemma iConvexComb_const (s : StdSimplex R I) (m : M) :
     s.iConvexComb (fun _ ↦ m) = m := by simp [iConvexComb]
 
