@@ -342,12 +342,12 @@ instance (priority := low) IsOrderedConvexSpace.ofModule : IsOrderedConvexSpace 
       rw [Finsupp.sum] at hw
       rw [← hsumR, ← Finset.sum_subset hwS fun x _ hx ↦ Finsupp.notMem_support_iff.1 hx, hw]
     have hupper (w : StdSimplex R M) (hwS : w.weights.support ⊆ S) (i : ℕ) (hi : i < n) :
-        w.upperMass (y i) = ∑ k ∈ Ico i n, w.weights (y k) := by
-      have hfilter : (range n).filter (fun k ↦ y i ≤ y k) = Ico i n := by
+        w.mass (.Ici <| y i) = ∑ k ∈ Ico i n, w.weights (y k) := by
+      have hfilter : (range n).filter (fun k ↦ y k ∈ Set.Ici (y i)) = Ico i n := by
         ext k
         simp only [mem_filter, mem_range, mem_Ico]
         exact ⟨fun h ↦ ⟨(hle i hi k h.1).1 h.2, h.1⟩, fun h ↦ ⟨h.2, (hle i hi k h.2).2 h.1⟩⟩
-      rw [StdSimplex.upperMass_eq_sum,
+      rw [StdSimplex.mass_eq_sum,
         Finset.sum_subset (Finset.filter_subset_filter _ hwS) (fun x hx hx' ↦ by
           by_contra h
           exact hx' (Finset.mem_filter.2
@@ -359,7 +359,7 @@ instance (priority := low) IsOrderedConvexSpace.ofModule : IsOrderedConvexSpace 
     refine sum_smul_le_sum_smul hy ((htotal w₁ hS₁).trans (htotal w₂ hS₂).symm) fun i ↦ ?_
     rcases lt_or_ge i n with hi | hi
     · rw [← hupper w₁ hS₁ i hi, ← hupper w₂ hS₂ i hi]
-      exact StdSimplex.le_def.1 hw _
+      exact hw <| isUpperSet_Ici _
     · rw [Finset.Ico_eq_empty (by omega)]
       simp
 

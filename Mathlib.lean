@@ -4726,6 +4726,7 @@ public import Mathlib.Geometry.Convex.ConvexSpace.Prod
 public import Mathlib.Geometry.Convex.ConvexSpace.Topology
 public import Mathlib.Geometry.Convex.ConvexSpace.WithTop
 public import Mathlib.Geometry.Convex.Fun
+public import Mathlib.Geometry.Convex.Fun.Dual
 public import Mathlib.Geometry.Convex.Hull
 public import Mathlib.Geometry.Convex.Set
 public import Mathlib.Geometry.Convex.Star
