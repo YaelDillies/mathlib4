@@ -210,6 +210,11 @@ lemma isConvexFunOn_iff : IsConvexFunOn R s f ↔ IsConvexSet R s ∧
     ∀ w : StdSimplex R X, ↑w.weights.support ⊆ s → f w.sConvexComb ≤ w.iConvexComb f :=
   ⟨fun hf ↦ ⟨hf.isConvexSet, fun _ ↦ hf.map_sConvexComb_le⟩, fun h ↦ .of_map_sConvexComb_le h.1 h.2⟩
 
+/-- An affine map is convex on any convex set. -/
+protected lemma IsAffineMap.isConvexFunOn (hs : IsConvexSet R s) (hf : IsAffineMap R f) :
+    IsConvexFunOn R s f :=
+  isConvexFunOn_iff.2 ⟨hs, fun w _ ↦ (hf.map_sConvexComb w).le⟩
+
 @[simp] protected lemma IsConvexFunOn.singleton : IsConvexFunOn R {x} f :=
   isConvexFunOn_iff.2 ⟨.singleton, fun w hw ↦ by
     obtain rfl : w = .single x := by

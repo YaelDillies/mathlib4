@@ -145,6 +145,11 @@ instance {ι : Type*} {M : ι → Type*} [∀ i, AddCommMonoid (M i)] [∀ i, Mo
 instance {ι : Type*} : IsModuleConvexSpace R (ι →₀ M) where
   sConvexComb_eq_sum w := by ext; simp [Finsupp.sum]
 
+@[fun_prop]
+lemma IsAffineMap.linearMap (h : M →ₗ[R] N) : IsAffineMap R h where
+  map_sConvexComb w := by
+    simp [sConvexComb_eq_sum, map_finsuppSum, Finsupp.sum_mapDomain_index, add_smul]
+
 @[to_fun (attr := fun_prop)]
 lemma IsAffineMap.add (hf : IsAffineMap R f) (hg : IsAffineMap R g) : IsAffineMap R (f + g) where
   map_sConvexComb w := by
