@@ -22,6 +22,12 @@ combinations is monotone.
   namely the order induced by the pointwise order on upper mass functions.
 * `Convexity.IsOrderedConvexSpace`: Typeclass for a convex space over a partial order in which
   `sConvexComb` is monotone for stochastic dominance.
+
+## Implementation notes
+
+`IsOrderedConvexSpace` is its own order dual, but `StdSimplex.upperMass` is *not* dualisable: its
+dual is the lower mass function, which defines the same stochastic dominance order, hence we do not
+define it.
 -/
 
 open Finsupp
@@ -178,10 +184,12 @@ lemma monotone_map {w : StdSimplex R I} : Monotone (w.map : (I → X) → StdSim
   · simp
   · exact hfg _
 
-@[gcongr] lemma map_le_map {w : StdSimplex R I} {f g : I → X} (hfg : f ≤ g) : w.map f ≤ w.map g :=
+@[gcongr, to_dual self]
+lemma map_le_map {w : StdSimplex R I} {f g : I → X} (hfg : f ≤ g) : w.map f ≤ w.map g :=
   monotone_map hfg
 
-@[simp] lemma single_le_single_iff : (single x : StdSimplex R X) ≤ single y ↔ x ≤ y := by
+@[simp, to_dual self]
+lemma single_le_single_iff : (single x : StdSimplex R X) ≤ single y ↔ x ≤ y := by
   classical
   refine ⟨fun h ↦ ?_, fun hxm ↦ le_def.2 fun z ↦ ?_⟩
   · have hx := le_def.1 h x
@@ -196,7 +204,7 @@ lemma monotone_map {w : StdSimplex R I} : Monotone (w.map : (I → X) → StdSim
     · exact zero_le_one
     · exact le_rfl
 
-@[gcongr] alias ⟨_, single_le_single⟩ := single_le_single_iff
+@[gcongr, to_dual self] alias ⟨_, single_le_single⟩ := single_le_single_iff
 
 lemma monotone_single : Monotone (single : X → StdSimplex R X) := fun _x _m ↦ single_le_single
 
@@ -220,18 +228,18 @@ export IsOrderedConvexSpace (monotone_sConvexComb)
 
 variable [IsOrderedConvexSpace R X] {v : StdSimplex R I} {w₁ w₂ : StdSimplex R X} {f g : I → X}
 
-@[gcongr]
+@[gcongr, to_dual self]
 lemma sConvexComb_le_sConvexComb (h : w₁ ≤ w₂) : w₁.sConvexComb ≤ w₂.sConvexComb :=
   monotone_sConvexComb h
 
 lemma monotone_iConvexComb (v : StdSimplex R I) : Monotone (v.iConvexComb : (I → X) → X) :=
   fun _f _g hfg ↦ monotone_sConvexComb <| StdSimplex.monotone_map hfg
 
-@[gcongr]
+@[gcongr, to_dual self]
 lemma iConvexComb_le_iConvexComb (hfg : f ≤ g) : v.iConvexComb f ≤ v.iConvexComb g :=
   monotone_iConvexComb _ hfg
 
-@[gcongr]
+@[gcongr, to_dual self (dont_translate := R)]
 lemma convexCombPair_le_convexCombPair {a b : R} (ha hb hab) {x₁ x₂ y₁ y₂ : X} (hx : x₁ ≤ x₂)
     (hy : y₁ ≤ y₂) :
     convexCombPair a b ha hb hab x₁ y₁ ≤ convexCombPair a b ha hb hab x₂ y₂ := by
