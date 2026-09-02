@@ -6,7 +6,7 @@ Authors: Yaël Dillies
 module
 
 public import Mathlib.Data.Finsupp.Option
-public import Mathlib.Geometry.Convex.ConvexSpace.Defs
+public import Mathlib.Geometry.Convex.ConvexSpace.Order
 
 /-!
 # Adjoining a top or bottom element to a convex space
@@ -123,4 +123,64 @@ lemma isAffineMap_withTopSome : IsAffineMap R (.some : X → WithTop X) :=
   ⟨fun v ↦ (sConvexComb_map_withTopSome v).symm⟩
 
 end ConvexSpace
+
+/-! ### Ordered convex space structure -/
+
+section IsOrderedConvexSpace
+variable [LinearOrder X]
+
+namespace StdSimplex
+
+@[simp] lemma upperMass_untop (w : StdSimplex R (WithTop X)) (hw : w.weights ⊤ = 0) (x : X) :
+    (w.untop hw).upperMass x = w.upperMass (x : WithTop X) := by
+  conv_rhs => rw [← map_untop_some w hw]
+  rw [upperMass_map, upperMass_eq_finsuppSum]
+  simp only [WithTop.coe_le_coe]
+
+@[simp] lemma upperMass_unbot (w : StdSimplex R (WithBot X)) (hw : w.weights ⊥ = 0) (x : X) :
+    (w.unbot hw).upperMass x = w.upperMass (x : WithBot X) := by
+  conv_rhs => rw [← map_unbot_some w hw]
+  rw [upperMass_map, upperMass_eq_finsuppSum]
+  simp only [WithBot.coe_le_coe]
+
+end StdSimplex
+
+variable [ConvexSpace R X] [IsOrderedConvexSpace R X]
+
+/-- Adjoining a top element to an ordered convex space gives an ordered convex space. -/
+instance : IsOrderedConvexSpace R (WithTop X) where
+  monotone_sConvexComb w₁ w₂ h := by
+    by_cases h₂ : w₂.weights ⊤ = 0
+    · -- `w₂` puts no weight on `⊤`, hence neither does the smaller `w₁`.
+      have h₁ : w₁.weights ⊤ = 0 := by
+        have hle := StdSimplex.upperMass_le_upperMass h (⊤ : WithTop X)
+        rw [StdSimplex.upperMass_top, StdSimplex.upperMass_top, h₂] at hle
+        exact le_antisymm hle (w₁.weights_nonneg ⊤)
+      rw [sConvexComb_withTop_eq_some h₁, sConvexComb_withTop_eq_some h₂, WithTop.coe_le_coe]
+      exact monotone_sConvexComb <| StdSimplex.le_def.2 fun x ↦ by
+        simpa using StdSimplex.upperMass_le_upperMass h (x : WithTop X)
+    · rw [sConvexComb_withTop_eq_top.2 h₂]
+      exact le_top
+
+/-- Adjoining a bottom element to an ordered convex space gives an ordered convex space. -/
+instance : IsOrderedConvexSpace R (WithBot X) where
+  monotone_sConvexComb w₁ w₂ h := by
+    by_cases h₁ : w₁.weights ⊥ = 0
+    · -- `w₁` puts no weight on `⊥`; since its support lies above its minimum, which is not `⊥`,
+      -- neither does the larger `w₂`.
+      have h₂ : w₂.weights ⊥ = 0 := by
+        by_contra hbot
+        have hmin := StdSimplex.forall_le_of_le h
+          (x := w₁.weights.support.min' w₁.support_weights_nonempty)
+          fun y hy ↦ Finset.min'_le _ _ (Finsupp.mem_support_iff.2 hy)
+        have hmem := Finset.min'_mem _ w₁.support_weights_nonempty
+        rw [le_bot_iff.1 (hmin hbot)] at hmem
+        exact Finsupp.mem_support_iff.1 hmem h₁
+      rw [sConvexComb_withBot_eq_some h₁, sConvexComb_withBot_eq_some h₂, WithBot.coe_le_coe]
+      exact monotone_sConvexComb <| StdSimplex.le_def.2 fun x ↦ by
+        simpa using StdSimplex.upperMass_le_upperMass h (x : WithBot X)
+    · rw [sConvexComb_withBot_eq_bot.2 h₁]
+      exact bot_le
+
+end IsOrderedConvexSpace
 end Convexity
