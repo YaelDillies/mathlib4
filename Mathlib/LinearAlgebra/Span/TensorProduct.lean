@@ -101,17 +101,17 @@ variable [CommRing R] [CommRing A] [Nontrivial A]
   (p : Submodule R M) [Free R p] [Module.Finite R p]
 
 @[simp] lemma finrank_span_eq_finrank :
-    finrank A (span A (p : Set M)) = finrank R p := by
+    (span A (p : Set M)).finrank = p.finrank := by
   rcases subsingleton_or_nontrivial R; · simp [Algebra.subsingleton R A]
   let ι := Free.ChooseBasisIndex R p
   let b₁ : Basis ι R p := Free.chooseBasis R p
   let b₂ : Basis ι A (span A (p : Set M)) := (b₁.baseChange A).map <| p.tensorEquivSpan A
-  rw [finrank_eq_card_basis b₁, finrank_eq_card_basis b₂]
+  rw [Submodule.finrank_eq_card_basis b₂, Submodule.finrank_eq_card_basis b₁]
 
 variable (R) in
 lemma finrank_span_eq_finrank_span [IsPrincipalIdealRing R] [IsDomain R] [IsTorsionFree R M]
     (s : Set M) [Module.Finite R (span R s)] :
-    finrank A (span A s) = finrank R (span R s) := by
+    (span A s).finrank = (span R s).finrank := by
   rw [← span_span_of_tower R, finrank_span_eq_finrank]
 
 end CommRing

@@ -69,43 +69,43 @@ variable {K : Type*} [DivisionRing K]
 variable (e f : V ≃ₗ[K] V)
 
 theorem finrank_fixedSubmodule_add_le :
-    finrank K e.fixedSubmodule + finrank K f.fixedSubmodule ≤
-      finrank K ↥(e.fixedSubmodule ⊔ f.fixedSubmodule) +
-        finrank K (e * f).fixedSubmodule := by
+    e.fixedSubmodule.finrank + f.fixedSubmodule.finrank ≤
+      (e.fixedSubmodule ⊔ f.fixedSubmodule).finrank +
+        (e * f).fixedSubmodule.finrank := by
   have := finrank_mono (fixedSubmodule_inf_fixedSubmodule_le_comp e.toLinearMap f.toLinearMap)
   rwa [← Nat.add_le_add_iff_left, finrank_sup_add_finrank_inf_eq] at this
 
 theorem finrank_le_one_add_finrank_fixedSubmodule_dilatransvection
     (he : e ∈ dilatransvections K V) :
-    finrank K V ≤ 1 + finrank K e.fixedSubmodule := by
+    finrank K V ≤ 1 + e.fixedSubmodule.finrank := by
   rw [fixedSubmodule_eq_ker, add_comm, ← Nat.add_le_add_iff_left,
     ← add_assoc, finrank_range_add_finrank_ker, add_comm]
   simpa [← mem_dilatransvections_iff_finrank]
 
 theorem le_one_add_finrank_fixedSubmodule_dilatransvection_mul (hf : f ∈ dilatransvections K V) :
-    finrank K e.fixedSubmodule ≤ 1 + finrank K (f * e).fixedSubmodule := by
+    e.fixedSubmodule.finrank ≤ 1 + (f * e).fixedSubmodule.finrank := by
   have := finrank_fixedSubmodule_add_le f e
   have := finrank_le_one_add_finrank_fixedSubmodule_dilatransvection f hf
-  have : finrank K ↥(f.fixedSubmodule ⊔ e.fixedSubmodule) ≤ finrank K V :=
+  have : (f.fixedSubmodule ⊔ e.fixedSubmodule).finrank ≤ finrank K V :=
     finrank_le _
   linarith
 
 theorem finrank_fixedSubmodule_dilatransvection_mul_le (hf : f ∈ dilatransvections K V) :
-    finrank K (f * e).fixedSubmodule ≤ 1 + finrank K e.fixedSubmodule := by
+    (f * e).fixedSubmodule.finrank ≤ 1 + e.fixedSubmodule.finrank := by
   conv_rhs => rw [show e = f⁻¹ * (f * e) by simp]
   rw [← inv_mem_dilatransvections_iff] at hf
   exact le_one_add_finrank_fixedSubmodule_dilatransvection_mul (f * e) f⁻¹ hf
 
 theorem le_one_add_finrank_fixedSubmodule_mul_dilatransvection (hf : f ∈ dilatransvections K V) :
-    finrank K e.fixedSubmodule ≤ 1 + finrank K (e * f).fixedSubmodule := by
+    e.fixedSubmodule.finrank ≤ 1 + (e * f).fixedSubmodule.finrank := by
   have := finrank_fixedSubmodule_add_le e f
   have := finrank_le_one_add_finrank_fixedSubmodule_dilatransvection f hf
-  have : finrank K ↥(e.fixedSubmodule ⊔ f.fixedSubmodule) ≤ finrank K V :=
+  have : (e.fixedSubmodule ⊔ f.fixedSubmodule).finrank ≤ finrank K V :=
     finrank_le _
   linarith
 
 theorem finrank_fixedSubmodule_mul_dilatransvection_le (hf : f ∈ dilatransvections K V) :
-    finrank K (e * f).fixedSubmodule ≤ 1 + finrank K e.fixedSubmodule := by
+    (e * f).fixedSubmodule.finrank ≤ 1 + e.fixedSubmodule.finrank := by
   conv_rhs => rw [show e = (e * f) * f⁻¹ by simp]
   rw [← inv_mem_dilatransvections_iff] at hf
   exact le_one_add_finrank_fixedSubmodule_mul_dilatransvection (e * f) f⁻¹ hf
@@ -194,7 +194,7 @@ theorem sup_span_singleton_lt_top {W : Submodule K V} (v : V)
   rw [lt_top_iff_ne_top]
   intro htop
   have h1 := finrank_quotient_add_finrank W
-  have h2 : finrank K ↥(W ⊔ K ∙ v) ≤ finrank K W + 1 := by
+  have h2 : (W ⊔ K ∙ v).finrank ≤ W.finrank + 1 := by
     refine le_trans (Submodule.finrank_add_le_finrank_add_finrank _ _) ?_
     simp only [add_le_add_iff_left]
     exact le_trans (finrank_span_le_card {v}) (by simp)

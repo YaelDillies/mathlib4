@@ -60,14 +60,14 @@ section Infinite
 variable [Semiring R]
 
 /-- The rank of a matrix, defined as the dimension of its column space, as a cardinal. -/
-noncomputable def cRank (A : Matrix m n R) : Cardinal := Module.rank R <| span R <| range A.col
+noncomputable def cRank (A : Matrix m n R) : Cardinal := (span R <| range A.col).rank
 
 @[simp]
 theorem cRank_subsingleton [Subsingleton R] (A : Matrix m n R) : A.cRank = 1 :=
   rank_subsingleton _ _
 
 lemma cRank_toNat_eq_finrank (A : Matrix m n R) :
-    A.cRank.toNat = Module.finrank R (span R (range A.col)) := rfl
+    A.cRank.toNat = (span R (range A.col)).finrank := rfl
 
 lemma lift_cRank_submatrix_le (A : Matrix m n R) (r : m₀ → m) (c : n₀ → n) :
     lift.{um} (A.submatrix r c).cRank ≤ lift.{um₀} A.cRank := by
@@ -105,7 +105,7 @@ theorem eRank_subsingleton [Subsingleton R] (A : Matrix m n R) : A.eRank = 1 := 
   simp [eRank]
 
 lemma eRank_toNat_eq_finrank (A : Matrix m n R) :
-    A.eRank.toNat = Module.finrank R (span R (range A.col)) :=
+    A.eRank.toNat = (span R (range A.col)).finrank :=
   toNat_toENat ..
 
 lemma eRank_submatrix_le (A : Matrix m n R) (r : m₀ → m) (c : n₀ → n) :
@@ -132,7 +132,7 @@ variable [Fintype n] [Fintype o]
 
 /-- The rank of a matrix is the rank of its image. -/
 noncomputable def rank [CommSemiring R] (A : Matrix m n R) : ℕ :=
-  finrank R <| LinearMap.range A.mulVecLin
+  A.mulVecLin.range.finrank
 
 @[simp]
 theorem rank_subsingleton [CommSemiring R] [Subsingleton R] (A : Matrix m n R) : A.rank = 1 :=
@@ -257,8 +257,8 @@ lemma rank_mul_eq_right_of_det_mem_nonZeroDivisors {R : Type*} [CommRing R]
     [Fintype m] [DecidableEq m] (A : Matrix m m R) (B : Matrix m n R)
     (hA : A.det ∈ nonZeroDivisors R) : (A * B).rank = B.rank := by
   rw [rank, rank, mulVecLin_mul, LinearMap.range_comp,
-    ← (Submodule.equivMapOfInjective A.mulVecLin
-      (mulVec_injective_of_det_mem_nonZeroDivisors hA) _).finrank_eq]
+    ← Submodule.finrank_eq_of_linearEquiv (Submodule.equivMapOfInjective A.mulVecLin
+      (mulVec_injective_of_det_mem_nonZeroDivisors hA) _)]
 
 lemma rank_mul_eq_right_of_det_ne_zero {R : Type*} [CommRing R] [IsDomain R]
     [Fintype m] [DecidableEq m] (A : Matrix m m R) (B : Matrix m n R) (h : A.det ≠ 0) :
@@ -290,7 +290,7 @@ theorem rank_submatrix_le [CommSemiring R] [StrongRankCondition R] [Fintype n₀
   have := Module.Finite.span_of_finite R (Set.finite_range (A.submatrix r id).col)
   calc
     _ = (((A.submatrix r id)ᵀᵀ.submatrix id c)ᵀᵀ).rank := by simp
-    _ ≤ finrank R (span R (range (A.submatrix r id).col)) := by
+    _ ≤ (span R (range (A.submatrix r id).col)).finrank := by
       rw [rank, Matrix.mulVecLin_transpose, Matrix.transpose_submatrix, transpose_transpose,
         range_vecMulLinear, ← Matrix.transpose_submatrix, row_transpose]
       exact Submodule.finrank_mono (Submodule.span_mono (fun v ⟨j, hj⟩ => ⟨c j, hj⟩))
@@ -348,7 +348,7 @@ and is therefore independent of the choice of bases. -/
 theorem rank_eq_finrank_range_toLin [Finite m] [DecidableEq n] {M₁ M₂ : Type*} [CommSemiring R]
     [AddCommMonoid M₁] [AddCommMonoid M₂] [Module R M₁] [Module R M₂] (A : Matrix m n R)
     (v₁ : Basis m R M₁) (v₂ : Basis n R M₂) :
-    A.rank = finrank R (LinearMap.range (toLin v₂ v₁ A)) := by
+    A.rank = (toLin v₂ v₁ A).range.finrank := by
   cases nonempty_fintype m
   let e₁ := (Pi.basisFun R m).equiv v₁ (Equiv.refl _)
   let e₂ := (Pi.basisFun R n).equiv v₂ (Equiv.refl _)
@@ -395,7 +395,7 @@ theorem rank_le_height [CommSemiring R] [StrongRankCondition R] {m n : ℕ}
 
 /-- The rank of a matrix is the rank of the space spanned by its columns. -/
 theorem rank_eq_finrank_span_cols [CommSemiring R] (A : Matrix m n R) :
-    A.rank = finrank R (Submodule.span R (Set.range A.col)) := by rw [rank, Matrix.range_mulVecLin]
+    A.rank = (Submodule.span R (Set.range A.col)).finrank := by rw [rank, Matrix.range_mulVecLin]
 
 @[simp]
 theorem cRank_toNat_eq_rank [CommSemiring R] (A : Matrix m n R) : A.cRank.toNat = A.rank := by
@@ -412,7 +412,7 @@ variable [Field R]
 /-- The rank of a diagonal matrix is the count of non-zero elements on its main diagonal -/
 theorem rank_diagonal [Fintype m] [DecidableEq m] [DecidableEq R] (w : m → R) :
     (diagonal w).rank = Fintype.card {i // (w i) ≠ 0} := by
-  rw [Matrix.rank, ← Matrix.toLin'_apply', Module.finrank, ← LinearMap.rank,
+  rw [Matrix.rank, ← Matrix.toLin'_apply', Submodule.finrank_eq_toNat_rank, ← LinearMap.rank,
     LinearMap.rank_diagonal, Cardinal.toNat_natCast]
 
 open TransvectionStruct in
@@ -501,10 +501,10 @@ theorem ker_mulVecLin_conjTranspose_mul_self (A : Matrix m n R) :
 
 theorem rank_conjTranspose_mul_self (A : Matrix m n R) : (Aᴴ * A).rank = A.rank := by
   dsimp only [rank]
-  refine add_left_injective (finrank R (LinearMap.ker (mulVecLin A))) ?_
+  refine add_left_injective (mulVecLin A).ker.finrank ?_
   dsimp only
-  trans finrank R { x // x ∈ LinearMap.range (mulVecLin (Aᴴ * A)) } +
-    finrank R { x // x ∈ LinearMap.ker (mulVecLin (Aᴴ * A)) }
+  trans (mulVecLin (Aᴴ * A)).range.finrank +
+    (mulVecLin (Aᴴ * A)).ker.finrank
   · rw [ker_mulVecLin_conjTranspose_mul_self]
   · simp only [LinearMap.finrank_range_add_finrank_ker]
 
@@ -541,10 +541,10 @@ theorem ker_mulVecLin_transpose_mul_self (A : Matrix m n R) :
 
 theorem rank_transpose_mul_self (A : Matrix m n R) : (Aᵀ * A).rank = A.rank := by
   dsimp only [rank]
-  refine add_left_injective (finrank R <| LinearMap.ker A.mulVecLin) ?_
+  refine add_left_injective A.mulVecLin.ker.finrank ?_
   dsimp only
-  trans finrank R { x // x ∈ LinearMap.range (mulVecLin (Aᵀ * A)) } +
-    finrank R { x // x ∈ LinearMap.ker (mulVecLin (Aᵀ * A)) }
+  trans (mulVecLin (Aᵀ * A)).range.finrank +
+    (mulVecLin (Aᵀ * A)).ker.finrank
   · rw [ker_mulVecLin_transpose_mul_self]
   · simp only [LinearMap.finrank_range_add_finrank_ker]
 
@@ -565,7 +565,7 @@ theorem rank_self_mul_transpose [Field R] [LinearOrder R] [IsStrictOrderedRing R
 
 /-- The rank of a matrix is the rank of the space spanned by its rows. -/
 theorem rank_eq_finrank_span_row [Field R] [Finite m] (A : Matrix m n R) :
-    A.rank = finrank R (Submodule.span R (Set.range A.row)) := by
+    A.rank = (Submodule.span R (Set.range A.row)).finrank := by
   cases nonempty_fintype m
   rw [← rank_transpose, rank_eq_finrank_span_cols, col_transpose]
 
@@ -585,7 +585,7 @@ lemma rank_add_rank_le_card_of_mul_eq_zero [Field R] [Finite l] [Fintype m]
       ← Module.finrank_fintype_fun_eq_card R,
       ← LinearMap.finrank_range_add_finrank_ker (Matrix.toLin em el A),
       add_le_add_iff_left]
-  apply Submodule.finrank_mono
+  gcongr
   rw [LinearMap.range_le_ker_iff, ← Matrix.toLin_mul, hAB, map_zero]
 
 end Matrix

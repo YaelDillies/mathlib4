@@ -154,6 +154,12 @@ theorem _root_.Module.finrank_eq_card_chooseBasisIndex [Module.Finite R M] :
     finrank R M = Fintype.card (ChooseBasisIndex R M) := by
   simp [finrank, rank_eq_card_chooseBasisIndex]
 
+/-- The `finrank` of a free submodule `p` is the cardinality of `ChooseBasisIndex R p`. -/
+theorem _root_.Submodule.finrank_eq_card_chooseBasisIndex {N : Type*} [AddCommGroup N]
+    [Module R N] (p : Submodule R N) [Module.Free R p] [Module.Finite R p] :
+    p.finrank = Fintype.card (ChooseBasisIndex R p) :=
+  _root_.Module.finrank_eq_card_chooseBasisIndex R p
+
 /-- The rank of a free module `M` over an infinite scalar ring `R` is the cardinality of `M`
 whenever `#R < #M`. -/
 lemma rank_eq_mk_of_infinite_lt [Infinite R] (h_lt : lift.{v} #R < lift.{u} #M) :

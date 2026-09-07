@@ -173,6 +173,11 @@ variable {K V}
 theorem finrank_of_infinite_dimensional (h : ¬FiniteDimensional K V) : finrank K V = 0 :=
   Module.finrank_of_not_finite h
 
+/-- The `Submodule.finrank` version of `finrank_of_infinite_dimensional`. -/
+theorem _root_.Submodule.finrank_of_infinite_dimensional {p : Submodule K V}
+    (h : ¬FiniteDimensional K p) : p.finrank = 0 :=
+  Module.finrank_of_infinite_dimensional h
+
 theorem finiteDimensional_iff_of_rank_eq_nsmul {W} [AddCommGroup W] [Module K W] {n : ℕ}
     (hn : n ≠ 0) (hVW : Module.rank K V = n • Module.rank K W) :
     FiniteDimensional K V ↔ FiniteDimensional K W :=

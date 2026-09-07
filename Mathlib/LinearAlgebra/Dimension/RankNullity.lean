@@ -53,12 +53,12 @@ class HasRankNullity (R : Type v) [inst : Ring R] : Prop where
   exists_set_linearIndependent : ∀ (M : Type u) [AddCommGroup M] [Module R M],
     ∃ s : Set M, #s = Module.rank R M ∧ LinearIndepOn R id s
   rank_quotient_add_rank : ∀ {M : Type u} [AddCommGroup M] [Module R M] (N : Submodule R M),
-    Module.rank R (M ⧸ N) + Module.rank R N = Module.rank R M
+    Module.rank R (M ⧸ N) + N.rank = Module.rank R M
 
 variable [HasRankNullity.{u} R]
 
 lemma Submodule.rank_quotient_add_rank (N : Submodule R M) :
-    Module.rank R (M ⧸ N) + Module.rank R N = Module.rank R M :=
+    Module.rank R (M ⧸ N) + N.rank = Module.rank R M :=
   HasRankNullity.rank_quotient_add_rank N
 
 variable (R M) in
@@ -70,40 +70,40 @@ variable (R) in
 theorem nontrivial_of_hasRankNullity : Nontrivial R := by
   refine (subsingleton_or_nontrivial R).resolve_left fun H ↦ ?_
   have := rank_quotient_add_rank (R := R) (M := PUnit) ⊥
-  simp [one_add_one_eq_two] at this
+  simp [Submodule.rank, one_add_one_eq_two] at this
 
 attribute [local instance] nontrivial_of_hasRankNullity
 
 theorem LinearMap.lift_rank_range_add_rank_ker (f : M →ₗ[R] M') :
-    lift.{u} (Module.rank R (LinearMap.range f)) + lift.{v} (Module.rank R (LinearMap.ker f)) =
+    lift.{u} f.range.rank + lift.{v} f.ker.rank =
       lift.{v} (Module.rank R M) := by
   have := fun p : Submodule R M => Classical.decEq (M ⧸ p)
-  rw [← f.quotKerEquivRange.lift_rank_eq, ← lift_add, rank_quotient_add_rank]
+  rw [← f.quotKerEquivRange.lift_rank_eq_submodule_rank, ← lift_add, rank_quotient_add_rank]
 
 /-- The **rank-nullity theorem** -/
 theorem LinearMap.rank_range_add_rank_ker (f : M →ₗ[R] M₁) :
-    Module.rank R (LinearMap.range f) + Module.rank R (LinearMap.ker f) = Module.rank R M := by
+    f.range.rank + f.ker.rank = Module.rank R M := by
   have := fun p : Submodule R M => Classical.decEq (M ⧸ p)
-  rw [← f.quotKerEquivRange.rank_eq, rank_quotient_add_rank]
+  rw [← f.quotKerEquivRange.rank_eq_submodule_rank, rank_quotient_add_rank]
 
 theorem LinearMap.lift_rank_eq_of_surjective {f : M →ₗ[R] M'} (h : Surjective f) :
     lift.{v} (Module.rank R M) =
-      lift.{u} (Module.rank R M') + lift.{v} (Module.rank R (LinearMap.ker f)) := by
+      lift.{u} (Module.rank R M') + lift.{v} f.ker.rank := by
   rw [← lift_rank_range_add_rank_ker f, ← rank_range_of_surjective f h]
 
 theorem LinearMap.rank_eq_of_surjective {f : M →ₗ[R] M₁} (h : Surjective f) :
-    Module.rank R M = Module.rank R M₁ + Module.rank R (LinearMap.ker f) := by
+    Module.rank R M = Module.rank R M₁ + f.ker.rank := by
   rw [← rank_range_add_rank_ker f, ← rank_range_of_surjective f h]
 
 theorem LinearMap.lift_rank_comap_le {f : M →ₗ[R] M'} (p : Submodule R M') :
-    lift.{v} (Module.rank R (comap f p)) ≤
-      lift.{u} (Module.rank R p) + lift.{v} (Module.rank R f.ker) := by
+    lift.{v} (comap f p).rank ≤
+      lift.{u} p.rank + lift.{v} f.ker.rank := by
   let f' : comap f p →ₗ[R] p := f.restrict (by aesop)
-  have hk : Module.rank R f'.ker ≤ Module.rank R f.ker := by
+  have hk : f'.ker.rank ≤ f.ker.rank := by
     rw [← rank_map_eq (injective_subtype (comap f p))]
     exact rank_mono fun x hx ↦ by aesop (add simp Subtype.ext_iff)
-  have hr : Module.rank R f'.range ≤ Module.rank R p := by grw [Submodule.rank_le f'.range]
-  rw [← f'.lift_rank_range_add_rank_ker]
+  have hr : f'.range.rank ≤ p.rank := Submodule.rank_le _
+  rw [← Submodule.rank_coe (comap f p), ← f'.lift_rank_range_add_rank_ker]
   gcongr <;> rwa [lift_le]
 
 omit [HasRankNullity.{u} R] in
@@ -122,7 +122,7 @@ lemma LinearMap.rank_quot_submodule_map_eq [HasRankNullity.{v} R]
     let e := g.quotKerEquivOfSurjective g_surj
     rwa [g_ker] at e
   have := f'.rank_eq_of_surjective <| factor_surjective map_le_range
-  rwa [← e.rank_eq] at this
+  rwa [← e.rank_eq_submodule_rank] at this
 
 omit [HasRankNullity.{u} R] in
 theorem LinearMap.lift_rank_quot_map_le [HasRankNullity.{v} R]
@@ -188,7 +188,7 @@ theorem exists_linearIndependent_pair_of_one_lt_rank [IsDomain R] [StrongRankCon
   exact ⟨y, hy⟩
 
 theorem Submodule.exists_smul_notMem_of_rank_lt {N : Submodule R M}
-    (h : Module.rank R N < Module.rank R M) : ∃ m : M, ∀ r : R, r ≠ 0 → r • m ∉ N := by
+    (h : N.rank < Module.rank R M) : ∃ m : M, ∀ r : R, r ≠ 0 → r • m ∉ N := by
   have : Module.rank R (M ⧸ N) ≠ 0 := by
     intro e
     rw [← rank_quotient_add_rank N, e, zero_add] at h
@@ -201,18 +201,20 @@ theorem Submodule.exists_smul_notMem_of_rank_lt {N : Submodule R M}
 open Cardinal Submodule Function LinearMap
 
 theorem Submodule.rank_sup_add_rank_inf_eq (s t : Submodule R M) :
-    Module.rank R (s ⊔ t : Submodule R M) + Module.rank R (s ⊓ t : Submodule R M) =
-    Module.rank R s + Module.rank R t := by
+    (s ⊔ t : Submodule R M).rank + (s ⊓ t : Submodule R M).rank =
+    s.rank + t.rank := by
+  simp only [← Submodule.rank_coe]
   conv_rhs => enter [2]; rw [show t = (s ⊔ t) ⊓ t by simp]
   rw [← rank_quotient_add_rank ((s ⊓ t).comap s.subtype),
-    ← rank_quotient_add_rank (t.comap (s ⊔ t).subtype),
-    comap_inf, (quotientInfEquivSupQuotient s t).rank_eq, ← comap_inf,
+    ← rank_quotient_add_rank (t.comap (s ⊔ t).subtype)]
+  simp only [← Submodule.rank_coe]
+  rw [comap_inf, (quotientInfEquivSupQuotient s t).rank_eq, ← comap_inf,
     (equivSubtypeMap s (comap _ (s ⊓ t))).rank_eq, Submodule.map_comap_subtype,
     (equivSubtypeMap (s ⊔ t) (comap _ t)).rank_eq, Submodule.map_comap_subtype,
     ← inf_assoc, inf_idem, add_right_comm]
 
 theorem Submodule.rank_add_le_rank_add_rank (s t : Submodule R M) :
-    Module.rank R (s ⊔ t : Submodule R M) ≤ Module.rank R s + Module.rank R t := by
+    (s ⊔ t : Submodule R M).rank ≤ s.rank + t.rank := by
   rw [← Submodule.rank_sup_add_rank_inf_eq]
   exact self_le_add_right _ _
 
@@ -245,27 +247,29 @@ theorem exists_linearIndependent_pair_of_one_lt_finrank [IsDomain R] [Module.IsT
 
 /-- Rank-nullity theorem using `finrank`. -/
 lemma Submodule.finrank_quotient_add_finrank [Module.Finite R M] (N : Submodule R M) :
-    finrank R (M ⧸ N) + finrank R N = finrank R M := by
+    finrank R (M ⧸ N) + N.finrank = finrank R M := by
   rw [← Nat.cast_inj (R := Cardinal), Module.finrank_eq_rank, Nat.cast_add, Module.finrank_eq_rank,
     Submodule.finrank_eq_rank]
   exact HasRankNullity.rank_quotient_add_rank _
 
 /-- Rank-nullity theorem using `finrank` and subtraction. -/
 lemma Submodule.finrank_quotient [Module.Finite R M] {S : Type*} [Ring S] [SMul R S] [Module S M]
-    [IsScalarTower R S M] (N : Submodule S M) : finrank R (M ⧸ N) = finrank R M - finrank R N := by
+    [IsScalarTower R S M] (N : Submodule S M) :
+    finrank R (M ⧸ N) = finrank R M - finrank R N := by
   rw [← (N.restrictScalars R).finrank_quotient_add_finrank]
   exact Nat.eq_sub_of_add_eq rfl
 
 lemma Submodule.disjoint_ker_of_finrank_le [IsDomain R] [IsTorsionFree R M] {N : Type*}
     [AddCommGroup N] [Module R N] {L : Submodule R M} [Module.Finite R L] (f : M →ₗ[R] N)
-    (h : finrank R L ≤ finrank R (L.map f)) :
+    (h : L.finrank ≤ (L.map f).finrank) :
     Disjoint L (LinearMap.ker f) := by
   refine LinearMap.injective_domRestrict_iff.mp <| LinearMap.ker_eq_bot.mp <|
     Submodule.rank_eq_zero.mp ?_
   rw [← Submodule.finrank_eq_rank, Nat.cast_eq_zero]
   rw [← LinearMap.range_domRestrict] at h
   have := (LinearMap.ker (f.domRestrict L)).finrank_quotient_add_finrank
-  rw [LinearEquiv.finrank_eq (f.domRestrict L).quotKerEquivRange] at this
+  rw [(f.domRestrict L).quotKerEquivRange.finrank_eq_submodule_finrank] at this
+  simp only [Submodule.finrank_coe] at this
   lia
 
 end Finrank
@@ -276,7 +280,7 @@ open Submodule Module
 
 variable [StrongRankCondition R] [Module.Finite R M]
 
-lemma Submodule.exists_of_finrank_lt (N : Submodule R M) (h : finrank R N < finrank R M) :
+lemma Submodule.exists_of_finrank_lt (N : Submodule R M) (h : N.finrank < finrank R M) :
     ∃ m : M, ∀ r : R, r ≠ 0 → r • m ∉ N := by
   obtain ⟨s, hs, hs'⟩ :=
     exists_finset_linearIndependent_of_le_finrank (R := R) (M := M ⧸ N) le_rfl

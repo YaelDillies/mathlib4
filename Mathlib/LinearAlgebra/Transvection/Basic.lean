@@ -366,7 +366,7 @@ equivalences `e` such that the linear map `e - id` has rank at most 1.
 See also `LinearEquiv.mem_dilatransvections_iff_finrank`. -/
 theorem mem_dilatransvections_iff_rank {e : V ≃ₗ[K] V} :
     e ∈ dilatransvections K V ↔
-      Module.rank K (range ((e : V →ₗ[K] V) - LinearMap.id (R := K))) ≤ 1 := by
+      (range ((e : V →ₗ[K] V) - LinearMap.id (R := K))).rank ≤ 1 := by
   simp only [dilatransvections]
   constructor
   · simp only [Set.mem_ofPred_eq]
@@ -379,15 +379,15 @@ theorem mem_dilatransvections_iff_rank {e : V ≃ₗ[K] V} :
     simp only [Set.mem_ofPred_eq]
     set u := (e : V →ₗ[K] V) - LinearMap.id with hu
     rw [eq_sub_iff_add_eq] at hu
-    by_cases hr : Module.rank K (range u) = 0
+    by_cases hr : (range u).rank = 0
     · use 0, 0
       ext x
       suffices u x = 0 by simp [← hu, this]
-      rw [rank_zero_iff] at hr
+      rw [Submodule.rank_eq_zero_iff_subsingleton] at hr
       simpa [← Subtype.coe_inj] using Subsingleton.allEq (⟨u x , mem_range_self u x⟩ : range u) 0
     rw [← ne_eq, ← Cardinal.one_le_iff_ne_zero] at hr
-    replace he : Module.rank K (range u) = 1 := le_antisymm he hr
-    rw [rank_eq_one_iff_finrank_eq_one, finrank_eq_one_iff Unit] at he
+    replace he : (range u).rank = 1 := le_antisymm he hr
+    rw [Submodule.rank_eq_one_iff_finrank_eq_one, Submodule.finrank_eq_one_iff Unit] at he
     obtain ⟨b⟩ := he
     use (b.coord default) ∘ₗ u.rangeRestrict, b default
     ext x
@@ -407,18 +407,19 @@ equivalences `e` such that the linear map `e - id` has rank at most 1.
 See also `LinearEquiv.mem_dilatransvections_iff_rank`. -/
 theorem mem_dilatransvections_iff_finrank [Module.Finite K V] {e : V ≃ₗ[K] V} :
     e ∈ dilatransvections K V ↔
-      finrank K (range ((e : V →ₗ[K] V) - LinearMap.id (R := K))) ≤ 1 := by
-  rw [mem_dilatransvections_iff_rank, finrank, ← one_toNat,
-    toNat_le_iff_le_of_lt_aleph0 (rank_lt_aleph0 K _) one_lt_aleph0]
+      (range ((e : V →ₗ[K] V) - LinearMap.id (R := K))).finrank ≤ 1 := by
+  rw [mem_dilatransvections_iff_rank, Submodule.finrank_eq_toNat_rank, ← Submodule.rank_coe,
+    ← one_toNat, toNat_le_iff_le_of_lt_aleph0 (rank_lt_aleph0 K _) one_lt_aleph0]
 
 theorem mem_dilatransvections_iff_finrank_quotient [Module.Finite K V] {e : V ≃ₗ[K] V} :
     e ∈ dilatransvections K V ↔ finrank K (V ⧸ e.fixedSubmodule) ≤ 1 := by
-  rw [mem_dilatransvections_iff_finrank, ← (quotKerEquivRange _).finrank_eq,
+  rw [mem_dilatransvections_iff_finrank, ← (quotKerEquivRange _).finrank_eq_submodule_finrank,
     ← fixedSubmodule_eq_ker]
 
 theorem mem_dilatransvections_iff_rank_quotient {e : V ≃ₗ[K] V} :
     e ∈ dilatransvections K V ↔ Module.rank K (V ⧸ e.fixedSubmodule) ≤ 1 := by
-  rw [mem_dilatransvections_iff_rank, ← (quotKerEquivRange _).rank_eq, ← fixedSubmodule_eq_ker]
+  rw [mem_dilatransvections_iff_rank, ← (quotKerEquivRange _).rank_eq_submodule_rank,
+    ← fixedSubmodule_eq_ker]
 
 variable (e f : V ≃ₗ[K] V)
 

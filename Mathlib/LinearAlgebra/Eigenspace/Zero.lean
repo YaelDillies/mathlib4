@@ -139,7 +139,7 @@ lemma not_hasEigenvalue_zero_tfae (φ : Module.End K M) :
 
 open Module.Free in
 lemma finrank_maxGenEigenspace_zero_eq (φ : Module.End K M) :
-    finrank K (φ.maxGenEigenspace 0) = natTrailingDegree (φ.charpoly) := by
+    (φ.maxGenEigenspace 0).finrank = natTrailingDegree (φ.charpoly) := by
   set V := φ.maxGenEigenspace 0
   have hV : V = ⨆ (n : ℕ), ker (φ ^ n) := by
     simp [V, ← Module.End.iSup_genEigenspace_eq, Module.End.genEigenspace_nat]
@@ -200,17 +200,17 @@ lemma finrank_maxGenEigenspace_zero_eq (φ : Module.End K M) :
   induction n <;> simp [pow_succ', *]
 
 lemma finrank_maxGenEigenspace_eq (φ : Module.End K M) (μ : K) :
-    finrank K (φ.maxGenEigenspace μ) = φ.charpoly.rootMultiplicity μ := by
+    (φ.maxGenEigenspace μ).finrank = φ.charpoly.rootMultiplicity μ := by
   rw [φ.maxGenEigenspace_eq_maxGenEigenspace_zero, finrank_maxGenEigenspace_zero_eq,
     Polynomial.rootMultiplicity_eq_natTrailingDegree, LinearMap.charpoly_sub_smul]
 
 lemma finrank_genEigenspace_le (φ : Module.End K M) (μ : K) (k : ℕ) :
-    finrank K (φ.genEigenspace μ k) ≤ φ.charpoly.rootMultiplicity μ := by
+    (φ.genEigenspace μ k).finrank ≤ φ.charpoly.rootMultiplicity μ := by
   grw [Submodule.finrank_mono (φ.genEigenspace_le_maximal μ k), finrank_maxGenEigenspace_eq]
 
 /-- The geometric multiplicity of an eigenvalue is at most the algebraic multiplicity. -/
 lemma finrank_eigenspace_le (φ : Module.End K M) (μ : K) :
-    finrank K (φ.eigenspace μ) ≤ φ.charpoly.rootMultiplicity μ :=
+    (φ.eigenspace μ).finrank ≤ φ.charpoly.rootMultiplicity μ :=
   finrank_genEigenspace_le ..
 
 end LinearMap

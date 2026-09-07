@@ -92,6 +92,10 @@ Also see `rank_eq_zero_iff` for the version without `NoZeroSMulDivisor R M`. -/
 theorem rank_zero_iff : Module.rank R M = 0 ↔ Subsingleton M :=
   rank_zero_iff_forall_zero.trans (subsingleton_iff_forall_eq 0).symm
 
+/-- The `Submodule.rank` version of `rank_zero_iff`. -/
+theorem Submodule.rank_eq_zero_iff_subsingleton {N : Type*} [AddCommGroup N] [Module R N]
+    {p : Submodule R N} [IsTorsionFree R p] : p.rank = 0 ↔ Subsingleton p := rank_zero_iff
+
 theorem rank_pos_iff_exists_ne_zero : 0 < Module.rank R M ↔ ∃ x : M, x ≠ 0 := by
   contrapose!; rw [nonpos_iff_eq_zero]; exact rank_zero_iff_forall_zero
 
@@ -108,7 +112,7 @@ theorem Module.finite_of_rank_eq_zero (h : Module.rank R M = 0) : Module.Finite 
 
 end
 
-lemma exists_mem_ne_zero_of_rank_pos [Nontrivial R] {s : Submodule R M} (h : 0 < Module.rank R s) :
+lemma exists_mem_ne_zero_of_rank_pos [Nontrivial R] {s : Submodule R M} (h : 0 < s.rank) :
     ∃ b : M, b ∈ s ∧ b ≠ 0 :=
   exists_mem_ne_zero_of_ne_bot fun eq => by rw [eq, rank_bot] at h; exact lt_irrefl _ h
 
@@ -360,6 +364,10 @@ lemma LinearIndependent.finrank_eq_zero_of_infinite {ι} [Infinite ι] {v : ι �
 theorem Module.nontrivial_of_finrank_pos (h : 0 < finrank R M) : Nontrivial M := by
   contrapose! h; exact finrank_zero_of_subsingleton.le
 
+/-- A submodule is nontrivial if it has positive `finrank`. -/
+theorem Submodule.nontrivial_of_finrank_pos {p : Submodule R M} (h : 0 < p.finrank) :
+    Nontrivial p := Module.nontrivial_of_finrank_pos h
+
 /-- A finite-dimensional space is nontrivial if it has `finrank` equal to the successor of a
 natural number. -/
 theorem Module.nontrivial_of_finrank_eq_succ {n : ℕ}
@@ -369,7 +377,7 @@ theorem Module.nontrivial_of_finrank_eq_succ {n : ℕ}
 variable (R M)
 
 @[simp]
-theorem finrank_bot : finrank R (⊥ : Submodule R M) = 0 :=
+theorem finrank_bot : (⊥ : Submodule R M).finrank = 0 :=
   finrank_eq_of_rank_eq (rank_bot _ _)
 
 end
@@ -391,6 +399,11 @@ theorem Module.finrank_pos_iff [IsDomain R] [IsTorsionFree R M] :
   rw [← rank_pos_iff_nontrivial (R := R), ← finrank_eq_rank]
   norm_cast
 
+omit [Module.Finite R M] in
+/-- The `Submodule.finrank` version of `Module.finrank_pos_iff`. -/
+theorem Submodule.finrank_pos_iff [IsDomain R] [IsTorsionFree R M] (p : Submodule R M)
+    [Module.Finite R p] : 0 < p.finrank ↔ Nontrivial p := Module.finrank_pos_iff
+
 /-- A nontrivial finite-dimensional space has positive `finrank`. -/
 theorem Module.finrank_pos [IsDomain R] [IsTorsionFree R M] [h : Nontrivial M] :
     0 < finrank R M :=
@@ -409,9 +422,14 @@ theorem Module.finrank_zero_iff [IsDomain R] [IsTorsionFree R M] :
   rw [← rank_zero_iff (R := R), ← finrank_eq_rank]
   norm_cast
 
+/-- The `Submodule.finrank` version of `Module.finrank_zero_iff`. -/
+theorem Submodule.finrank_eq_zero_iff_subsingleton {N : Type*} [AddCommGroup N] [Module R N]
+    {p : Submodule R N} [IsDomain R] [IsTorsionFree R p] [Module.Finite R p] :
+    p.finrank = 0 ↔ Subsingleton p := Module.finrank_zero_iff
+
 /-- Similar to `rank_quotient_add_rank_le` but for `finrank` and a finite `M`. -/
 lemma Module.finrank_quotient_add_finrank_le (N : Submodule R M) :
-    finrank R (M ⧸ N) + finrank R N ≤ finrank R M := by
+    finrank R (M ⧸ N) + N.finrank ≤ finrank R M := by
   have := nontrivial_of_invariantBasisNumber R
   have := rank_quotient_add_rank_le N
   rw [← finrank_eq_rank R M, ← finrank_eq_rank R, ← N.finrank_eq_rank] at this
@@ -438,7 +456,7 @@ lemma Submodule.bot_eq_top_of_rank_eq_zero (h : Module.rank R M = 0) : (⊥ : Su
 
 /-- See `rank_subsingleton` for the reason that `Nontrivial R` is needed. -/
 @[simp]
-theorem Submodule.rank_eq_zero {S : Submodule R M} : Module.rank R S = 0 ↔ S = ⊥ :=
+theorem Submodule.rank_eq_zero {S : Submodule R M} : S.rank = 0 ↔ S = ⊥ :=
   ⟨fun h =>
     (Submodule.eq_bot_iff _).2 fun x hx =>
       congr_arg Subtype.val <|
@@ -448,12 +466,13 @@ theorem Submodule.rank_eq_zero {S : Submodule R M} : Module.rank R S = 0 ↔ S =
 
 @[simp]
 theorem Submodule.finrank_eq_zero [StrongRankCondition R] {S : Submodule R M} [Module.Finite R S] :
-    finrank R S = 0 ↔ S = ⊥ := by
-  rw [← Submodule.rank_eq_zero, ← finrank_eq_rank, ← @Nat.cast_zero Cardinal, Nat.cast_inj]
+    S.finrank = 0 ↔ S = ⊥ := by
+  rw [← Submodule.rank_eq_zero, ← Submodule.finrank_eq_rank_of_finite,
+    ← @Nat.cast_zero Cardinal, Nat.cast_inj]
 
 @[simp]
 lemma Submodule.one_le_finrank_iff [StrongRankCondition R] {S : Submodule R M} [Module.Finite R S] :
-    1 ≤ finrank R S ↔ S ≠ ⊥ := by
+    1 ≤ S.finrank ↔ S ≠ ⊥ := by
   contrapose!; rw [Nat.lt_one_iff, finrank_eq_zero]
 
 end

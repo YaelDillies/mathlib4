@@ -498,8 +498,8 @@ theorem rank_inf_eq_one_of_commute_of_flat_of_inj (hf : Module.Flat R A ∨ Modu
     lift_rank_range_of_injective (Algebra.linearMap R S) hinj
   rw [Module.rank_self, Cardinal.lift_one, Cardinal.lift_eq_one] at this
   rw [← this]
-  change Module.rank R (toSubmodule (⊥ : Subalgebra R S)) ≤
-    Module.rank R (toSubmodule (A ⊓ B))
+  change (toSubmodule (⊥ : Subalgebra R S)).rank ≤
+    (toSubmodule (A ⊓ B)).rank
   exact Submodule.rank_mono (bot_le : (⊥ : Subalgebra R S) ≤ A ⊓ B)
 
 theorem rank_inf_eq_one_of_commute_of_flat_left_of_inj [Module.Flat R A]
@@ -735,7 +735,7 @@ theorem adjoin_rank_eq_rank_left [Module.Free R A] [Module.Flat R B]
     Module.rank B (Algebra.adjoin B (A : Set S)) = Module.rank R A := by
   rw [← rank_toSubmodule, Module.Free.rank_eq_card_chooseBasisIndex R A,
     A.adjoin_eq_span_basis B (Module.Free.chooseBasis R A)]
-  change Module.rank B (Submodule.span B (Set.range (A.val ∘ Module.Free.chooseBasis R A))) = _
+  change (Submodule.span B (Set.range (A.val ∘ Module.Free.chooseBasis R A))).rank = _
   have := H.linearIndependent_left_of_flat (Module.Free.chooseBasis R A).linearIndependent
   rw [rank_span this, Cardinal.mk_range_eq _ this.injective]
 

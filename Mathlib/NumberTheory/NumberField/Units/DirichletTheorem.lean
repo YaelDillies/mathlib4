@@ -383,7 +383,7 @@ protected theorem finrank_eq_rank :
 
 @[simp]
 theorem unitLattice_rank :
-    finrank ℤ (unitLattice K) = Units.rank K := by
+    (unitLattice K).finrank = Units.rank K := by
   classical
   rw [← Units.finrank_eq_rank, ZLattice.rank ℝ]
 
@@ -455,7 +455,7 @@ instance : Monoid.FG (𝓞 K)ˣ := by
   infer_instance
 
 theorem finrank_modTorsion : finrank ℤ (Additive ((𝓞 K)ˣ ⧸ (torsion K))) = rank K := by
-  rw [← LinearEquiv.finrank_eq (logEmbeddingEquiv K).symm, unitLattice_rank]
+  rw [(logEmbeddingEquiv K).finrank_eq_submodule_finrank, unitLattice_rank]
 
 @[deprecated (since := "2026-06-05")] alias rank_modTorsion := finrank_modTorsion
 

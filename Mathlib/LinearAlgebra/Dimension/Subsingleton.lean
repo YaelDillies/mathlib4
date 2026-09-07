@@ -26,6 +26,11 @@ variable [Nontrivial R]
 
 theorem rank_punit : Module.rank R PUnit = 0 := rank_subsingleton' _ _
 
-theorem rank_bot : Module.rank R (⊥ : Submodule R M) = 0 := rank_subsingleton' _ _
+@[simp, nontriviality]
+theorem Submodule.rank_eq_zero_of_subsingleton {p : Submodule R M} [Subsingleton p] :
+    p.rank = 0 := rank_subsingleton' _ _
+
+@[simp]
+theorem rank_bot : (⊥ : Submodule R M).rank = 0 := rank_subsingleton' _ _
 
 end

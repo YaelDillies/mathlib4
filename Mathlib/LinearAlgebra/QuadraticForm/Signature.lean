@@ -63,8 +63,8 @@ Note the proof of nonemptiness needed for `max'` is a little fiddly since we are
 `Nontrivial R`, and the `⊥` submodule of a module over the zero ring has finrank 1, not 0.
 -/
 def sigPos : ℕ := max' {r ∈ Iic (Module.finrank R M) |
-    ∃ V : Submodule R M, Module.finrank R V = r ∧ (Q.restrict V).PosDef}
-  ⟨Module.finrank R (⊥ : Submodule R M), by
+    ∃ V : Submodule R M, V.finrank = r ∧ (Q.restrict V).PosDef}
+  ⟨(⊥ : Submodule R M).finrank, by
     simp only [mem_filter, mem_Iic]
     refine ⟨?_, ⟨⊥, rfl, fun x hx' ↦ (hx' <| Subsingleton.elim x 0).elim⟩⟩
     nontriviality R
@@ -76,7 +76,7 @@ lemma sigPos_le_finrank : sigPos Q ≤ Module.finrank R M := by
 
 /-- Defining property of `sigPos`. -/
 lemma sigPos_isGreatest [Module.Finite R M] [StrongRankCondition R] : IsGreatest
-    {r | ∃ V : Submodule R M, Module.finrank R V = r ∧ (Q.restrict V).PosDef} (sigPos Q) := by
+    {r | ∃ V : Submodule R M, V.finrank = r ∧ (Q.restrict V).PosDef} (sigPos Q) := by
   classical
   refine ⟨(mem_filter.mp <| max'_mem _ _).2, ?_⟩
   rintro _ ⟨V, rfl, hV⟩
@@ -85,12 +85,12 @@ lemma sigPos_isGreatest [Module.Finite R M] [StrongRankCondition R] : IsGreatest
   exact ⟨V.finrank_le, V, rfl, hV⟩
 
 lemma exists_finrank_eq_sigPos_and_posDef [Module.Finite R M] [StrongRankCondition R] :
-    ∃ V : Submodule R M, Module.finrank R V = sigPos Q ∧ (Q.restrict V).PosDef :=
+    ∃ V : Submodule R M, V.finrank = sigPos Q ∧ (Q.restrict V).PosDef :=
   (sigPos_isGreatest Q).1
 
 lemma le_sigPos_of_posDef [Module.Finite R M] [StrongRankCondition R]
     {V : Submodule R M} (hV : (Q.restrict V).PosDef) :
-    Module.finrank R V ≤ sigPos Q :=
+    V.finrank ≤ sigPos Q :=
   (sigPos_isGreatest Q).2 ⟨V, by tauto⟩
 
 /-- For quadratic forms on finite-dimensional spaces, the maximal finrank of a negative-definite
@@ -99,16 +99,16 @@ def sigNeg : ℕ := sigPos (-Q)
 
 /-- Defining property of `sigNeg`. -/
 lemma sigNeg_isGreatest [Module.Finite R M] [StrongRankCondition R] : IsGreatest
-    {r | ∃ V : Submodule R M, Module.finrank R V = r ∧ ((-Q).restrict V).PosDef} (sigNeg Q) :=
+    {r | ∃ V : Submodule R M, V.finrank = r ∧ ((-Q).restrict V).PosDef} (sigNeg Q) :=
   sigPos_isGreatest (-Q)
 
 lemma exists_finrank_eq_sigNeg_and_negDef [Module.Finite R M] [StrongRankCondition R] :
-    ∃ V : Submodule R M, Module.finrank R V = sigNeg Q ∧ ((-Q).restrict V).PosDef :=
+    ∃ V : Submodule R M, V.finrank = sigNeg Q ∧ ((-Q).restrict V).PosDef :=
   exists_finrank_eq_sigPos_and_posDef (-Q)
 
 lemma le_sigNeg_of_negDef [Module.Finite R M] [StrongRankCondition R]
     {V : Submodule R M} (hV : ((-Q).restrict V).PosDef) :
-    Module.finrank R V ≤ sigNeg Q :=
+    V.finrank ≤ sigNeg Q :=
   le_sigPos_of_posDef (-Q) hV
 
 variable {Q}
@@ -211,7 +211,7 @@ lemma sigNeg_weightedSumSquares :
 
 private lemma sigPos_add_sigNeg_add_radical₁ :
     sigPos (weightedSumSquares 𝕜 w) + sigNeg (weightedSumSquares 𝕜 w) +
-      Module.finrank 𝕜 (weightedSumSquares 𝕜 w).radical = Nat.card ι := by
+      (weightedSumSquares 𝕜 w).radical.finrank = Nat.card ι := by
   rw [radical_weightedSumSquares, sigPos_weightedSumSquares, sigNeg_weightedSumSquares,
     Pi.dim_spanSubset]
   calc {i | 0 < w i}.ncard + {i | w i < 0}.ncard + {i | w i = 0}.ncard
@@ -230,7 +230,7 @@ private lemma sigPos_add_sigNeg_add_radical₁ :
   _ = Nat.card ι := Set.ncard_univ _
 
 lemma sigPos_add_sigNeg_add_radical [FiniteDimensional 𝕜 M] :
-    sigPos Q + sigNeg Q + Module.finrank 𝕜 Q.radical = Module.finrank 𝕜 M := by
+    sigPos Q + sigNeg Q + Q.radical.finrank = Module.finrank 𝕜 M := by
   have : Invertible (2 : 𝕜) := invertibleOfNonzero (NeZero.ne _)
   obtain ⟨w, e⟩ := Q.equivalent_weightedSumSquares
   rw [e.sigPos_eq, e.sigNeg_eq, e.rank_radical_eq]

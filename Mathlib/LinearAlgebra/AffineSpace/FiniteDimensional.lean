@@ -151,7 +151,7 @@ instance finiteDimensional_direction_map {V₂ P₂ : Type*} [AddCommGroup V₂]
 family has dimension one less than its cardinality. -/
 theorem AffineIndependent.finrank_vectorSpan_image_finset [DecidableEq P]
     {p : ι → P} (hi : AffineIndependent k p) {s : Finset ι} {n : ℕ} (hc : #s = n + 1) :
-    finrank k (vectorSpan k (s.image p : Set P)) = n := by
+    (vectorSpan k (s.image p : Set P)).finrank = n := by
   classical
   have hi' := hi.range.mono (Set.image_subset_range p ↑s)
   have hc' : #(s.image p) = n + 1 := by rwa [s.card_image_of_injective hi.injective]
@@ -169,7 +169,7 @@ theorem AffineIndependent.finrank_vectorSpan_image_finset [DecidableEq P]
 /-- The `vectorSpan` of a finite affinely independent family has
 dimension one less than its cardinality. -/
 theorem AffineIndependent.finrank_vectorSpan [Fintype ι] {p : ι → P} (hi : AffineIndependent k p)
-    {n : ℕ} (hc : Fintype.card ι = n + 1) : finrank k (vectorSpan k (Set.range p)) = n := by
+    {n : ℕ} (hc : Fintype.card ι = n + 1) : (vectorSpan k (Set.range p)).finrank = n := by
   classical
   rw [← Finset.card_univ] at hc
   rw [← Set.image_univ, ← Finset.coe_univ, ← Finset.coe_image]
@@ -178,7 +178,7 @@ theorem AffineIndependent.finrank_vectorSpan [Fintype ι] {p : ι → P} (hi : A
 /-- The `vectorSpan` of a finite affinely independent family has dimension one less than its
 cardinality. -/
 lemma AffineIndependent.finrank_vectorSpan_add_one [Fintype ι] [Nonempty ι] {p : ι → P}
-    (hi : AffineIndependent k p) : finrank k (vectorSpan k (Set.range p)) + 1 = Fintype.card ι := by
+    (hi : AffineIndependent k p) : (vectorSpan k (Set.range p)).finrank + 1 = Fintype.card ι := by
   rw [hi.finrank_vectorSpan (tsub_add_cancel_of_le _).symm, tsub_add_cancel_of_le] <;>
     exact Fintype.card_pos
 
@@ -205,7 +205,7 @@ variable (k)
 /-- The `vectorSpan` of `n + 1` points in an indexed family has
 dimension at most `n`. -/
 theorem finrank_vectorSpan_image_finset_le [DecidableEq P] (p : ι → P) (s : Finset ι) {n : ℕ}
-    (hc : #s = n + 1) : finrank k (vectorSpan k (s.image p : Set P)) ≤ n := by
+    (hc : #s = n + 1) : (vectorSpan k (s.image p : Set P)).finrank ≤ n := by
   classical
   have hn : (s.image p).Nonempty := by
     rw [Finset.image_nonempty, ← Finset.card_pos, hc]
@@ -220,7 +220,7 @@ theorem finrank_vectorSpan_image_finset_le [DecidableEq P] (p : ι → P) (s : F
 /-- The `vectorSpan` of an indexed family of `n + 1` points has
 dimension at most `n`. -/
 theorem finrank_vectorSpan_range_le [Fintype ι] (p : ι → P) {n : ℕ} (hc : Fintype.card ι = n + 1) :
-    finrank k (vectorSpan k (Set.range p)) ≤ n := by
+    (vectorSpan k (Set.range p)).finrank ≤ n := by
   classical
   rw [← Set.image_univ, ← Finset.coe_univ, ← Finset.coe_image]
   rw [← Finset.card_univ] at hc
@@ -228,7 +228,7 @@ theorem finrank_vectorSpan_range_le [Fintype ι] (p : ι → P) {n : ℕ} (hc : 
 
 /-- The `vectorSpan` of an indexed family of `n + 1` points has dimension at most `n`. -/
 lemma finrank_vectorSpan_range_add_one_le [Fintype ι] [Nonempty ι] (p : ι → P) :
-    finrank k (vectorSpan k (Set.range p)) + 1 ≤ Fintype.card ι :=
+    (vectorSpan k (Set.range p)).finrank + 1 ≤ Fintype.card ι :=
   (le_tsub_iff_right <| Nat.succ_le_iff.2 Fintype.card_pos).1 <| finrank_vectorSpan_range_le _ _
     (tsub_add_cancel_of_le <| Nat.succ_le_iff.2 Fintype.card_pos).symm
 
@@ -236,7 +236,7 @@ lemma finrank_vectorSpan_range_add_one_le [Fintype ι] [Nonempty ι] (p : ι →
 `vectorSpan` has dimension `n`. -/
 theorem affineIndependent_iff_finrank_vectorSpan_eq [Fintype ι] (p : ι → P) {n : ℕ}
     (hc : Fintype.card ι = n + 1) :
-    AffineIndependent k p ↔ finrank k (vectorSpan k (Set.range p)) = n := by
+    AffineIndependent k p ↔ (vectorSpan k (Set.range p)).finrank = n := by
   classical
   have hn : Nonempty ι := by simp [← Fintype.card_pos_iff, hc]
   obtain ⟨i₁⟩ := hn
@@ -251,7 +251,7 @@ theorem affineIndependent_iff_finrank_vectorSpan_eq [Fintype ι] (p : ι → P) 
 `vectorSpan` has dimension at least `n`. -/
 theorem affineIndependent_iff_le_finrank_vectorSpan [Fintype ι] (p : ι → P) {n : ℕ}
     (hc : Fintype.card ι = n + 1) :
-    AffineIndependent k p ↔ n ≤ finrank k (vectorSpan k (Set.range p)) := by
+    AffineIndependent k p ↔ n ≤ (vectorSpan k (Set.range p)).finrank := by
   rw [affineIndependent_iff_finrank_vectorSpan_eq k p hc]
   constructor
   · rintro rfl
@@ -262,20 +262,20 @@ theorem affineIndependent_iff_le_finrank_vectorSpan [Fintype ι] (p : ι → P) 
 `vectorSpan` does not have dimension at most `n`. -/
 theorem affineIndependent_iff_not_finrank_vectorSpan_le [Fintype ι] (p : ι → P) {n : ℕ}
     (hc : Fintype.card ι = n + 2) :
-    AffineIndependent k p ↔ ¬finrank k (vectorSpan k (Set.range p)) ≤ n := by
+    AffineIndependent k p ↔ ¬(vectorSpan k (Set.range p)).finrank ≤ n := by
   rw [affineIndependent_iff_le_finrank_vectorSpan k p hc, ← Nat.lt_iff_add_one_le, lt_iff_not_ge]
 
 /-- `n + 2` points have a `vectorSpan` with dimension at most `n` if
 and only if they are not affinely independent. -/
 theorem finrank_vectorSpan_le_iff_not_affineIndependent [Fintype ι] (p : ι → P) {n : ℕ}
     (hc : Fintype.card ι = n + 2) :
-    finrank k (vectorSpan k (Set.range p)) ≤ n ↔ ¬AffineIndependent k p :=
+    (vectorSpan k (Set.range p)).finrank ≤ n ↔ ¬AffineIndependent k p :=
   (not_iff_comm.1 (affineIndependent_iff_not_finrank_vectorSpan_le k p hc).symm).symm
 
 variable {k}
 
 lemma AffineIndependent.card_le_finrank_succ [Fintype ι] {p : ι → P} (hp : AffineIndependent k p) :
-    Fintype.card ι ≤ Module.finrank k (vectorSpan k (Set.range p)) + 1 := by
+    Fintype.card ι ≤ (vectorSpan k (Set.range p)).finrank + 1 := by
   cases isEmpty_or_nonempty ι
   · simp [Fintype.card_eq_zero]
   rw [← tsub_le_iff_right]
@@ -328,7 +328,7 @@ cardinality, it equals that submodule. -/
 theorem AffineIndependent.vectorSpan_image_finset_eq_of_le_of_card_eq_finrank_add_one
     [DecidableEq P] {p : ι → P}
     (hi : AffineIndependent k p) {s : Finset ι} {sm : Submodule k V} [FiniteDimensional k sm]
-    (hle : vectorSpan k (s.image p : Set P) ≤ sm) (hc : #s = finrank k sm + 1) :
+    (hle : vectorSpan k (s.image p : Set P) ≤ sm) (hc : #s = sm.finrank + 1) :
     vectorSpan k (s.image p : Set P) = sm :=
   Submodule.eq_of_le_of_finrank_eq hle <| hi.finrank_vectorSpan_image_finset hc
 
@@ -337,7 +337,7 @@ family lies in a submodule with dimension one less than its
 cardinality, it equals that submodule. -/
 theorem AffineIndependent.vectorSpan_eq_of_le_of_card_eq_finrank_add_one [Fintype ι] {p : ι → P}
     (hi : AffineIndependent k p) {sm : Submodule k V} [FiniteDimensional k sm]
-    (hle : vectorSpan k (Set.range p) ≤ sm) (hc : Fintype.card ι = finrank k sm + 1) :
+    (hle : vectorSpan k (Set.range p) ≤ sm) (hc : Fintype.card ι = sm.finrank + 1) :
     vectorSpan k (Set.range p) = sm :=
   Submodule.eq_of_le_of_finrank_eq hle <| hi.finrank_vectorSpan hc
 
@@ -348,7 +348,7 @@ theorem AffineIndependent.affineSpan_image_finset_eq_of_le_of_card_eq_finrank_ad
     [DecidableEq P] {p : ι → P}
     (hi : AffineIndependent k p) {s : Finset ι} {sp : AffineSubspace k P}
     [FiniteDimensional k sp.direction] (hle : affineSpan k (s.image p : Set P) ≤ sp)
-    (hc : #s = finrank k sp.direction + 1) : affineSpan k (s.image p : Set P) = sp := by
+    (hc : #s = sp.direction.finrank + 1) : affineSpan k (s.image p : Set P) = sp := by
   have hn : s.Nonempty := by
     rw [← Finset.card_pos, hc]
     apply Nat.succ_pos
@@ -362,7 +362,7 @@ in an affine subspace whose direction has dimension one less than its
 cardinality, it equals that subspace. -/
 theorem AffineIndependent.affineSpan_eq_of_le_of_card_eq_finrank_add_one [Fintype ι] {p : ι → P}
     (hi : AffineIndependent k p) {sp : AffineSubspace k P} [FiniteDimensional k sp.direction]
-    (hle : affineSpan k (Set.range p) ≤ sp) (hc : Fintype.card ι = finrank k sp.direction + 1) :
+    (hle : affineSpan k (Set.range p) ≤ sp) (hc : Fintype.card ι = sp.direction.finrank + 1) :
     affineSpan k (Set.range p) = sp := by
   classical
   rw [← Finset.card_univ] at hc
@@ -432,11 +432,11 @@ instance finiteDimensional_direction_affineSpan_insert_set (s : Set P)
 /-- A set of points is collinear if their `vectorSpan` has dimension
 at most `1`. -/
 def Collinear (s : Set P) : Prop :=
-  Module.rank k (vectorSpan k s) ≤ 1
+  (vectorSpan k s).rank ≤ 1
 
 /-- The definition of `Collinear`. -/
 theorem collinear_iff_rank_le_one (s : Set P) :
-    Collinear k s ↔ Module.rank k (vectorSpan k s) ≤ 1 := Iff.rfl
+    Collinear k s ↔ (vectorSpan k s).rank ≤ 1 := Iff.rfl
 
 variable {k}
 
@@ -444,9 +444,9 @@ variable {k}
 collinear if and only if their `vectorSpan` has dimension at most
 `1`. -/
 theorem collinear_iff_finrank_le_one {s : Set P} [FiniteDimensional k (vectorSpan k s)] :
-    Collinear k s ↔ finrank k (vectorSpan k s) ≤ 1 := by
+    Collinear k s ↔ (vectorSpan k s).finrank ≤ 1 := by
   have h := collinear_iff_rank_le_one k s
-  rw [← finrank_eq_rank] at h
+  rw [← Submodule.finrank_eq_rank_of_finite] at h
   exact mod_cast h
 
 alias ⟨Collinear.finrank_le_one, _⟩ := collinear_iff_finrank_le_one
@@ -704,7 +704,7 @@ theorem affineIndependent_iff_affineIndependent_collinear_ne {p₁ p₂ p₃ p :
 variable (k) in
 /-- A set of points is coplanar if their `vectorSpan` has dimension at most `2`. -/
 def Coplanar (s : Set P) : Prop :=
-  Module.rank k (vectorSpan k s) ≤ 2
+  (vectorSpan k s).rank ≤ 2
 
 /-- The `vectorSpan` of coplanar points is finite-dimensional. -/
 theorem Coplanar.finiteDimensional_vectorSpan {s : Set P} (h : Coplanar k s) :
@@ -720,9 +720,9 @@ theorem Coplanar.finiteDimensional_direction_affineSpan {s : Set P} (h : Coplana
 /-- A set of points, whose `vectorSpan` is finite-dimensional, is coplanar if and only if their
 `vectorSpan` has dimension at most `2`. -/
 theorem coplanar_iff_finrank_le_two {s : Set P} [FiniteDimensional k (vectorSpan k s)] :
-    Coplanar k s ↔ finrank k (vectorSpan k s) ≤ 2 := by
-  have h : Coplanar k s ↔ Module.rank k (vectorSpan k s) ≤ 2 := Iff.rfl
-  rw [← finrank_eq_rank] at h
+    Coplanar k s ↔ (vectorSpan k s).finrank ≤ 2 := by
+  have h : Coplanar k s ↔ (vectorSpan k s).rank ≤ 2 := Iff.rfl
+  rw [← Submodule.finrank_eq_rank_of_finite] at h
   exact mod_cast h
 
 alias ⟨Coplanar.finrank_le_two, _⟩ := coplanar_iff_finrank_le_two
@@ -770,7 +770,7 @@ variable [DivisionRing k] [AddCommGroup V] [Module k V] [AffineSpace V P]
 
 /-- Adding a point to a finite-dimensional subspace increases the dimension by at most one. -/
 theorem finrank_vectorSpan_insert_le (s : AffineSubspace k P) (p : P) :
-    finrank k (vectorSpan k (insert p (s : Set P))) ≤ finrank k s.direction + 1 := by
+    (vectorSpan k (insert p (s : Set P))).finrank ≤ s.direction.finrank + 1 := by
   by_cases hf : FiniteDimensional k s.direction; swap
   · have hf' : ¬FiniteDimensional k (vectorSpan k (insert p (s : Set P))) := by
       intro h
@@ -778,16 +778,17 @@ theorem finrank_vectorSpan_insert_le (s : AffineSubspace k P) (p : P) :
         conv_lhs => rw [← affineSpan_coe s, direction_affineSpan]
         exact vectorSpan_mono k (Set.subset_insert _ _)
       exact hf (Submodule.finiteDimensional_of_le h')
-    rw [finrank_of_infinite_dimensional hf, finrank_of_infinite_dimensional hf', zero_add]
+    have h1 : s.direction.finrank = 0 := finrank_of_infinite_dimensional hf
+    have h2 : (vectorSpan k (insert p (s : Set P))).finrank = 0 :=
+      finrank_of_infinite_dimensional hf'
+    rw [h1, h2, zero_add]
     exact zero_le_one
   rw [← direction_affineSpan, ← affineSpan_insert_affineSpan]
   rcases (s : Set P).eq_empty_or_nonempty with (hs | ⟨p₀, hp₀⟩)
   · rw [coe_eq_bot_iff] at hs
     rw [hs, bot_coe, span_empty, bot_coe, direction_affineSpan, direction_bot, finrank_bot,
       zero_add]
-    convert! zero_le_one' ℕ
-    rw [← finrank_bot k V]
-    convert! rfl <;> simp
+    simp
   · rw [affineSpan_coe, direction_affineSpan_insert hp₀, add_comm]
     refine (Submodule.finrank_add_le_finrank_add_finrank _ _).trans ?_
     gcongr
@@ -803,7 +804,7 @@ variable (k) in
 /-- Adding a point to a set with a finite-dimensional span increases the dimension by at most
 one. -/
 theorem finrank_vectorSpan_insert_le_set (s : Set P) (p : P) :
-    finrank k (vectorSpan k (insert p s)) ≤ finrank k (vectorSpan k s) + 1 := by
+    (vectorSpan k (insert p s)).finrank ≤ (vectorSpan k s).finrank + 1 := by
   rw [← direction_affineSpan, ← affineSpan_insert_affineSpan, direction_affineSpan,
     ← direction_affineSpan _ s]
   exact finrank_vectorSpan_insert_le ..

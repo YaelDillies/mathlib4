@@ -347,7 +347,7 @@ variable (K : Type*) {L : Type*} [Field K] [Field L] [Algebra K L]
 
 @[simp]
 lemma finrank_rootSpanIn [Q.IsValuedIn K] :
-    finrank K (Q.rootSpan K) = finrank L M := by
+    (Q.rootSpan K).finrank = finrank L M := by
   rw [LinearMap.finrank_eq_of_isPerfPair Q.toLinearMap (Q.rootSpan K) (Q.corootSpan K)]
   · simp
   · simp
@@ -355,12 +355,12 @@ lemma finrank_rootSpanIn [Q.IsValuedIn K] :
 
 @[simp]
 lemma finrank_corootSpanIn [Q.IsValuedIn K] :
-    finrank K (Q.corootSpan K) = finrank L N :=
+    (Q.corootSpan K).finrank = finrank L N :=
   finrank_rootSpanIn K Q.flip
 
 @[simp]
 lemma finrank_rootSpanIn_int [Finite ι] [CharZero L] [Q.IsCrystallographic] :
-    finrank ℤ (Q.rootSpan ℤ) = finrank L M := by
+    (Q.rootSpan ℤ).finrank = finrank L M := by
   let _i : Module ℚ M := .compHom M (algebraMap ℚ L)
   let _i : Module ℚ N := .compHom N (algebraMap ℚ L)
   have _i : IsAddTorsionFree M := .of_isTorsionFree L M
@@ -368,7 +368,7 @@ lemma finrank_rootSpanIn_int [Finite ι] [CharZero L] [Q.IsCrystallographic] :
 
 @[simp]
 lemma finrank_corootSpanIn_int [Finite ι] [CharZero L] [Q.IsCrystallographic] :
-    finrank ℤ (Q.corootSpan ℤ) = finrank L N :=
+    (Q.corootSpan ℤ).finrank = finrank L N :=
   Q.flip.finrank_rootSpanIn_int
 
 end Field

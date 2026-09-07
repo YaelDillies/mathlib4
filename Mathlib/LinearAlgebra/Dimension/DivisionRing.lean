@@ -55,7 +55,7 @@ theorem Module.Basis.finite_ofVectorSpaceIndex_of_rank_lt_aleph0 (h : Module.ran
 
 /-- Also see `rank_quotient_add_rank`. -/
 theorem rank_quotient_add_rank_of_divisionRing (p : Submodule K V) :
-    Module.rank K (V ⧸ p) + Module.rank K p = Module.rank K V := by
+    Module.rank K (V ⧸ p) + p.rank = Module.rank K V := by
   let ⟨f⟩ := quotient_prod_linearEquiv p
   exact rank_prod'.symm.trans f.rank_eq
 
@@ -110,7 +110,7 @@ variable [Module R V] [IsScalarTower R K V]
 variable (M : Submodule R V)
 
 /-- The `K`-rank of the `K`-span of an `R`-submodule `M` of `V` is at most the `R`-rank of `M`. -/
-theorem rank_span_le_rank : Module.rank K (span K (M : Set V)) ≤ Module.rank R M := by
+theorem rank_span_le_rank : (span K (M : Set V)).rank ≤ M.rank := by
   obtain ⟨b, hbM, hbspan, hbli⟩ := exists_linearIndependent K (M : Set V)
   rw [← hbspan, rank_span_set hbli]
   exact LinearIndependent.cardinal_le_rank (v := Set.inclusion hbM)
@@ -119,7 +119,7 @@ theorem rank_span_le_rank : Module.rank K (span K (M : Set V)) ≤ Module.rank R
 /-- The `K`-rank of the `K`-span of a set `s` in `V` is at most the `R`-rank of the `R`-span
 of `s`. -/
 theorem rank_span_le_rank_span (s : Set V) :
-    Module.rank K (span K s) ≤ Module.rank R (span R s) :=
+    (span K s).rank ≤ (span R s).rank :=
   span_span_of_tower R K s ▸ rank_span_le_rank (span R s)
 
 /-- The `K`-rank of the `K`-span of a finitely generated `R`-submodule `M` of `V` is at most
@@ -127,10 +127,10 @@ the `R`-rank of `M`.
 
 This is the `Module.finrank` version of `Submodule.rank_span_le_rank`; see also
 `Submodule.finrank_span_eq_finrank` for an equality in a different setting. -/
-theorem finrank_span_le_finrank (h : M.FG) : finrank K (span K (M : Set V)) ≤ finrank R M := by
+theorem finrank_span_le_finrank (h : M.FG) : (span K (M : Set V)).finrank ≤ M.finrank := by
   apply finrank_le_of_rank_le
   have : Module.Finite R M := Module.Finite.of_fg h
-  rw [finrank_eq_rank]
+  rw [Submodule.finrank_eq_rank_of_finite]
   exact rank_span_le_rank M
 
 /-- The `K`-rank of the `K`-span of a finite set `s` in `V` is at most the `R`-rank of the
@@ -139,7 +139,7 @@ theorem finrank_span_le_finrank (h : M.FG) : finrank K (span K (M : Set V)) ≤ 
 This is the `Module.finrank` version of `Submodule.rank_span_le_rank_span`; see also
 `Submodule.finrank_span_eq_finrank_span` for an equality in a different setting. -/
 theorem finrank_span_le_finrank_span {s : Set V} (hs : s.Finite) :
-    finrank K (span K s) ≤ finrank R (span R s) :=
+    (span K s).finrank ≤ (span R s).finrank :=
   span_span_of_tower R K s ▸ finrank_span_le_finrank _ (Submodule.fg_span hs)
 
 end Submodule

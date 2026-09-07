@@ -119,7 +119,7 @@ lemma Matrix.SpecialLinearGroup.lineStab_fix_of_span
     | _ w => simpa [Submodule.Quotient.eq] using! hA w
   have hdet := A.toLin'.toLinearMap.det_eq_det_mul_det L hcomap
   rw [show LinearMap.det A.toLin'.toLinearMap = 1 by simp [toLin'_to_linearMap],
-      hres, hQ, LinearMap.det_smul, finrank_span_singleton hv, pow_one,
+      hres, hQ, LinearMap.det_smul, Submodule.finrank_coe, finrank_span_singleton hv, pow_one,
       LinearMap.det_id, LinearMap.det_id, mul_one, mul_one] at hdet
   exact hcv.trans (hdet ▸ one_smul F v)
 

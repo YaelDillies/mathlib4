@@ -111,7 +111,7 @@ theorem isIntegral_character [Finite G] (g : G) : IsIntegral ℤ (ρ.character g
 variable [Fintype G] [Invertible (Nat.card G : k)]
 
 theorem card_inv_mul_sum_char_eq_finrank :
-    (Nat.card G : k)⁻¹ * ∑ g : G, ρ.character g = finrank k (invariants ρ) := by
+    (Nat.card G : k)⁻¹ * ∑ g : G, ρ.character g = (invariants ρ).finrank := by
   have : Invertible (Fintype.card G : k) := by rwa [Fintype.card_eq_nat_card]
   rw [← (isProj_averageMap ρ).trace]
   simp [character, GroupAlgebra.average, _root_.map_sum]
@@ -125,7 +125,7 @@ theorem card_inv_mul_sum_char_mul_char_eq_finrank :
     (Nat.card G : k)⁻¹ * ∑ g : G, σ.character g * ρ.character g⁻¹ =
       finrank k (IntertwiningMap ρ σ) := by
   simp_rw [mul_comm, ← char_linHom, card_inv_mul_sum_char_eq_finrank,
-    (invariantsEquivIntertwiningMap ρ σ).finrank_eq]
+    ← (invariantsEquivIntertwiningMap ρ σ).symm.finrank_eq_submodule_finrank]
 
 end Group
 
@@ -209,7 +209,7 @@ theorem isIntegral_character [Finite G] (V : FDRep k G) (g : G) : IsIntegral ℤ
 variable [Fintype G] [Invertible (Nat.card G : k)]
 
 theorem average_char_eq_finrank_invariants (V : FDRep k G) :
-    (Nat.card G : k)⁻¹ * ∑ g : G, V.character g = finrank k (invariants V.ρ) := by
+    (Nat.card G : k)⁻¹ * ∑ g : G, V.character g = (invariants V.ρ).finrank := by
   have : Invertible (Fintype.card G : k) := by
     rwa [Fintype.card_eq_nat_card]
   rw [← (isProj_averageMap V.ρ).trace]
@@ -225,8 +225,8 @@ theorem scalar_product_char_eq_finrank_equivariant (V W : FDRep k G) :
     Module.finrank k (V ⟶ W) := by
   conv_lhs => congr; rfl; congr; rfl; intro _; rw [mul_comm, ← FDRep.char_linHom]
   -- The scalar product is the character of `Hom(V, W).`
-  rw [FDRep.average_char_eq_finrank_invariants, ← LinearEquiv.finrank_eq
-    (Representation.linHom.invariantsEquivFDRepHom V W), of_ρ']
+  rw [FDRep.average_char_eq_finrank_invariants,
+    (Representation.linHom.invariantsEquivFDRepHom V W).symm.finrank_eq_submodule_finrank, of_ρ']
   -- The average over the group of the character of a representation equals the dimension of the
   -- space of invariants, and the space of invariants of `Hom(V, W)` is the subspace of
   -- `G`-equivariant linear maps, `Hom_G(V, W)`.

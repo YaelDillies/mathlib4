@@ -102,7 +102,7 @@ theorem rank_quotient_le (p : Submodule R M) : Module.rank R (M ⧸ p) ≤ Modul
 theorem Submodule.finrank_quotient_le [StrongRankCondition R] [Module.Finite R M]
     (s : Submodule R M) : finrank R (M ⧸ s) ≤ finrank R M :=
   toNat_le_toNat ((Submodule.mkQ s).rank_le_of_surjective Quot.mk_surjective)
-    (rank_lt_aleph0 _ _)
+    (Module.rank_lt_aleph0 ..)
 
 end Quotient
 
@@ -401,7 +401,7 @@ variable [StrongRankCondition R]
 /-- The dimension of a submodule is bounded by the dimension of the ambient space. -/
 theorem Submodule.finrank_le [Module.Finite R M] (s : Submodule R M) :
     s.finrank ≤ finrank R M :=
-  toNat_le_toNat (Submodule.rank_le s) (rank_lt_aleph0 _ _)
+  toNat_le_toNat (Submodule.rank_le s) (Module.rank_lt_aleph0 ..)
 
 /-- Pushforwards of finite submodules have a smaller finrank. -/
 theorem Submodule.finrank_map_le
@@ -412,7 +412,7 @@ theorem Submodule.finrank_map_le
 @[gcongr]
 theorem Submodule.finrank_mono {s t : Submodule R M} [Module.Finite R t] (hst : s ≤ t) :
     s.finrank ≤ t.finrank :=
-  Cardinal.toNat_le_toNat (Submodule.rank_mono hst) (rank_lt_aleph0 R ↥t)
+  Cardinal.toNat_le_toNat (Submodule.rank_mono hst) (Module.rank_lt_aleph0 ..)
 
 end
 

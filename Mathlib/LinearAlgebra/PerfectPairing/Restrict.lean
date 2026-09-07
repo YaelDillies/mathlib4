@@ -208,9 +208,9 @@ lemma finrank_eq_of_isPerfPair
     (hM : span L (M' : Set M) = ⊤)
     (hN : span L (N' : Set N) = ⊤)
     (hp : ∀ᵉ (x ∈ M') (y ∈ N'), p x y ∈ (algebraMap K L).range) :
-    finrank K M' = finrank L M := by
+    M'.finrank = finrank L M := by
   obtain ⟨n, b, b', hb⟩ := exists_basis_basis_of_span_eq_top_of_mem_algebraMap p M' N' hM hN hp
-  rw [finrank_eq_card_basis b, finrank_eq_card_basis b']
+  rw [finrank_eq_card_basis b, Submodule.finrank_eq_card_basis b']
 
 variable {M' N' : Type*}
   [AddCommGroup M'] [AddCommGroup N'] [Module K M'] [Module K N'] [IsScalarTower K L N]

@@ -141,7 +141,7 @@ theorem submodule_eq (v : ℙ K V) : v.submodule = K ∙ v.rep := by
   conv_lhs => rw [← v.mk_rep]
   rfl
 
-theorem finrank_submodule (v : ℙ K V) : finrank K v.submodule = 1 := by
+theorem finrank_submodule (v : ℙ K V) : v.submodule.finrank = 1 := by
   rw [submodule_eq]
   exact finrank_span_singleton v.rep_nonzero
 
@@ -161,7 +161,7 @@ variable (K V)
 
 /-- The equivalence between the projectivization and the
 collection of subspaces of dimension 1. -/
-noncomputable def equivSubmodule : ℙ K V ≃ { H : Submodule K V // finrank K H = 1 } :=
+noncomputable def equivSubmodule : ℙ K V ≃ { H : Submodule K V // H.finrank = 1 } :=
   (Equiv.ofInjective _ submodule_injective).trans <| .subtypeEquiv (.refl _) fun H ↦ by
     refine ⟨fun ⟨v, hv⟩ ↦ hv ▸ v.finrank_submodule, fun h ↦ ?_⟩
     rcases finrank_eq_one_iff'.1 h with ⟨v : H, hv₀, hv : ∀ w : H, _⟩
@@ -174,11 +174,11 @@ noncomputable def equivSubmodule : ℙ K V ≃ { H : Submodule K V // finrank K 
 variable {K V}
 
 /-- Construct an element of the projectivization from a subspace of dimension 1. -/
-noncomputable def mk'' (H : Submodule K V) (h : finrank K H = 1) : ℙ K V :=
+noncomputable def mk'' (H : Submodule K V) (h : H.finrank = 1) : ℙ K V :=
   (equivSubmodule K V).symm ⟨H, h⟩
 
 @[simp]
-theorem submodule_mk'' (H : Submodule K V) (h : finrank K H = 1) : (mk'' H h).submodule = H :=
+theorem submodule_mk'' (H : Submodule K V) (h : H.finrank = 1) : (mk'' H h).submodule = H :=
   congr_arg Subtype.val <| (equivSubmodule K V).apply_symm_apply ⟨H, h⟩
 
 @[simp]

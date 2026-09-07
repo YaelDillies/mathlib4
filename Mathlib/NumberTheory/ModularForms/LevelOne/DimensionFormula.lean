@@ -171,7 +171,7 @@ cusp forms. -/
 lemma ModularForm.rank_eq_one_add_rank_cuspForm {k : ℕ} (hk : 3 ≤ k) (hk2 : Even k) :
     Module.rank ℂ (ModularForm 𝒮ℒ k) = 1 + Module.rank ℂ (CuspForm 𝒮ℒ k) := by
   suffices Module.rank ℂ (ModularForm 𝒮ℒ k ⧸ cuspFormSubmodule 𝒮ℒ k) = 1 by
-    rw [(CuspForm.equivCuspFormSubmodule 𝒮ℒ k).rank_eq,
+    rw [(CuspForm.equivCuspFormSubmodule 𝒮ℒ k).rank_eq_submodule_rank,
       ← Submodule.rank_quotient_add_rank (cuspFormSubmodule 𝒮ℒ k), this]
   apply rank_eq_one (Submodule.Quotient.mk (E hk))
   · intro h

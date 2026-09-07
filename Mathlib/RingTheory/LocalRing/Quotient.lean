@@ -67,13 +67,13 @@ theorem finrank_quotient_map :
   have : Module.Finite (R ⧸ p) (S ⧸ pS) := Module.Finite.of_restrictScalars_finite R _ _
   apply le_antisymm
   · let b := Module.Free.chooseBasis R S
-    conv_rhs => rw [finrank_eq_card_chooseBasisIndex]
+    conv_rhs => rw [Module.finrank_eq_card_chooseBasisIndex]
     apply finrank_le_of_span_eq_top
     rw [Set.range_comp]
     apply (quotient_span_eq_top_iff_span_eq_top _).mpr b.span_eq
   · let b := Module.Free.chooseBasis (R ⧸ p) (S ⧸ pS)
     choose b' hb' using fun i ↦ Ideal.Quotient.mk_surjective (b i)
-    conv_rhs => rw [finrank_eq_card_chooseBasisIndex]
+    conv_rhs => rw [Module.finrank_eq_card_chooseBasisIndex]
     refine finrank_le_of_span_eq_top (v := b') ?_
     apply (quotient_span_eq_top_iff_span_eq_top _).mp
     rw [← Set.range_comp, show Ideal.Quotient.mk pS ∘ b' = ⇑b from funext hb']

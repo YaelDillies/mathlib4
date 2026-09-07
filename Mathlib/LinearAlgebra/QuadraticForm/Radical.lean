@@ -58,7 +58,7 @@ lemma mem_radical_iff' {m : M} :
 
 /-- The rank of the radical of a quadratic map is invariant under equivalences. -/
 lemma Equivalent.rank_radical_eq {Q' : QuadraticMap R M' P} (h : Equivalent Q Q') :
-    Module.finrank R Q.radical = Module.finrank R Q'.radical := by
+    Q.radical.finrank = Q'.radical.finrank := by
   obtain ⟨e⟩ := h
   rw [← e.map_radical, LinearEquiv.finrank_map_eq]
 
@@ -114,7 +114,7 @@ See [elman-karpenko-merkurjev-2008], Chapter II, §7.
 -/
 structure Nondegenerate : Prop where
   radical_eq_bot : Q.radical = ⊥
-  rank_rad_polar_le : Module.rank R Q.polarBilin.ker ≤ 1
+  rank_rad_polar_le : Q.polarBilin.ker.rank ≤ 1
 
 section InvertibleTwo
 
@@ -151,7 +151,7 @@ lemma nondegenerate_iff_radical_eq_bot :
   refine ⟨Nondegenerate.radical_eq_bot, fun h ↦ ⟨h, ?_⟩⟩
   rw [← QuadraticMap.radical_eq_ker_polarBilin, h]
   nontriviality R
-  simp only [rank_subsingleton', zero_le]
+  simp
 
 /-- If `2` is invertible in the coefficient ring,
 a quadratic map is nondegenerate
@@ -196,7 +196,7 @@ lemma radical_weightedSumSquares :
 the rank of `Q.radical` is equal to the number of zero weights. -/
 lemma finrank_radical_of_equiv_weightedSumSquares {M : Type*} [AddCommGroup M] [Module 𝕜 M]
     {Q : QuadraticForm 𝕜 M} (hQ : Equivalent Q (weightedSumSquares 𝕜 w)) :
-    Module.finrank 𝕜 Q.radical = {i | w i = 0}.ncard := by
+    Q.radical.finrank = {i | w i = 0}.ncard := by
   rw [hQ.rank_radical_eq, radical_weightedSumSquares, Pi.dim_spanSubset]
 
 end QuadraticForm

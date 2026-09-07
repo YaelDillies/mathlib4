@@ -553,12 +553,12 @@ See `Submodule.exists_smith_normal_form_of_rank_eq` for a version that states th
 existence of the basis.
 -/
 noncomputable def Submodule.smithNormalFormOfRankEq [Fintype ι] (b : Basis ι R M)
-    (h : Module.finrank R N = Module.finrank R M) :
+    (h : N.finrank = Module.finrank R M) :
     Basis.SmithNormalForm N ι (Fintype.card ι) :=
   let ⟨n, bM, bN, f, a, snf⟩ := N.smithNormalForm b
   let e : Fin n ≃ Fin (Fintype.card ι) := Fintype.equivOfCardEq (by
     simp only [Fintype.card_fin, ← Module.finrank_eq_card_basis bM, ← h,
-      Module.finrank_eq_card_basis bN])
+      Submodule.finrank_eq_card_basis bN])
   ⟨bM, bN.reindex e, e.symm.toEmbedding.trans f, a ∘ e.symm, fun i ↦ by
     simp only [snf, Basis.coe_reindex, Function.Embedding.trans_apply, Equiv.toEmbedding_apply,
       (· ∘ ·)]⟩
@@ -574,7 +574,7 @@ See also `Submodule.smithNormalFormOfRankEq` for a version of this theorem that 
 a `Basis.SmithNormalForm`.
 -/
 theorem Submodule.exists_smith_normal_form_of_rank_eq (b : Basis ι R M)
-    (h : Module.finrank R N = Module.finrank R M) :
+    (h : N.finrank = Module.finrank R M) :
     ∃ (b' : Basis ι R M) (a : ι → R) (ab' : Basis ι R N), ∀ i, (ab' i : M) = a i • b' i := by
   cases nonempty_fintype ι
   let ⟨bM, bN, f, a, snf⟩ := N.smithNormalFormOfRankEq b h
@@ -597,7 +597,7 @@ is a square diagonal matrix; this is the basis for `M`. See:
   forms a square diagonal matrix.
 -/
 noncomputable def Submodule.smithNormalFormTopBasis (b : Basis ι R M)
-    (h : Module.finrank R N = Module.finrank R M) : Basis ι R M :=
+    (h : N.finrank = Module.finrank R M) : Basis ι R M :=
   (exists_smith_normal_form_of_rank_eq b h).choose
 
 /--
@@ -610,7 +610,7 @@ is a square diagonal matrix; this is the basis for `N`. See:
   forms a square diagonal matrix.
 -/
 noncomputable def Submodule.smithNormalFormBotBasis (b : Basis ι R M)
-    (h : Module.finrank R N = Module.finrank R M) : Basis ι R N :=
+    (h : N.finrank = Module.finrank R M) : Basis ι R N :=
   (exists_smith_normal_form_of_rank_eq b h).choose_spec.choose_spec.choose
 
 /--
@@ -623,19 +623,19 @@ is a square diagonal matrix; these are the entries of the diagonal matrix. See:
   forms a square diagonal matrix.
 -/
 noncomputable def Submodule.smithNormalFormCoeffs (b : Basis ι R M)
-    (h : Module.finrank R N = Module.finrank R M) : ι → R :=
+    (h : N.finrank = Module.finrank R M) : ι → R :=
   (exists_smith_normal_form_of_rank_eq b h).choose_spec.choose
 
 @[simp]
 theorem Submodule.smithNormalFormBotBasis_def (b : Basis ι R M)
-    (h : Module.finrank R N = Module.finrank R M) :
+    (h : N.finrank = Module.finrank R M) :
     ∀ i, (smithNormalFormBotBasis b h i : M) =
       smithNormalFormCoeffs b h i • smithNormalFormTopBasis b h i :=
   (exists_smith_normal_form_of_rank_eq b h).choose_spec.choose_spec.choose_spec
 
 @[simp]
 theorem Submodule.smithNormalFormCoeffs_ne_zero (b : Basis ι R M)
-    (h : Module.finrank R N = Module.finrank R M) (i : ι) :
+    (h : N.finrank = Module.finrank R M) (i : ι) :
     smithNormalFormCoeffs b h i ≠ 0 := by
   intro hi
   apply Basis.ne_zero (smithNormalFormBotBasis b h) i
@@ -649,10 +649,10 @@ section Ideal
 variable {S : Type*} [CommRing S] [IsDomain S] [Algebra R S]
 
 theorem Ideal.finrank_eq_finrank [Finite ι] (b : Basis ι R S) (I : Ideal S) (hI : I ≠ ⊥) :
-    Module.finrank R (restrictScalars R I) = Module.finrank R S := by
+    (restrictScalars R I).finrank = Module.finrank R S := by
   obtain ⟨_, bS, bI, _, _, _⟩ := (I.restrictScalars R).smithNormalForm b
   cases nonempty_fintype ι
-  rw [Module.finrank_eq_card_basis bS, Module.finrank_eq_card_basis bI]
+  rw [Submodule.finrank_eq_card_basis bI, Module.finrank_eq_card_basis bS]
   exact Ideal.rank_eq bS hI (bI.map ((restrictScalarsEquiv R S S I).restrictScalars R))
 
 /-- If `S` a finite-dimensional ring extension of a PID `R` which is free as an `R`-module,

@@ -264,24 +264,24 @@ open Module Submodule
 variable {B : BilinForm K V}
 
 theorem finrank_add_finrank_orthogonal' (W : Submodule K V) :
-    finrank K W + finrank K (B.orthogonal W) =
-      finrank K V + finrank K (W ⊓ B.ker : Subspace K V) := by
+    W.finrank + (B.orthogonal W).finrank =
+      finrank K V + (W ⊓ B.ker : Subspace K V).finrank := by
   rw [← toLin_restrict_ker_eq_inf_ker _ _, ←
     toLin_restrict_range_dualCoannihilator_eq_orthogonal _ _, finrank_map_subtype_eq]
   conv_rhs =>
     rw [← @Subspace.finrank_add_finrank_dualCoannihilator_eq K V _ _ _ _
         (LinearMap.range (B.domRestrict W)),
-      add_comm, ← add_assoc, add_comm (finrank K (LinearMap.ker (B.domRestrict W))),
-      LinearMap.finrank_range_add_finrank_ker]
+      add_comm, ← add_assoc, add_comm (B.domRestrict W).ker.finrank,
+      LinearMap.finrank_range_add_finrank_ker, Submodule.finrank_coe]
 
 theorem finrank_add_finrank_orthogonal (b₁ : B.IsRefl) (W : Submodule K V) :
-    finrank K W + finrank K (B.orthogonal W) =
-      finrank K V + finrank K (W ⊓ B.orthogonal ⊤ : Subspace K V) := by
+    W.finrank + (B.orthogonal W).finrank =
+      finrank K V + (W ⊓ B.orthogonal ⊤ : Subspace K V).finrank := by
   rw [orthogonal_top_eq_ker b₁]
   exact finrank_add_finrank_orthogonal' _
 
 lemma finrank_orthogonal (hB : B.Nondegenerate) (W : Submodule K V) :
-    finrank K (B.orthogonal W) = finrank K V - finrank K W := by
+    (B.orthogonal W).finrank = finrank K V - W.finrank := by
   have := finrank_add_finrank_orthogonal' (B := B) W
   rw [hB.ker_eq_bot, inf_bot_eq, finrank_bot, add_zero] at this
   lia
@@ -300,9 +300,9 @@ lemma isCompl_orthogonal_iff_disjoint (hB₀ : B.IsRefl) :
   rw [codisjoint_iff]
   apply (eq_top_of_finrank_eq <| (finrank_le _).antisymm _)
   calc
-    finrank K V ≤ finrank K V + finrank K ↥(W ⊓ B.orthogonal ⊤) := le_self_add
-    _ ≤ finrank K ↥(W ⊔ B.orthogonal W) + finrank K ↥(W ⊓ B.orthogonal W) := ?_
-    _ ≤ finrank K ↥(W ⊔ B.orthogonal W) := by simp [h.eq_bot]
+    finrank K V ≤ finrank K V + (W ⊓ B.orthogonal ⊤).finrank := le_self_add
+    _ ≤ (W ⊔ B.orthogonal W).finrank + (W ⊓ B.orthogonal W).finrank := ?_
+    _ ≤ (W ⊔ B.orthogonal W).finrank := by simp [h.eq_bot]
   rw [finrank_sup_add_finrank_inf_eq, finrank_add_finrank_orthogonal hB₀ W]
 
 /-- A subspace is complement to its orthogonal complement with respect to some
@@ -318,7 +318,7 @@ theorem isCompl_orthogonal_of_restrict_nondegenerate
     simp only [restrict_apply, domRestrict_apply]
     exact b₁ n x (b₁ x n (b₁ n x (hx₂ n hn)))
   refine IsCompl.of_eq this (eq_top_of_finrank_eq <| (finrank_le _).antisymm ?_)
-  conv_rhs => rw [← add_zero (finrank K _)]
+  conv_rhs => rw [← add_zero (Submodule.finrank _)]
   rw [← finrank_bot K V, ← this, finrank_sup_add_finrank_inf_eq,
     finrank_add_finrank_orthogonal b₁]
   exact le_self_add

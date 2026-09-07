@@ -158,7 +158,7 @@ lemma iSup_iInf_maxGenEigenspace_eq_top_of_forall_mapsTo [FiniteDimensional K M]
     replace hχ : ⨅ i, (f i).maxGenEigenspace (χ i) = ⊤ := by simpa
     simp_rw [eq_top_iff] at hχ ⊢
     exact le_trans hχ <| le_iSup (fun χ : ι → K ↦ ⨅ i, (f i).maxGenEigenspace (χ i)) χ
-  · replace hy : ∀ φ, finrank K ((f i).maxGenEigenspace φ) < n := fun φ ↦ by
+  · replace hy : ∀ φ, ((f i).maxGenEigenspace φ).finrank < n := fun φ ↦ by
       simp_rw [not_exists, ← lt_top_iff_ne_top] at hy; exact h_dim ▸ Submodule.finrank_lt (hy φ).ne
     have hi (j : ι) (φ : K) :
         MapsTo (f j) ((f i).maxGenEigenspace φ) ((f i).maxGenEigenspace φ) := by

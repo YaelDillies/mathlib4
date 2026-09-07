@@ -67,7 +67,7 @@ theorem _root_.LinearIndependent.lt_aleph0_of_finiteDimensional {ι : Type w} [F
 /-- If a submodule has maximal dimension in a finite-dimensional space, then it is equal to the
 whole space. -/
 theorem _root_.Submodule.eq_top_of_finrank_eq [FiniteDimensional K V] {S : Submodule K V}
-    (h : finrank K S = finrank K V) : S = ⊤ := by
+    (h : S.finrank = finrank K V) : S = ⊤ := by
   set bS := Basis.ofVectorSpace K S with bS_eq
   have : LinearIndepOn K id (Subtype.val '' Basis.ofVectorSpaceIndex K S) := by
     simpa [bS] using bS.linearIndependent.linearIndepOn_id.image
@@ -78,8 +78,8 @@ theorem _root_.Submodule.eq_top_of_finrank_eq [FiniteDimensional K V] {S : Submo
   have : (↑) '' Basis.ofVectorSpaceIndex K S = this.extend (Set.subset_univ _) :=
     Set.eq_of_subset_of_card_le (this.subset_extend _)
       (by
-        rw [Set.card_image_of_injective _ Subtype.coe_injective, ← finrank_eq_card_basis bS, ←
-            finrank_eq_card_basis b, h])
+        rw [Set.card_image_of_injective _ Subtype.coe_injective,
+          ← Submodule.finrank_eq_card_basis bS, ← Module.finrank_eq_card_basis b, h])
   rw [← b.span_eq, b_eq, Basis.coe_extend, Subtype.range_coe, ← this, ← Submodule.coe_subtype,
     span_image]
   have := bS.span_eq
@@ -248,15 +248,15 @@ variable [DivisionRing K] [AddCommGroup V] [Module K V]
 /-- If a submodule is contained in a finite-dimensional
 submodule with the same or smaller dimension, they are equal. -/
 theorem eq_of_le_of_finrank_le {S₁ S₂ : Submodule K V} [FiniteDimensional K S₂] (hle : S₁ ≤ S₂)
-    (hd : finrank K S₂ ≤ finrank K S₁) : S₁ = S₂ := by
-  rw [← LinearEquiv.finrank_eq (Submodule.comapSubtypeEquivOfLe hle)] at hd
+    (hd : S₂.finrank ≤ S₁.finrank) : S₁ = S₂ := by
+  rw [← Submodule.finrank_eq_of_linearEquiv (comapSubtypeEquivOfLe hle)] at hd
   exact le_antisymm hle (Submodule.comap_subtype_eq_top.1
     (eq_top_of_finrank_eq (le_antisymm (comap (Submodule.subtype S₂) S₁).finrank_le hd)))
 
 /-- If a submodule is contained in a finite-dimensional
 submodule with the same dimension, they are equal. -/
 theorem eq_of_le_of_finrank_eq {S₁ S₂ : Submodule K V} [FiniteDimensional K S₂] (hle : S₁ ≤ S₂)
-    (hd : finrank K S₁ = finrank K S₂) : S₁ = S₂ :=
+    (hd : S₁.finrank = S₂.finrank) : S₁ = S₂ :=
   eq_of_le_of_finrank_le hle hd.ge
 
 end Submodule
@@ -292,7 +292,7 @@ variable [DivisionRing K] [AddCommGroup V] [Module K V] {V₂ : Type v'} [AddCom
 theorem surjective_of_injective [FiniteDimensional K V] {f : V →ₗ[K] V} (hinj : Injective f) :
     Surjective f := by
   have h := rank_range_of_injective _ hinj
-  rw [← finrank_eq_rank, ← finrank_eq_rank, Nat.cast_inj] at h
+  rw [← Submodule.finrank_eq_rank_of_finite, ← finrank_eq_rank, Nat.cast_inj] at h
   exact range_eq_top.1 (eq_top_of_finrank_eq h)
 
 /-- The image under an onto linear map of a finite-dimensional space is also finite-dimensional. -/
@@ -533,17 +533,17 @@ section Span
 
 open Submodule
 
-theorem finrank_span_singleton {v : V} (hv : v ≠ 0) : finrank K (K ∙ v) = 1 := by
+theorem finrank_span_singleton {v : V} (hv : v ≠ 0) : (K ∙ v).finrank = 1 := by
   apply le_antisymm
   · exact finrank_span_le_card ({v} : Set V)
-  · rw [Nat.succ_le_iff, finrank_pos_iff]
+  · rw [Nat.succ_le_iff, Submodule.finrank_pos_iff]
     use ⟨v, mem_span_singleton_self v⟩, 0
     apply Subtype.coe_ne_coe.mp
     simp [hv]
 
 /-- A submodule over a division ring is an atom of the submodule lattice iff it has `finrank` 1. -/
 theorem Submodule.isAtom_iff_finrank_eq_one {S : Submodule K V} :
-    IsAtom S ↔ finrank K S = 1 := by
+    IsAtom S ↔ S.finrank = 1 := by
   refine ⟨fun hS ↦ ?_, fun hS ↦ ⟨by aesop, fun T hT ↦ ?_⟩⟩
   · obtain ⟨v : V, hv : v ∈ S, hv_ne : v ≠ 0⟩ := S.ne_bot_iff.mp hS.ne_bot
     suffices K ∙ v = S by rw [← this, finrank_span_singleton hv_ne]
@@ -571,12 +571,13 @@ lemma exists_smul_eq_of_finrank_eq_one
 
 /-- A submodule of finrank 1 is spanned by any of its nonzero elements. -/
 theorem eq_span_singleton_of_mem_of_finrank_eq_one {S : Submodule K V} {w : V}
-    (hS : finrank K S = 1) (hw : w ∈ S) (hw0 : w ≠ 0) :
+    (hS : S.finrank = 1) (hw : w ∈ S) (hw0 : w ≠ 0) :
     S = K ∙ w := by
-  have : FiniteDimensional K S := Module.finite_of_finrank_pos (by lia)
+  have : FiniteDimensional K S := Module.finite_of_finrank_pos (by simp [hS])
   exact Eq.symm <| eq_of_le_of_finrank_le (by simpa)
     (by rw [hS, finrank_span_singleton hw0])
 
+@[gcongr]
 theorem Set.finrank_mono [FiniteDimensional K V] {s t : Set V} (h : s ⊆ t) :
     s.finrank K ≤ t.finrank K :=
   Submodule.finrank_mono (span_mono h)
@@ -604,6 +605,10 @@ theorem finrank_eq_one_iff_of_nonzero' (v : V) (nz : v ≠ 0) :
   rw [finrank_eq_one_iff_of_nonzero v nz]
   apply span_singleton_eq_top_iff
 
+/-- The `Submodule.finrank` version of `finrank_eq_one_iff_of_nonzero'`. -/
+theorem Submodule.finrank_eq_one_iff_of_nonzero' {p : Submodule K V} (v : p) (nz : v ≠ 0) :
+    p.finrank = 1 ↔ ∀ w : p, ∃ c : K, c • v = w := _root_.finrank_eq_one_iff_of_nonzero' v nz
+
 -- We use the `LinearMap.CompatibleSMul` typeclass here, to encompass two situations:
 -- * `A = K`
 -- * `[Field K] [Algebra K A] [IsScalarTower K A V] [IsScalarTower K A W]`
@@ -613,7 +618,7 @@ theorem surjective_of_nonzero_of_finrank_eq_one {W A : Type*} [Semiring A] [Modu
   change Surjective (f.restrictScalars K)
   obtain ⟨v, n⟩ := DFunLike.ne_iff.mp w
   intro z
-  obtain ⟨c, rfl⟩ := (finrank_eq_one_iff_of_nonzero' (f v) n).mp h z
+  obtain ⟨c, rfl⟩ := (_root_.finrank_eq_one_iff_of_nonzero' (f v) n).mp h z
   exact ⟨c • v, by simp⟩
 
 end finrank_eq_one

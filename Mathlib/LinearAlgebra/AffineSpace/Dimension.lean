@@ -43,7 +43,7 @@ open Classical in
 `s` interpreted as a linear space. -/
 noncomputable def dim (s : AffineSubspace R A) : WithBot Cardinal :=
   if s = ⊥ then ⊥
-  else Module.rank R s.direction
+  else s.direction.rank
 
 /-- The dimension of `s` is equal to `⊥` if `s = ⊥`, and otherwise it is equal to the finite
 dimension of `s` interpreted as a linear space. Note that this inherits `Module.finrank`s junk
@@ -85,10 +85,10 @@ theorem finDim_ne_bot_iff : finDim s ≠ ⊥ ↔ (s : Set A).Nonempty := by
   contrapose!
   simp
 
-theorem dim_eq_rank (h : s ≠ ⊥) : dim s = Module.rank R s.direction := by
+theorem dim_eq_rank (h : s ≠ ⊥) : dim s = s.direction.rank := by
   simpa [dim]
 
-theorem finDim_eq_finrank (h : s ≠ ⊥) : finDim s = Module.finrank R s.direction := by
+theorem finDim_eq_finrank (h : s ≠ ⊥) : finDim s = s.direction.finrank := by
   simp [finDim, dim_eq_rank h]
   norm_cast
 
@@ -105,7 +105,7 @@ theorem finDim_eq_finrank_of_not_finite [Module.Free R s.direction] [StrongRankC
 theorem dim_lt_aleph0 [StrongRankCondition R] (s : AffineSubspace R A)
     [Module.Finite R s.direction] : dim s < ℵ₀ := by
   dsimp [dim]
-  split_ifs <;> simp [Module.rank_lt_aleph0]
+  split_ifs <;> simp [Submodule.rankModule.rank_lt_aleph0]
 
 theorem finite_iff_dim_lt_aleph0 [StrongRankCondition R] (s : AffineSubspace R A)
     [Module.Free R s.direction] : Module.Finite R s.direction ↔ dim s < ℵ₀ := by
@@ -193,7 +193,8 @@ theorem dim_le_zero_iff_subsingleton [IsDomain R] [Module.IsTorsionFree R s.dire
     dim s ≤ 0 ↔ (s : Set A).Subsingleton := by
   by_cases hs : s = ⊥
   · simp [hs]
-  simp [dim_eq_rank, hs, rank_zero_iff, Submodule.subsingleton_iff_eq_bot]
+  simp [dim_eq_rank, hs, Submodule.rank_eq_zero_iff_subsingleton,
+    Submodule.subsingleton_iff_eq_bot]
 
 @[simp]
 theorem finDim_le_zero_iff_subsingleton [StrongRankCondition R] [IsDomain R]
@@ -201,7 +202,8 @@ theorem finDim_le_zero_iff_subsingleton [StrongRankCondition R] [IsDomain R]
     finDim s ≤ 0 ↔ (s : Set A).Subsingleton := by
   by_cases hs : s = ⊥
   · simp [hs]
-  simp [finDim_eq_finrank, hs, Module.finrank_zero_iff, Submodule.subsingleton_iff_eq_bot]
+  simp [finDim_eq_finrank, hs, Submodule.finrank_eq_zero_iff_subsingleton,
+    Submodule.subsingleton_iff_eq_bot]
 
 end Ring
 

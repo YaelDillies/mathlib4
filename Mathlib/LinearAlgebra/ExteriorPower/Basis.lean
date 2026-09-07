@@ -173,11 +173,12 @@ variable (M) [Module.Free R M] [Module.Finite R M]
 /-- If `R` is non-trivial and `M` is finite free of rank `r`, then
 the `n`th exterior power of `M` is of finrank `Nat.choose r n`. -/
 @[simp] lemma finrank_eq [Nontrivial R] :
-    finrank R (⋀[R]^n M) = (finrank R M).choose n := by
+    (⋀[R]^n M).finrank = (finrank R M).choose n := by
   classical
   let : LinearOrder (Module.Free.ChooseBasisIndex R M) := linearOrderOfSTO WellOrderingRel
   let B := (Module.Free.chooseBasis R M).exteriorPower n
-  rw [Module.finrank_eq_card_basis (Module.Free.chooseBasis R M), Module.finrank_eq_card_basis B,
+  rw [Module.finrank_eq_card_basis (Module.Free.chooseBasis R M),
+    Submodule.finrank_eq_card_basis B,
     Fintype.card_eq_nat_card, powersetCard.card, Fintype.card_eq_nat_card]
 
 lemma bijective_pairingDual :

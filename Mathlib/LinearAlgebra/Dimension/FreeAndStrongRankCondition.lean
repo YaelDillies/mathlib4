@@ -122,16 +122,16 @@ theorem rank_eq_one_iff [Module.Free K V] :
 single vector in the submodule such that the submodule is contained in
 its span. -/
 theorem rank_submodule_le_one_iff (s : Submodule K V) [Module.Free K s] :
-    Module.rank K s ≤ 1 ↔ ∃ v₀ ∈ s, s ≤ K ∙ v₀ := by
-  simp_rw [rank_le_one_iff, le_span_singleton_iff]
+    s.rank ≤ 1 ↔ ∃ v₀ ∈ s, s ≤ K ∙ v₀ := by
+  simp_rw [← Submodule.rank_coe, rank_le_one_iff, le_span_singleton_iff]
   simp
 
 /-- A submodule has dimension `1` if and only if there is a
 single non-zero vector in the submodule such that the submodule is contained in
 its span. -/
 theorem rank_submodule_eq_one_iff (s : Submodule K V) [Module.Free K s] :
-    Module.rank K s = 1 ↔ ∃ v₀ ∈ s, v₀ ≠ 0 ∧ s ≤ K ∙ v₀ := by
-  simp_rw [rank_eq_one_iff, le_span_singleton_iff]
+    s.rank = 1 ↔ ∃ v₀ ∈ s, v₀ ≠ 0 ∧ s ≤ K ∙ v₀ := by
+  simp_rw [← Submodule.rank_coe, rank_eq_one_iff, le_span_singleton_iff]
   refine ⟨fun ⟨⟨v₀, hv₀⟩, H, h⟩ ↦ ⟨v₀, hv₀, fun h' ↦ by
     simp only [h', ne_eq] at H; exact H rfl, fun v hv ↦ ?_⟩,
     fun ⟨v₀, hv₀, H, h⟩ ↦ ⟨⟨v₀, hv₀⟩,
@@ -145,7 +145,7 @@ theorem rank_submodule_eq_one_iff (s : Submodule K V) [Module.Free K s] :
 single vector, not necessarily in the submodule, such that the
 submodule is contained in its span. -/
 theorem rank_submodule_le_one_iff' (s : Submodule K V) [Module.Free K s] :
-    Module.rank K s ≤ 1 ↔ ∃ v₀, s ≤ K ∙ v₀ := by
+    s.rank ≤ 1 ↔ ∃ v₀, s ≤ K ∙ v₀ := by
   have := nontrivial_of_invariantBasisNumber K
   constructor
   · rw [rank_submodule_le_one_iff]
@@ -157,9 +157,9 @@ theorem rank_submodule_le_one_iff' (s : Submodule K V) [Module.Free K s] :
       |>.cardinal_le_rank.trans (rank_span_le {v₀})
 
 theorem Submodule.rank_le_one_iff_isPrincipal (W : Submodule K V) [Module.Free K W] :
-    Module.rank K W ≤ 1 ↔ W.IsPrincipal := by
-  simp only [rank_le_one_iff, Submodule.isPrincipal_iff, le_antisymm_iff, le_span_singleton_iff,
-    span_singleton_le_iff_mem]
+    W.rank ≤ 1 ↔ W.IsPrincipal := by
+  simp only [← Submodule.rank_coe, rank_le_one_iff, Submodule.isPrincipal_iff, le_antisymm_iff,
+    le_span_singleton_iff, span_singleton_le_iff_mem]
   constructor
   · rintro ⟨⟨m, hm⟩, hm'⟩
     choose f hf using hm'
@@ -191,6 +191,14 @@ theorem finrank_eq_one_iff' [Module.Free K V] :
   rw [← rank_eq_one_iff]
   exact toNat_eq_iff one_ne_zero
 
+/-- The `Submodule.finrank` version of `finrank_eq_one_iff`. -/
+theorem Submodule.finrank_eq_one_iff {p : Submodule K V} [Module.Free K p] (ι : Type*) [Unique ι] :
+    p.finrank = 1 ↔ Nonempty (Basis ι K p) := _root_.finrank_eq_one_iff ι
+
+/-- The `Submodule.finrank` version of `finrank_eq_one_iff'`. -/
+theorem Submodule.finrank_eq_one_iff' {p : Submodule K V} [Module.Free K p] :
+    p.finrank = 1 ↔ ∃ v ≠ 0, ∀ w : p, ∃ c : K, c • v = w := _root_.finrank_eq_one_iff'
+
 /-- A finite-dimensional module has dimension at most 1 iff
 there is some `v : V` so every vector is a multiple of `v`.
 -/
@@ -200,8 +208,8 @@ theorem finrank_le_one_iff [Module.Free K V] [Module.Finite K V] :
 
 theorem Submodule.finrank_le_one_iff_isPrincipal
     (W : Submodule K V) [Module.Free K W] [Module.Finite K W] :
-    finrank K W ≤ 1 ↔ W.IsPrincipal := by
-  rw [← W.rank_le_one_iff_isPrincipal, ← finrank_eq_rank, Nat.cast_le_one]
+    W.finrank ≤ 1 ↔ W.IsPrincipal := by
+  rw [← W.rank_le_one_iff_isPrincipal, ← Submodule.finrank_eq_rank_of_finite, Nat.cast_le_one]
 
 theorem Module.finrank_le_one_iff_top_isPrincipal [Module.Free K V] [Module.Finite K V] :
     finrank K V ≤ 1 ↔ (⊤ : Submodule K V).IsPrincipal := by

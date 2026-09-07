@@ -96,20 +96,20 @@ theorem iSup_maxGenEigenspace_eq_top [IsAlgClosed K] [FiniteDimensional K V] (f 
     -- Therefore, we can define the restriction `f'` of `f` to `ER`.
     let f' : End K ER := f.restrict h_f_ER
     -- The dimension of `ES` is positive
-    have h_dim_ES_pos : 0 < finrank K ES := by
+    have h_dim_ES_pos : 0 < ES.finrank := by
       dsimp +instances only [ES]
       rw [h_dim]
       apply pos_finrank_genEigenspace_of_hasEigenvalue hμ₀ (Nat.zero_lt_succ n)
     -- and the dimensions of `ES` and `ER` add up to `finrank K V`.
-    have h_dim_add : finrank K ER + finrank K ES = finrank K V := by
+    have h_dim_add : ER.finrank + ES.finrank = finrank K V := by
       dsimp +instances only [ER, ES]
       rw [Module.End.genEigenspace_nat, Module.End.genEigenrange_nat]
       apply LinearMap.finrank_range_add_finrank_ker
     -- Therefore the dimension `ER` mus be smaller than `finrank K V`.
-    have h_dim_ER : finrank K ER < n.succ := by lia
+    have h_dim_ER : ER.finrank < n.succ := by lia
     -- This allows us to apply the induction hypothesis on `ER`:
     have ih_ER : ⨆ (μ : K), f'.maxGenEigenspace μ = ⊤ :=
-      ih (finrank K ER) h_dim_ER f' rfl
+      ih ER.finrank h_dim_ER f' rfl
     -- The induction hypothesis gives us a statement about subspaces of `ER`. We can transfer this
     -- to a statement about subspaces of `V` via `Submodule.subtype`:
     have ih_ER' : ⨆ (μ : K), (f'.maxGenEigenspace μ).map ER.subtype = ER := by

@@ -347,6 +347,11 @@ theorem rank_eq_card_basis {ι : Type w} [Fintype ι] (h : Basis ι R M) :
   have := nontrivial_of_invariantBasisNumber R
   rw [← h.mk_range_eq_rank, Cardinal.mk_fintype, Set.card_range_of_injective h.injective]
 
+/-- If a submodule has a finite basis, then its rank (seen as a cardinal) is equal to the
+cardinality of the basis. -/
+theorem Submodule.rank_eq_card_basis {ι : Type w} [Fintype ι] {p : Submodule R M}
+    (b : Basis ι R p) : p.rank = Fintype.card ι := _root_.rank_eq_card_basis b
+
 namespace Module.Basis
 
 theorem card_le_card_of_linearIndependent {ι : Type*} [Fintype ι] (b : Basis ι R M)
@@ -376,17 +381,17 @@ theorem mk_eq_rank'.{m} (v : Basis ι R M) :
 end Module.Basis
 
 theorem rank_span {v : ι → M} (hv : LinearIndependent R v) :
-    Module.rank R ↑(span R (range v)) = #(range v) := by
+    (span R (range v)).rank = #(range v) := by
   have := nontrivial_of_invariantBasisNumber R
-  rw [← Cardinal.lift_inj, ← (Basis.span hv).mk_eq_rank,
+  rw [← Submodule.rank_coe, ← Cardinal.lift_inj, ← (Basis.span hv).mk_eq_rank,
     Cardinal.mk_range_eq_of_injective (@LinearIndependent.injective ι R M v _ _ _ _ hv)]
 
-theorem rank_span_set {s : Set M} (hs : LinearIndepOn R id s) : Module.rank R ↑(span R s) = #s := by
+theorem rank_span_set {s : Set M} (hs : LinearIndepOn R id s) : (span R s).rank = #s := by
   rw [← @ofPred_mem_eq _ s, ← Subtype.range_coe_subtype]
   exact rank_span hs
 
 theorem toENat_rank_span_set {v : ι → M} {s : Set ι} (hs : LinearIndepOn R v s) :
-    (Module.rank R <| span R <| v '' s).toENat = s.encard := by
+    (span R <| v '' s).rank.toENat = s.encard := by
   rw [image_eq_range, ← hs.injOn.encard_image, ← toENat_cardinalMk, image_eq_range,
     ← rank_span hs.linearIndependent]
 
@@ -452,6 +457,14 @@ theorem finrank_eq_card_basis {ι : Type w} [Fintype ι] (h : Basis ι R M) :
     finrank R M = Fintype.card ι :=
   finrank_eq_of_rank_eq (rank_eq_card_basis h)
 
+/-- If a submodule has a basis, then its `finrank` is the cardinality of the basis. -/
+theorem _root_.Submodule.finrank_eq_nat_card_basis {p : Submodule R M} (b : Basis ι R p) :
+    p.finrank = Nat.card ι := Module.finrank_eq_nat_card_basis b
+
+/-- If a submodule has a finite basis, then its `finrank` is the cardinality of the basis. -/
+theorem _root_.Submodule.finrank_eq_card_basis {ι : Type w} [Fintype ι] {p : Submodule R M}
+    (b : Basis ι R p) : p.finrank = Fintype.card ι := Module.finrank_eq_card_basis b
+
 /-- If a free module is of finite rank, then the cardinality of any basis is equal to its
 `finrank`. -/
 theorem mk_finrank_eq_card_basis [Module.Finite R M] {ι : Type w} (h : Basis ι R M) :
@@ -510,6 +523,10 @@ theorem rank_lt_aleph0 [Module.Finite R M] : Module.rank R M < ℵ₀ := by
   exact (ciSup_le' fun i => linearIndependent_le_span_finset _ i.prop S hS).trans_lt
     natCast_lt_aleph0
 
+/-- The rank of a finite submodule is finite. -/
+lemma _root_.Submodule.rank_lt_aleph0 {s : Submodule R M} [Module.Finite R s] : s.rank < ℵ₀ :=
+  Module.rank_lt_aleph0 ..
+
 noncomputable instance {R M : Type*} [DivisionRing R] [AddCommGroup M] [Module R M]
     {s t : Set M} [Module.Finite R (span R t)]
     (hs : LinearIndepOn R id s) (hst : s ⊆ t) :
@@ -522,6 +539,12 @@ noncomputable instance {R M : Type*} [DivisionRing R] [AddCommGroup M] [Module R
 @[simp]
 theorem finrank_eq_rank [Module.Finite R M] : ↑(finrank R M) = Module.rank R M := by
   rw [Module.finrank, cast_toNat_of_lt_aleph0 (rank_lt_aleph0 R M)]
+
+/-- The `Submodule.rank` version of `Module.finrank_eq_rank`, for a finite submodule.
+
+See `Submodule.finrank_eq_rank` for the version assuming the ambient module to be finite. -/
+theorem _root_.Submodule.finrank_eq_rank_of_finite (p : Submodule R M) [Module.Finite R p] :
+    (p.finrank : Cardinal) = p.rank := finrank_eq_rank R p
 
 theorem finrank_eq_zero_iff_of_free [Module.Free R M] [Module.Finite R M] :
     Module.finrank R M = 0 ↔ Subsingleton M := by
@@ -539,11 +562,20 @@ theorem finrank_pos_iff_of_free [Module.Free R M] [Module.Finite R M] :
   rw [← not_subsingleton_iff_nontrivial, ← iff_not_comm]
   simp [Module.finrank_eq_zero_iff_of_free]
 
+/-- The `Submodule.finrank` version of `Module.finrank_eq_zero_iff_of_free`. -/
+theorem _root_.Submodule.finrank_eq_zero_iff_of_free (p : Submodule R M) [Module.Free R p]
+    [Module.Finite R p] : p.finrank = 0 ↔ Subsingleton p :=
+  Module.finrank_eq_zero_iff_of_free R p
+
+/-- The `Submodule.finrank` version of `Module.finrank_pos_iff_of_free`. -/
+theorem _root_.Submodule.finrank_pos_iff_of_free (p : Submodule R M) [Module.Free R p]
+    [Module.Finite R p] : 0 < p.finrank ↔ Nontrivial p := Module.finrank_pos_iff_of_free R p
+
 /-- If `M` is finite, then `finrank N = rank N` for all `N : Submodule M`. Note that
 such an `N` need not be finitely generated. -/
 protected theorem _root_.Submodule.finrank_eq_rank [Module.Finite R M] (N : Submodule R M) :
-    finrank R N = Module.rank R N := by
-  rw [finrank, Cardinal.cast_toNat_of_lt_aleph0]
+    N.finrank = N.rank := by
+  rw [Submodule.finrank_eq_toNat_rank, Cardinal.cast_toNat_of_lt_aleph0]
   exact lt_of_le_of_lt (Submodule.rank_le N) (rank_lt_aleph0 R M)
 
 end Module
@@ -559,13 +591,13 @@ theorem LinearMap.finrank_le_finrank_of_surjective [Module.Finite R M] {f : M �
   finrank_le_finrank_of_rank_le_rank (lift_rank_le_of_surjective _ hf) (rank_lt_aleph0 _ _)
 
 theorem LinearMap.finrank_range_le [Module.Finite R M] (f : M →ₗ[R] M') :
-    finrank R (LinearMap.range f) ≤ finrank R M :=
+    f.range.finrank ≤ finrank R M :=
   finrank_le_finrank_of_rank_le_rank (lift_rank_range_le f) (rank_lt_aleph0 _ _)
 
 theorem LinearMap.finrank_le_of_isSMulRegular {S : Type*} [CommSemiring S] [Algebra S R]
     [Module S M] [IsScalarTower S R M] (L L' : Submodule R M) [Module.Finite R L'] {s : S}
     (hr : IsSMulRegular M s) (h : ∀ x ∈ L, s • x ∈ L') :
-    Module.finrank R L ≤ Module.finrank R L' := by
+    L.finrank ≤ L'.finrank := by
   refine finrank_le_finrank_of_rank_le_rank (lift_le.mpr <| rank_le_of_isSMulRegular L L' hr h) ?_
   rw [← Module.finrank_eq_rank R L']
   exact natCast_lt_aleph0
@@ -639,16 +671,17 @@ variable (K s) in
 /-- This is a version of `exists_linearIndependent`
 with an upper estimate on the size of the finite set we choose. -/
 theorem exists_finset_span_eq_linearIndepOn :
-    ∃ t : Finset M, ↑t ⊆ s ∧ t.card = finrank K (span K s) ∧
+    ∃ t : Finset M, ↑t ⊆ s ∧ t.card = (span K s).finrank ∧
       span K t = span K s ∧ LinearIndepOn K id (t : Set M) := by
   rcases exists_linearIndependent K s with ⟨t, ht_sub, ht_span, ht_indep⟩
-  obtain ⟨t, rfl, ht_card⟩ : ∃ u : Finset M, ↑u = t ∧ u.card = finrank K (span K s) := by
-    rw [← Cardinal.mk_set_eq_nat_iff_finset, finrank_eq_rank, ← ht_span, rank_span_set ht_indep]
+  obtain ⟨t, rfl, ht_card⟩ : ∃ u : Finset M, ↑u = t ∧ u.card = (span K s).finrank := by
+    rw [← Cardinal.mk_set_eq_nat_iff_finset, Submodule.finrank_eq_rank_of_finite, ← ht_span,
+      rank_span_set ht_indep]
   exact ⟨t, ht_sub, ht_card, ht_span, ht_indep⟩
 
 variable (K s) in
 theorem exists_fun_fin_finrank_span_eq :
-    ∃ f : Fin (finrank K (span K s)) → M, (∀ i, f i ∈ s) ∧ span K (range f) = span K s ∧
+    ∃ f : Fin (span K s).finrank → M, (∀ i, f i ∈ s) ∧ span K (range f) = span K s ∧
       LinearIndependent K f := by
   rcases exists_finset_span_eq_linearIndepOn K s with ⟨t, hts, ht_card, ht_span, ht_indep⟩
   set e := (Finset.equivFinOfCardEq ht_card).symm
@@ -656,7 +689,7 @@ theorem exists_fun_fin_finrank_span_eq :
 
 /-- This is a version of `mem_span_set` with an estimate on the number of terms in the sum. -/
 theorem mem_span_set_iff_exists_finsupp_le_finrank :
-    x ∈ span K s ↔ ∃ c : M →₀ K, c.support.card ≤ finrank K (span K s) ∧
+    x ∈ span K s ↔ ∃ c : M →₀ K, c.support.card ≤ (span K s).finrank ∧
       ↑c.support ⊆ s ∧ c.sum (fun mi r ↦ r • mi) = x := by
   constructor
   · intro h

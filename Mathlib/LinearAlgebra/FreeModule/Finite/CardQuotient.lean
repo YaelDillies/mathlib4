@@ -40,7 +40,7 @@ theorem Submodule.natAbs_det_equiv (N : Submodule ℤ M) {E : Type*} [EquivLike 
       Nat.card (M ⧸ N) := by
   let b := Module.Free.chooseBasis ℤ M
   -- Since `e : M ≃ₗ[ℤ] N`, the submodule `N` has full rank.
-  have h : Module.finrank ℤ N = Module.finrank ℤ M :=
+  have h : N.finrank = Module.finrank ℤ M :=
     (AddEquiv.toIntLinearEquiv e : M ≃ₗ[ℤ] N).symm.finrank_eq
   -- Use the Smith normal form to choose a nice basis for `N`.
   let a := smithNormalFormCoeffs b h

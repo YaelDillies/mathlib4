@@ -35,7 +35,7 @@ theorem rank_sup_le_of_free : Module.rank R ↥(A ⊔ B) ≤ Module.rank R A * M
   have h := Algebra.adjoin_union_coe_submodule R (A : Set S) (B : Set S)
   rw [A.adjoin_eq_span_basis R bA, B.adjoin_eq_span_basis R bB, ← Algebra.sup_def,
     Submodule.span_mul_span] at h
-  change Module.rank R ↥(toSubmodule (A ⊔ B)) ≤ _
+  change (toSubmodule (A ⊔ B)).rank ≤ _
   rw [h, ← bA.mk_eq_rank'', ← bB.mk_eq_rank'']
   refine (rank_span_le _).trans Cardinal.mk_mul_le |>.trans ?_
   gcongr <;> exact Cardinal.mk_range_le

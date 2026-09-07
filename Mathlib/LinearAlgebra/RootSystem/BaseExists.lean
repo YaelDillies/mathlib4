@@ -142,7 +142,7 @@ lemma linearIndepOn_root_baseOf (f : M →+ ℚ) (hf : ∀ i, f (P.root i) ≠ 0
       replace this : LinearIndependent ℚ v :=
         .of_comp (P.rootSpan ℚ).subtype <| P.linearIndepOn_root_baseOf' f.toRatLinearMap hf
       exact Basis.mk this (by rw [h_span])
-    rw [← RootPairing.finrank_rootSpanIn ℚ P, finrank_eq_nat_card_basis b]
+    rw [← RootPairing.finrank_rootSpanIn ℚ P, Submodule.finrank_eq_nat_card_basis b]
   replace h_span : span R (range <| (P.rootSpan ℚ).subtype ∘ v) = ⊤ := by
     rw [range_comp, ← span_span_of_tower ℚ, span_image, h_span]
     simp

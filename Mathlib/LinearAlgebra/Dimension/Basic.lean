@@ -16,6 +16,9 @@ public import Mathlib.Data.Set.Card
 
 * The rank of a module is defined as `Module.rank : Cardinal`.
   This is defined as the supremum of the cardinalities of linearly independent subsets.
+* The rank of a submodule is defined as `Submodule.rank : Cardinal`. It is the rank of the
+  submodule seen as a module, but phrasing it as an operation on submodules rather than on types
+  means that `rw`, `gcongr` and `grw` can be used on it.
 
 ## Main statements
 
@@ -73,6 +76,19 @@ theorem rank_le_card : Module.rank R M ≤ #M :=
 
 instance nonempty_linearIndependent_set : Nonempty {s : Set M // LinearIndepOn R id s} :=
   ⟨⟨∅, linearIndepOn_empty _ _⟩⟩
+
+variable {R M}
+
+/-- The rank of a submodule, defined as a term of type `Cardinal`.
+
+This is simply the rank of the submodule seen as a module, but bundling it as an operation on
+submodules rather than on types means that `rw`, `gcongr` and `grw` can be used on it.
+
+See also `Submodule.finrank` for a `ℕ`-valued function which returns the correct value
+for a finite-dimensional submodule (but 0 for an infinite-dimensional one). -/
+protected noncomputable def Submodule.rank (p : Submodule R M) : Cardinal := Module.rank R p
+
+@[simp] lemma Submodule.rank_coe (p : Submodule R M) : Module.rank R p = p.rank := rfl
 
 end
 
@@ -169,6 +185,10 @@ theorem rank_subsingleton [Subsingleton R] : Module.rank R M = 1 := by
     simp [Set.subsingleton_of_subsingleton]
   · intro w hw
     exact ⟨⟨{0}, LinearIndepOn.of_subsingleton⟩, hw.trans_eq (Cardinal.mk_singleton _).symm⟩
+
+@[nontriviality, simp]
+theorem Submodule.rank_subsingleton [Subsingleton R] (p : Submodule R M) : p.rank = 1 :=
+  _root_.rank_subsingleton R p
 
 theorem Module.one_le_rank_iff : 1 ≤ Module.rank R M ↔ ∃ f : R →ₗ[R] M, Injective f := by
   nontriviality R
@@ -375,9 +395,9 @@ theorem LinearMap.rank_le_of_injective (f : M →ₗ[R] M₁) (i : Injective f) 
 /-- The rank of the range of a linear map is at most the rank of the source. -/
 -- The proof is: a free submodule of the range lifts to a free submodule of the
 -- source, by arbitrarily lifting a basis.
-theorem lift_rank_range_le (f : M →ₗ[R] M') : Cardinal.lift.{v}
-    (Module.rank R (LinearMap.range f)) ≤ Cardinal.lift.{v'} (Module.rank R M) := by
-  simp only [Module.rank_def]
+theorem lift_rank_range_le (f : M →ₗ[R] M') :
+    Cardinal.lift.{v} f.range.rank ≤ Cardinal.lift.{v'} (Module.rank R M) := by
+  simp only [Submodule.rank, Module.rank_def]
   rw [Cardinal.lift_iSup Cardinal.bddAbove_of_small]
   apply ciSup_le'
   rintro ⟨s, li⟩
@@ -389,23 +409,24 @@ theorem lift_rank_range_le (f : M →ₗ[R] M') : Cardinal.lift.{v}
     convert! li.comp (Equiv.Set.rangeSplittingImageEquiv f s) (Equiv.injective _) using 1
   · exact (Cardinal.lift_mk_eq'.mpr ⟨Equiv.Set.rangeSplittingImageEquiv f s⟩).ge
 
-theorem rank_range_le (f : M →ₗ[R] M₁) : Module.rank R (LinearMap.range f) ≤ Module.rank R M := by
+theorem rank_range_le (f : M →ₗ[R] M₁) : f.range.rank ≤ Module.rank R M := by
   simpa using lift_rank_range_le f
 
 theorem lift_rank_map_le (f : M →ₗ[R] M') (p : Submodule R M) :
-    Cardinal.lift.{v} (Module.rank R (p.map f)) ≤ Cardinal.lift.{v'} (Module.rank R p) := by
+    Cardinal.lift.{v} (p.map f).rank ≤ Cardinal.lift.{v'} p.rank := by
   have h := lift_rank_range_le (f.comp (Submodule.subtype p))
   rwa [LinearMap.range_comp, range_subtype] at h
 
 theorem rank_map_le (f : M →ₗ[R] M₁) (p : Submodule R M) :
-    Module.rank R (p.map f) ≤ Module.rank R p := by simpa using lift_rank_map_le f p
+    (p.map f).rank ≤ p.rank := by simpa using lift_rank_map_le f p
 
 theorem rank_map_eq {f : M →ₗ[R] M₁} (hf : Injective f) (p : Submodule R M) :
-    Module.rank R (p.map f) = Module.rank R p :=
+    (p.map f).rank = p.rank :=
   le_antisymm (rank_map_le f p)
     ((f.submoduleMap p).rank_le_of_injective <| LinearMap.submoduleMap_injective hf p)
 
-lemma Submodule.rank_mono {s t : Submodule R M} (h : s ≤ t) : Module.rank R s ≤ Module.rank R t :=
+@[gcongr]
+lemma Submodule.rank_mono {s t : Submodule R M} (h : s ≤ t) : s.rank ≤ t.rank :=
   (Submodule.inclusion h).rank_le_of_injective fun ⟨x, _⟩ ⟨y, _⟩ eq =>
     Subtype.ext <| show x = y from Subtype.ext_iff.1 eq
 
@@ -421,36 +442,58 @@ theorem LinearEquiv.lift_rank_eq (f : M ≃ₗ[R] M') :
 theorem LinearEquiv.rank_eq (f : M ≃ₗ[R] M₁) : Module.rank R M = Module.rank R M₁ :=
   Cardinal.lift_inj.1 f.lift_rank_eq
 
+/-- Two linearly equivalent submodules have the same rank.
+
+This is `LinearEquiv.rank_eq` stated in terms of `Submodule.rank`, so that it can be used by
+`rw`. -/
+theorem Submodule.rank_eq_of_linearEquiv {p : Submodule R M} {q : Submodule R M₁}
+    (e : p ≃ₗ[R] q) : p.rank = q.rank := e.rank_eq
+
+/-- A module linearly equivalent to a submodule has the same rank, a version with different
+universes.
+
+This is `LinearEquiv.lift_rank_eq` stated in terms of `Submodule.rank`, so that it can be used by
+`rw`. -/
+theorem LinearEquiv.lift_rank_eq_submodule_rank {q : Submodule R M'} (e : M ≃ₗ[R] q) :
+    Cardinal.lift.{v'} (Module.rank R M) = Cardinal.lift.{v} q.rank := e.lift_rank_eq
+
+/-- A module linearly equivalent to a submodule has the same rank.
+
+This is `LinearEquiv.rank_eq` stated in terms of `Submodule.rank`, so that it can be used by
+`rw`. -/
+theorem LinearEquiv.rank_eq_submodule_rank {q : Submodule R M₁} (e : M ≃ₗ[R] q) :
+    Module.rank R M = q.rank := e.rank_eq
+
 theorem lift_rank_range_of_injective (f : M →ₗ[R] M') (h : Injective f) :
-    lift.{v} (Module.rank R (LinearMap.range f)) = lift.{v'} (Module.rank R M) :=
+    lift.{v} f.range.rank = lift.{v'} (Module.rank R M) :=
   (LinearEquiv.ofInjective f h).lift_rank_eq.symm
 
 theorem rank_range_of_injective (f : M →ₗ[R] M₁) (h : Injective f) :
-    Module.rank R (LinearMap.range f) = Module.rank R M :=
+    f.range.rank = Module.rank R M :=
   (LinearEquiv.ofInjective f h).rank_eq.symm
 
 theorem LinearEquiv.lift_rank_map_eq (f : M ≃ₗ[R] M') (p : Submodule R M) :
-    lift.{v} (Module.rank R (p.map (f : M →ₗ[R] M'))) = lift.{v'} (Module.rank R p) :=
+    lift.{v} (p.map (f : M →ₗ[R] M')).rank = lift.{v'} p.rank :=
   (f.submoduleMap p).lift_rank_eq.symm
 
 /-- Pushforwards of submodules along a `LinearEquiv` have the same dimension. -/
 theorem LinearEquiv.rank_map_eq (f : M ≃ₗ[R] M₁) (p : Submodule R M) :
-    Module.rank R (p.map (f : M →ₗ[R] M₁)) = Module.rank R p :=
+    (p.map (f : M →ₗ[R] M₁)).rank = p.rank :=
   (f.submoduleMap p).rank_eq.symm
 
 variable (R M)
 
 @[simp]
-theorem rank_top : Module.rank R (⊤ : Submodule R M) = Module.rank R M :=
+theorem rank_top : (⊤ : Submodule R M).rank = Module.rank R M :=
   (LinearEquiv.ofTop ⊤ rfl).rank_eq
 
 variable {R M}
 
 theorem rank_range_of_surjective (f : M →ₗ[R] M') (h : Surjective f) :
-    Module.rank R (LinearMap.range f) = Module.rank R M' := by
+    f.range.rank = Module.rank R M' := by
   rw [LinearMap.range_eq_top.2 h, rank_top]
 
-theorem Submodule.rank_le (s : Submodule R M) : Module.rank R s ≤ Module.rank R M := by
+theorem Submodule.rank_le (s : Submodule R M) : s.rank ≤ Module.rank R M := by
   rw [← rank_top R M]
   exact rank_mono le_top
 
@@ -467,7 +510,7 @@ theorem LinearMap.rank_le_of_surjective (f : M →ₗ[R] M₁) (h : Surjective f
 lemma rank_le_of_isSMulRegular {S : Type*} [CommSemiring S] [Algebra S R] [Module S M]
     [IsScalarTower S R M] (L L' : Submodule R M) {s : S} (hr : IsSMulRegular M s)
     (h : ∀ x ∈ L, s • x ∈ L') :
-    Module.rank R L ≤ Module.rank R L' :=
+    L.rank ≤ L'.rank :=
   ((Algebra.lsmul S R M s).restrict h).rank_le_of_injective <|
     fun _ _ h ↦ by simpa using hr (Subtype.ext_iff.mp h)
 

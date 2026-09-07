@@ -155,13 +155,13 @@ theorem LinearMap.continuous_of_isClosed_ker (l : E →ₗ[𝕜] 𝕜)
     (hl : IsClosed (LinearMap.ker l : Set E)) :
     Continuous l := by
   -- `l` is either constant or surjective. If it is constant, the result is trivial.
-  by_cases H : finrank 𝕜 (LinearMap.range l) = 0
+  by_cases H : l.range.finrank = 0
   · rw [Submodule.finrank_eq_zero, LinearMap.range_eq_bot] at H
     rw [H]
     exact continuous_zero
   · -- In the case where `l` is surjective, we factor it as `φ : (E ⧸ l.ker) ≃ₗ[𝕜] 𝕜`. Note that
     -- `E ⧸ l.ker` is T2 since `l.ker` is closed.
-    have : finrank 𝕜 (LinearMap.range l) = 1 :=
+    have : l.range.finrank = 1 :=
       le_antisymm (finrank_self 𝕜 ▸ (LinearMap.range l).finrank_le) (zero_lt_iff.mpr H)
     have hi : Function.Injective ((LinearMap.ker l).liftQ l (le_refl _)) := by
       rw [← LinearMap.ker_eq_bot]
@@ -229,7 +229,7 @@ private theorem continuous_equivFun_basis_aux [T2Space E] {ι : Type v} [Finite 
     have : FiniteDimensional 𝕜 E := ξ.finiteDimensional_of_finite
     -- first step: thanks to the induction hypothesis, any n-dimensional subspace is equivalent
     -- to a standard space of dimension n, hence it is complete and therefore closed.
-    have H₁ : ∀ s : Submodule 𝕜 E, finrank 𝕜 s = n → IsClosed (s : Set E) := by
+    have H₁ : ∀ s : Submodule 𝕜 E, s.finrank = n → IsClosed (s : Set E) := by
       intro s s_dim
       let : IsUniformAddGroup s := s.toAddSubgroup.isUniformAddGroup
       let b := Basis.ofVectorSpace 𝕜 s
@@ -246,14 +246,14 @@ private theorem continuous_equivFun_basis_aux [T2Space E] {ι : Type v} [Finite 
     -- second step: any linear form is continuous, as its kernel is closed by the first step
     have H₂ : ∀ f : E →ₗ[𝕜] 𝕜, Continuous f := by
       intro f
-      by_cases H : finrank 𝕜 (LinearMap.range f) = 0
+      by_cases H : f.range.finrank = 0
       · rw [Submodule.finrank_eq_zero, LinearMap.range_eq_bot] at H
         rw [H]
         exact continuous_zero
-      · have : finrank 𝕜 (LinearMap.ker f) = n := by
+      · have : f.ker.finrank = n := by
           have Z := f.finrank_range_add_finrank_ker
           rw [finrank_eq_card_basis ξ, hn] at Z
-          have : finrank 𝕜 (LinearMap.range f) = 1 :=
+          have : f.range.finrank = 1 :=
             le_antisymm (finrank_self 𝕜 ▸ (LinearMap.range f).finrank_le) (zero_lt_iff.mpr H)
           rw [this, add_comm, Nat.add_one] at Z
           exact Nat.succ.inj Z

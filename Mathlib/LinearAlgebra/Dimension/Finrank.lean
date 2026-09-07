@@ -19,6 +19,10 @@ Defined is `Module.finrank`, the dimension of a finite-dimensional space, return
 `Nat`, as opposed to `Module.rank`, which returns a `Cardinal`. When the space has infinite
 dimension, its `finrank` is by convention set to `0`.
 
+Also defined is `Submodule.finrank`, the `Nat`-valued rank of a submodule. It is the `finrank` of
+the submodule seen as a module, but phrasing it as an operation on submodules rather than on types
+means that `rw`, `gcongr` and `grw` can be used on it.
+
 The definition of `finrank` does not assume a `FiniteDimensional` instance, but lemmas might.
 Import `LinearAlgebra.FiniteDimensional` to get access to these additional lemmas.
 
@@ -62,14 +66,35 @@ Note that if `R` is not a field then there can exist modules `M` with `¬(Module
 noncomputable def finrank (R M : Type*) [Semiring R] [AddCommMonoid M] [Module R M] : ℕ :=
   Cardinal.toNat (Module.rank R M)
 
+/-- The rank of a submodule as a natural number.
+
+This is simply the `finrank` of the submodule seen as a module, but bundling it as an operation on
+submodules rather than on types means that `rw`, `gcongr` and `grw` can be used on it.
+
+See `Submodule.rank` for a cardinal-valued version where infinite rank submodules have rank an
+infinite cardinal. -/
+protected noncomputable def _root_.Submodule.finrank (p : Submodule R M) : ℕ := finrank R p
+
+@[simp] lemma _root_.Submodule.finrank_coe (p : Submodule R M) : finrank R p = p.finrank := rfl
+
+lemma _root_.Submodule.finrank_eq_toNat_rank (p : Submodule R M) :
+    p.finrank = p.rank.toNat := rfl
+
 @[simp] theorem finrank_subsingleton [Subsingleton R] : finrank R M = 1 := by
   rw [finrank, rank_subsingleton, map_one]
+
+@[nontriviality, simp]
+theorem _root_.Submodule.finrank_subsingleton [Subsingleton R] (p : Submodule R M) :
+    p.finrank = 1 := by simp [Submodule.finrank_eq_toNat_rank]
 
 theorem finrank_eq_of_rank_eq {n : ℕ} (h : Module.rank R M = ↑n) : finrank R M = n := by
   simp [finrank, h]
 
 lemma rank_eq_one_iff_finrank_eq_one : Module.rank R M = 1 ↔ finrank R M = 1 :=
   Cardinal.toNat_eq_one.symm
+
+lemma _root_.Submodule.rank_eq_one_iff_finrank_eq_one {p : Submodule R M} :
+    p.rank = 1 ↔ p.finrank = 1 := Cardinal.toNat_eq_one.symm
 
 /-- This is like `rank_eq_one_iff_finrank_eq_one` but works for `2`, `3`, `4`, ... -/
 lemma rank_eq_ofNat_iff_finrank_eq_ofNat (n : ℕ) [Nat.AtLeastTwo n] :
@@ -117,27 +142,42 @@ theorem finrank_eq (f : M ≃ₗ[R] N) : finrank R M = finrank R N := by
   unfold finrank
   rw [← Cardinal.toNat_lift, f.lift_rank_eq, Cardinal.toNat_lift]
 
+/-- Two linearly equivalent submodules have the same finrank.
+
+This is `LinearEquiv.finrank_eq` stated in terms of `Submodule.finrank`, so that it can be used by
+`rw`. -/
+theorem _root_.Submodule.finrank_eq_of_linearEquiv {p : Submodule R M} {q : Submodule R N}
+    (e : p ≃ₗ[R] q) : p.finrank = q.finrank := e.finrank_eq
+
+/-- A module linearly equivalent to a submodule has the same finrank.
+
+This is `LinearEquiv.finrank_eq` stated in terms of `Submodule.finrank`, so that it can be used by
+`rw`. -/
+theorem finrank_eq_submodule_finrank {q : Submodule R N} (e : M ≃ₗ[R] q) :
+    finrank R M = q.finrank := e.finrank_eq
+
 /-- Pushforwards of finite-dimensional submodules along a `LinearEquiv` have the same finrank. -/
 theorem finrank_map_eq (f : M ≃ₗ[R] N) (p : Submodule R M) :
-    finrank R (p.map (f : M →ₗ[R] N)) = finrank R p :=
+    (p.map (f : M →ₗ[R] N)).finrank = p.finrank :=
   (f.submoduleMap p).finrank_eq.symm
 
 end LinearEquiv
 
 /-- The dimensions of the domain and range of an injective linear map are equal. -/
 theorem LinearMap.finrank_range_of_inj {f : M →ₗ[R] N} (hf : Function.Injective f) :
-    finrank R (LinearMap.range f) = finrank R M := by rw [(LinearEquiv.ofInjective f hf).finrank_eq]
+    f.range.finrank = finrank R M :=
+  (LinearEquiv.ofInjective f hf).finrank_eq.symm
 
 @[simp]
 theorem Submodule.finrank_map_subtype_eq (p : Submodule R M) (q : Submodule R p) :
-    finrank R (q.map p.subtype) = finrank R q :=
+    (q.map p.subtype).finrank = q.finrank :=
   (Submodule.equivSubtypeMap p q).symm.finrank_eq
 
 variable (R M)
 
 @[simp]
-theorem finrank_top : finrank R (⊤ : Submodule R M) = finrank R M := by
-  unfold finrank
+theorem finrank_top : (⊤ : Submodule R M).finrank = finrank R M := by
+  unfold Submodule.finrank finrank
   simp
 
 namespace Algebra

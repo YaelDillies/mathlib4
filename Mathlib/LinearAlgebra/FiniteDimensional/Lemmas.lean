@@ -44,7 +44,7 @@ space.
 
 See also `Submodule.length_lt`. -/
 theorem finrank_lt [FiniteDimensional K V] {s : Submodule K V} (h : s ≠ ⊤) :
-    finrank K s < finrank K V := by
+    s.finrank < finrank K V := by
   rw [← s.finrank_quotient_add_finrank, add_comm]
   rw [← Quotient.nontrivial_iff] at h
   exact Nat.lt_add_of_pos_right finrank_pos
@@ -52,37 +52,37 @@ theorem finrank_lt [FiniteDimensional K V] {s : Submodule K V} (h : s ≠ ⊤) :
 /-- The sum of the dimensions of s + t and s ∩ t is the sum of the dimensions of s and t -/
 theorem finrank_sup_add_finrank_inf_eq (s t : Submodule K V) [FiniteDimensional K s]
     [FiniteDimensional K t] :
-    finrank K ↑(s ⊔ t) + finrank K ↑(s ⊓ t) = finrank K ↑s + finrank K ↑t := by
-  have key : Module.rank K ↑(s ⊔ t) + Module.rank K ↑(s ⊓ t) = Module.rank K s + Module.rank K t :=
+    (s ⊔ t).finrank + (s ⊓ t).finrank = s.finrank + t.finrank := by
+  have key : (s ⊔ t).rank + (s ⊓ t).rank = s.rank + t.rank :=
     rank_sup_add_rank_inf_eq s t
-  repeat rw [← finrank_eq_rank] at key
+  repeat rw [← Submodule.finrank_eq_rank_of_finite] at key
   norm_cast at key
 
 theorem finrank_add_le_finrank_add_finrank (s t : Submodule K V) [FiniteDimensional K s]
-    [FiniteDimensional K t] : finrank K (s ⊔ t : Submodule K V) ≤ finrank K s + finrank K t := by
+    [FiniteDimensional K t] : (s ⊔ t : Submodule K V).finrank ≤ s.finrank + t.finrank := by
   rw [← finrank_sup_add_finrank_inf_eq]
   exact self_le_add_right _ _
 
 theorem finrank_add_finrank_le_of_disjoint [FiniteDimensional K V]
     {s t : Submodule K V} (hdisjoint : Disjoint s t) :
-    finrank K s + finrank K t ≤ finrank K V := by
+    s.finrank + t.finrank ≤ finrank K V := by
   rw [← Submodule.finrank_sup_add_finrank_inf_eq s t, hdisjoint.eq_bot, finrank_bot, add_zero]
   exact Submodule.finrank_le _
 
 theorem eq_top_of_disjoint [FiniteDimensional K V] (s t : Submodule K V)
-    (hdim : finrank K V ≤ finrank K s + finrank K t) (hdisjoint : Disjoint s t) : s ⊔ t = ⊤ := by
-  have h_finrank_inf : finrank K ↑(s ⊓ t) = 0 := by
+    (hdim : finrank K V ≤ s.finrank + t.finrank) (hdisjoint : Disjoint s t) : s ⊔ t = ⊤ := by
+  have h_finrank_inf : (s ⊓ t).finrank = 0 := by
     rw [disjoint_iff_inf_le, le_bot_iff] at hdisjoint
     rw [hdisjoint, finrank_bot]
   apply eq_top_of_finrank_eq
-  replace hdim : finrank K V = finrank K s + finrank K t :=
+  replace hdim : finrank K V = s.finrank + t.finrank :=
     le_antisymm hdim (finrank_add_finrank_le_of_disjoint hdisjoint)
   rw [hdim]
   convert! s.finrank_sup_add_finrank_inf_eq t
   rw [h_finrank_inf, add_zero]
 
 theorem isCompl_iff_disjoint [FiniteDimensional K V] (s t : Submodule K V)
-    (hdim : finrank K V ≤ finrank K s + finrank K t) :
+    (hdim : finrank K V ≤ s.finrank + t.finrank) :
     IsCompl s t ↔ Disjoint s t :=
   ⟨fun h ↦ h.1, fun h ↦ ⟨h, codisjoint_iff.mpr <| eq_top_of_disjoint s t hdim h⟩⟩
 
@@ -106,7 +106,7 @@ theorem sup_span_singleton_eq_top_iff [Module.Finite K V] {W : Submodule K V} {v
     · exact Submodule.disjoint_span_singleton_of_notMem hv
 
 theorem finrank_sup_span_singleton [Module.Finite K V] {p : Submodule K V} {v : V} (hv : v ∉ p) :
-    finrank K (p ⊔ Submodule.span K {v} : Submodule K V) = finrank K p + 1 := by
+    (p ⊔ Submodule.span K {v} : Submodule K V).finrank = p.finrank + 1 := by
   rw [← Nat.add_left_inj, finrank_sup_add_finrank_inf_eq, add_assoc,
     Nat.add_left_cancel_iff, finrank_span_singleton (by aesop),
     Nat.left_eq_add, Submodule.finrank_eq_zero, eq_bot_iff]
@@ -119,7 +119,7 @@ theorem finrank_sup_span_singleton [Module.Finite K V] {p : Submodule K V} {v : 
   simpa [smul_mem_iff p hv] using hx
 
 theorem eq_top_iff_finrank_eq [Module.Finite K V] {W : Submodule K V} :
-    W = ⊤ ↔ finrank K W = finrank K V := by
+    W = ⊤ ↔ W.finrank = finrank K V := by
   refine ⟨fun h ↦ by rw [h, finrank_top], fun h ↦ ?_⟩
   apply eq_of_le_of_finrank_eq le_top
   rw [finrank_top, h]
@@ -143,17 +143,17 @@ noncomputable def LinearEquiv.quotEquivOfEquiv {p : Subspace K V} {q : Subspace 
     (f₁ : p ≃ₗ[K] q) (f₂ : V ≃ₗ[K] V₂) : (V ⧸ p) ≃ₗ[K] V₂ ⧸ q :=
   LinearEquiv.ofFinrankEq _ _
     (by
-      rw [← @add_right_cancel_iff _ _ _ (finrank K p), Submodule.finrank_quotient_add_finrank,
-        LinearEquiv.finrank_eq f₁, Submodule.finrank_quotient_add_finrank,
+      rw [← @add_right_cancel_iff _ _ _ p.finrank, Submodule.finrank_quotient_add_finrank,
+        Submodule.finrank_eq_of_linearEquiv f₁, Submodule.finrank_quotient_add_finrank,
         LinearEquiv.finrank_eq f₂])
 
 -- TODO: generalize to the case where one of `p` and `q` is finite-dimensional.
 /-- Given the subspaces `p q`, if `p.quotient ≃ₗ[K] q`, then `q.quotient ≃ₗ[K] p` -/
 noncomputable def LinearEquiv.quotEquivOfQuotEquiv {p q : Subspace K V} (f : (V ⧸ p) ≃ₗ[K] q) :
     (V ⧸ q) ≃ₗ[K] p :=
-  LinearEquiv.ofFinrankEq _ _ <| by
-    rw [← add_right_cancel_iff, Submodule.finrank_quotient_add_finrank, ← LinearEquiv.finrank_eq f,
-      add_comm, Submodule.finrank_quotient_add_finrank]
+  LinearEquiv.ofFinrankEq _ _ <| show finrank K (V ⧸ q) = p.finrank by
+    rw [← add_right_cancel_iff, Submodule.finrank_quotient_add_finrank,
+      ← f.finrank_eq_submodule_finrank, add_comm, Submodule.finrank_quotient_add_finrank]
 
 end DivisionRing
 
@@ -171,16 +171,16 @@ variable [DivisionRing K] [AddCommGroup V] [Module K V] {V₂ : Type v'} [AddCom
 /-- rank-nullity theorem : the dimensions of the kernel and the range of a linear map add up to
 the dimension of the source space. -/
 theorem finrank_range_add_finrank_ker [FiniteDimensional K V] (f : V →ₗ[K] V₂) :
-    finrank K (LinearMap.range f) + finrank K (LinearMap.ker f) = finrank K V := by
-  rw [← f.quotKerEquivRange.finrank_eq]
+    f.range.finrank + f.ker.finrank = finrank K V := by
+  rw [← f.quotKerEquivRange.finrank_eq_submodule_finrank]
   exact Submodule.finrank_quotient_add_finrank _
 
 lemma ker_ne_bot_of_finrank_lt [FiniteDimensional K V] [FiniteDimensional K V₂] {f : V →ₗ[K] V₂}
     (h : finrank K V₂ < finrank K V) :
     LinearMap.ker f ≠ ⊥ := by
   have h₁ := f.finrank_range_add_finrank_ker
-  have h₂ : finrank K (LinearMap.range f) ≤ finrank K V₂ := (LinearMap.range f).finrank_le
-  suffices 0 < finrank K (LinearMap.ker f) from Submodule.one_le_finrank_iff.mp this
+  have h₂ : f.range.finrank ≤ finrank K V₂ := f.range.finrank_le
+  suffices 0 < f.ker.finrank from Submodule.one_le_finrank_iff.mp this
   lia
 
 end DivisionRing
@@ -231,16 +231,17 @@ section DivisionRing
 
 variable [DivisionRing K] [AddCommGroup V] [Module K V]
 
+@[gcongr]
 theorem finrank_lt_finrank_of_lt {s t : Submodule K V} [FiniteDimensional K t] (hst : s < t) :
-    finrank K s < finrank K t :=
+    s.finrank < t.finrank :=
   (comapSubtypeEquivOfLe hst.le).finrank_eq.symm.trans_lt <|
     finrank_lt <| by simp [not_le_of_gt hst]
 
 theorem finrank_strictMono [FiniteDimensional K V] :
-    StrictMono fun s : Submodule K V => finrank K s := fun _ _ => finrank_lt_finrank_of_lt
+    StrictMono fun s : Submodule K V => s.finrank := fun _ _ => finrank_lt_finrank_of_lt
 
 theorem finrank_add_eq_of_isCompl [FiniteDimensional K V] {U W : Submodule K V} (h : IsCompl U W) :
-    finrank K U + finrank K W = finrank K V := by
+    U.finrank + W.finrank = finrank K V := by
   rw [← finrank_sup_add_finrank_inf_eq, h.codisjoint.eq_top, h.disjoint.eq_bot, finrank_bot,
     add_zero]
   exact finrank_top _ _
@@ -400,7 +401,7 @@ theorem exists_ker_pow_eq_ker_pow_succ [FiniteDimensional K V] (f : End K V) :
   by_contra h_contra
   simp_rw [not_exists, not_and] at h_contra
   have h_le_ker_pow : ∀ n : ℕ, n ≤ (finrank K V).succ →
-      n ≤ finrank K (LinearMap.ker (f ^ n)) := by
+      n ≤ (f ^ n).ker.finrank := by
     intro n hn
     induction n with
     | zero => exact zero_le
@@ -410,12 +411,12 @@ theorem exists_ker_pow_eq_ker_pow_succ [FiniteDimensional K V] (f : End K V) :
         rw [pow_succ']
         apply LinearMap.ker_le_ker_comp
       have h_finrank_lt_finrank :
-          finrank K (LinearMap.ker (f ^ n)) < finrank K (LinearMap.ker (f ^ n.succ)) := by
+          (f ^ n).ker.finrank < (f ^ n.succ).ker.finrank := by
         apply Submodule.finrank_lt_finrank_of_lt h_ker_lt_ker
       calc
-        n.succ ≤ (finrank K ↑(LinearMap.ker (f ^ n))).succ :=
+        n.succ ≤ (f ^ n).ker.finrank.succ :=
           Nat.succ_le_succ (ih (Nat.le_of_succ_le hn))
-        _ ≤ finrank K ↑(LinearMap.ker (f ^ n.succ)) := Nat.succ_le_of_lt h_finrank_lt_finrank
+        _ ≤ (f ^ n.succ).ker.finrank := Nat.succ_le_of_lt h_finrank_lt_finrank
   have h_any_n_lt : ∀ n, n ≤ (finrank K V).succ → n ≤ finrank K V := fun n hn =>
     (h_le_ker_pow n hn).trans (Submodule.finrank_le _)
   exact Nat.not_succ_le_self _ (h_any_n_lt (finrank K V).succ (finrank K V).succ.le_refl)
@@ -452,8 +453,9 @@ variable {W : Type v'} [DivisionRing K] [AddCommGroup W] [AddCommGroup V] [Modul
 
 instance (p : Submodule K W) [FiniteDimensional K p] [FiniteDimensional K f.ker] :
     FiniteDimensional K (comap f p) := by
-  grw [FiniteDimensional, ← rank_lt_aleph0_iff, ← lift_lt, f.lift_rank_comap_le p, lift_aleph0]
-  apply add_lt_aleph0 <;> rwa [lift_lt_aleph0, rank_lt_aleph0_iff]
+  grw [FiniteDimensional, ← rank_lt_aleph0_iff, ← lift_lt, Submodule.rank_coe,
+    f.lift_rank_comap_le p, lift_aleph0]
+  apply add_lt_aleph0 <;> rwa [lift_lt_aleph0, ← Submodule.rank_coe, rank_lt_aleph0_iff]
 
 instance (p : Submodule K V) [FiniteDimensional K (V ⧸ p)] [FiniteDimensional K (W ⧸ f.range)] :
     FiniteDimensional K (W ⧸ map f p) := by

@@ -834,11 +834,11 @@ theorem eigenspace_restrict_eq_bot {f : End R M} {p : Submodule R M} (hfp : ∀ 
 /-- The generalized eigenspace of an eigenvalue has positive dimension for positive exponents. -/
 theorem pos_finrank_genEigenspace_of_hasEigenvalue [FiniteDimensional K V] {f : End K V}
     {k : ℕ} {μ : K} (hx : f.HasEigenvalue μ) (hk : 0 < k) :
-    0 < finrank K (f.genEigenspace μ k) :=
+    0 < (f.genEigenspace μ k).finrank :=
   calc
-    0 = finrank K (⊥ : Submodule K V) := by rw [finrank_bot]
-    _ < finrank K (f.eigenspace μ) := Submodule.finrank_lt_finrank_of_lt (bot_lt_iff_ne_bot.2 hx)
-    _ ≤ finrank K (f.genEigenspace μ k) :=
+    0 = (⊥ : Submodule K V).finrank := by rw [finrank_bot]
+    _ < (f.eigenspace μ).finrank := Submodule.finrank_lt_finrank_of_lt (bot_lt_iff_ne_bot.2 hx)
+    _ ≤ (f.genEigenspace μ k).finrank :=
       Submodule.finrank_mono ((f.genEigenspace μ).monotone (by simpa using Nat.succ_le_of_lt hk))
 
 /-- A linear map maps a generalized eigenrange into itself. -/

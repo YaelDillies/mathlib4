@@ -192,7 +192,7 @@ lemma exists_basis_of_basis_baseChange [Module.FinitePresentation R M]
       refine ⟨?_, this⟩
       rw [← LinearMap.ker_eq_bot (M := k ⊗[R] (ι →₀ R)) (f := i.baseChange k),
         ← Submodule.finrank_eq_zero (R := k) (M := k ⊗[R] (ι →₀ R)),
-        ← Nat.add_right_inj (n := Module.finrank k (LinearMap.range <| i.baseChange k)),
+        ← Nat.add_right_inj (n := (i.baseChange k).range.finrank),
         LinearMap.finrank_range_add_finrank_ker (V := k ⊗[R] (ι →₀ R)),
         LinearMap.range_eq_top.mpr this, finrank_top]
       simp only [Module.finrank_tensorProduct, Module.finrank_self,
