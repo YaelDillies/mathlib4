@@ -160,7 +160,7 @@ variable [IsDomain R]
 /-- A finitely-generated `R`-submodule of `V` of rank at least the `K`-rank of `V`
 is a lattice. -/
 lemma of_rank_le [Module.Finite K V] [IsFractionRing R K] {M : Submodule R V}
-    (hfg : M.FG) (hr : Module.rank K V ≤ Module.rank R M) : IsLattice K M where
+    (hfg : M.FG) (hr : Module.rank K V ≤ M.rank) : IsLattice K M where
   fg := hfg
   span_eq_top := by
     simpa using Submodule.span_range_eq_top_of_injective_of_rank_le M.injective_subtype hr
@@ -177,19 +177,19 @@ instance free [Module.IsTorsionFree R K] (M : Submodule R V) [IsLattice K M] : M
 
 /-- Any lattice has `R`-rank equal to the `K`-rank of `V`. -/
 lemma rank' [IsFractionRing R K] (M : Submodule R V) [IsLattice K M] :
-    Module.rank R M = Module.rank K V := by
+    M.rank = Module.rank K V := by
   let b := Module.Free.chooseBasis R M
-  rw [rank_eq_card_basis b, ← rank_eq_card_basis (b.extendOfIsLattice K)]
+  rw [Submodule.rank_eq_card_basis b, ← _root_.rank_eq_card_basis (b.extendOfIsLattice K)]
 
 /-- Any `R`-lattice in `ι → K` has `#ι` as `R`-rank. -/
 lemma rank_of_pi {ι : Type*} [Fintype ι] [IsFractionRing R K] (M : Submodule R (ι → K))
-    [IsLattice K M] : Module.rank R M = Fintype.card ι := by
+    [IsLattice K M] : M.rank = Fintype.card ι := by
   rw [IsLattice.rank' K M]
   simp
 
 /-- `Module.finrank` version of `IsLattice.rank`. -/
 lemma finrank_of_pi {ι : Type*} [Fintype ι] [IsFractionRing R K] (M : Submodule R (ι → K))
-    [IsLattice K M] : Module.finrank R M = Fintype.card ι :=
+    [IsLattice K M] : M.finrank = Fintype.card ι :=
   Module.finrank_eq_of_rank_eq (IsLattice.rank_of_pi K M)
 
 /-- The intersection of two lattices is a lattice. -/
@@ -204,7 +204,7 @@ instance inf [Module.Finite K V] [IsFractionRing R K] (M N : Submodule R V)
     apply Submodule.span_range_eq_top_of_injective_of_rank_le (M ⊓ N).injective_subtype
     have h := Submodule.rank_sup_add_rank_inf_eq M N
     rw [IsLattice.rank' K M, IsLattice.rank' K N, IsLattice.rank'] at h
-    rw [Cardinal.eq_of_add_eq_add_left h (Module.rank_lt_aleph0 K V)]
+    rw [Submodule.rank_coe, Cardinal.eq_of_add_eq_add_left h (Module.rank_lt_aleph0 K V)]
 
 end Field
 

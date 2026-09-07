@@ -199,12 +199,12 @@ def rightAngleRotationAux₂ : E →ₗᵢ[ℝ] E :=
         exact o.areaForm_le x (o.rightAngleRotationAux₁ x)
       · let K : Submodule ℝ E := ℝ ∙ x
         have : Nontrivial Kᗮ := by
-          apply nontrivial_of_finrank_pos (R := ℝ)
-          have : finrank ℝ K ≤ Finset.card {x} := by
+          apply Submodule.nontrivial_of_finrank_pos
+          have : K.finrank ≤ Finset.card {x} := by
             rw [← Set.toFinset_singleton]
             exact finrank_span_le_card ({x} : Set E)
           have : Finset.card {x} = 1 := Finset.card_singleton x
-          have : finrank ℝ K + finrank ℝ Kᗮ = finrank ℝ E := K.finrank_add_finrank_orthogonal
+          have : K.finrank + Kᗮ.finrank = finrank ℝ E := K.finrank_add_finrank_orthogonal
           have : finrank ℝ E = 2 := Fact.out
           lia
         obtain ⟨w, hw₀⟩ : ∃ w : Kᗮ, w ≠ 0 := exists_ne 0

@@ -276,8 +276,8 @@ end
 
 /-- The number of connected components in `G` is the dimension of the nullspace of its Laplacian. -/
 theorem card_connectedComponent_eq_finrank_ker_toLin'_lapMatrix :
-    Fintype.card G.ConnectedComponent = Module.finrank ℝ (G.lapMatrix ℝ).toLin'.ker := by
+    Fintype.card G.ConnectedComponent = (G.lapMatrix ℝ).toLin'.ker.finrank := by
   classical
-  rw [Module.finrank_eq_card_basis G.lapMatrix_ker_basis]
+  rw [Submodule.finrank_eq_card_basis G.lapMatrix_ker_basis]
 
 end SimpleGraph

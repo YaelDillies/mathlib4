@@ -37,12 +37,12 @@ variable {R : Type*} [Ring R] [Module R M] [Module R N] (f : M →ₗ[R] N)
 /-- The index of a linear map with sign convention `index = dim ker - dim coker`.
 
 In the case that either the kernel or cokernel has infinite rank, the value is junk. -/
-public def index : ℤ := finrank R f.ker - finrank R (N ⧸ f.range)
+public def index : ℤ := f.ker.finrank - finrank R (N ⧸ f.range)
 
 variable {f}
 
 public lemma index_eq_finrank_sub :
-    f.index = finrank R f.ker - finrank R (N ⧸ f.range) := by
+    f.index = f.ker.finrank - finrank R (N ⧸ f.range) := by
   rfl
 
 @[nontriviality] public lemma index_of_subsingleton [Subsingleton R] :
@@ -65,16 +65,16 @@ public lemma index_of_injective [Nontrivial R] (hf : Injective f) :
 variable [StrongRankCondition R]
 
 public lemma index_of_surjective (hf : Surjective f) :
-    f.index = finrank R f.ker := by
+    f.index = f.ker.finrank := by
   rw [index_eq_finrank_sub, range_eq_top.mpr hf]
   simp [finrank_eq_zero_of_subsingleton]
 
 @[simp] public lemma index_mkQ {S : Submodule R M} :
-    S.mkQ.index = finrank R S := by
+    S.mkQ.index = S.finrank := by
   rw [index_of_surjective S.mkQ_surjective, S.ker_mkQ]
 
 @[simp] public lemma index_projectionOnto {S T : Submodule R M} (hST : IsCompl S T) :
-    (S.projectionOnto T hST).index = finrank R T := by
+    (S.projectionOnto T hST).index = T.finrank := by
   rw [index_of_surjective (Submodule.projectionOnto_surjective hST), Submodule.ker_projectionOnto]
 
 public lemma index_of_bijective (hf : Bijective f) :
@@ -105,7 +105,7 @@ public lemma index_eq_of_finiteDimensional [FiniteDimensional k M] [FiniteDimens
   -- `0 → f.ker → M → N → f.coker → 0`
   rw [index_eq_finrank_sub]
   have h₁ := f.range.finrank_quotient_add_finrank
-  have h₂ := f.quotKerEquivRange.finrank_eq
+  have h₂ : finrank k (M ⧸ f.ker) = f.range.finrank := f.quotKerEquivRange.finrank_eq
   have h₃ := f.ker.finrank_quotient_add_finrank
   lia
 
@@ -131,7 +131,8 @@ open Submodule in
   have h₅ : Surjective f₄ := factor_surjective _
   have : FiniteDimensional k (g ∘ₗ f).ker := by rw [ker_comp]; infer_instance
   have : FiniteDimensional k (P ⧸ (g ∘ₗ f).range) := by rw [range_comp]; infer_instance
-  grind [index, sum_neg_one_pow_finrank_eq_zero_of_exact_six f₀ f₁ f₂ f₃ f₄ h₀ h₁ h₂ h₃ h₄ h₅]
+  grind [index, Submodule.finrank_coe,
+    sum_neg_one_pow_finrank_eq_zero_of_exact_six f₀ f₁ f₂ f₃ f₄ h₀ h₁ h₂ h₃ h₄ h₅]
 
 end DivisionRing
 

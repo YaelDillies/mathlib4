@@ -39,13 +39,8 @@ lemma RCLike.span_one_I : Submodule.span ℝ (M := K) {1, I} = ⊤ := by
 variable (K) in
 lemma RCLike.rank_le_two : Module.rank ℝ K ≤ 2 :=
   calc
-    _ = Module.rank ℝ ↥(Submodule.span ℝ ({1, I} : Set K)) := by rw [span_one_I]; simp
-    _ ≤ #({1, I} : Finset K) := by
-      -- TODO: `simp` doesn't rewrite inside the type argument to `Module.rank`, but `rw` does.
-      -- We should introduce `Submodule.rank` to fix this.
-      have := rank_span_finset_le (R := ℝ) (M := K) {1, I}
-      rw [Finset.coe_pair] at this
-      simpa [span_one_I] using this
+    _ = (Submodule.span ℝ ({1, I} : Set K)).rank := by simp [span_one_I]
+    _ ≤ #({1, I} : Finset K) := by simpa using rank_span_finset_le (R := ℝ) (M := K) {1, I}
     _ ≤ 2 := mod_cast Finset.card_le_two
 
 variable (K) in

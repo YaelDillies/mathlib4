@@ -114,7 +114,7 @@ lemma ContinuousLinearMap.exist_extension_of_finiteDimensional_range {S : Submod
   choose gi hgf using fun i ↦ StrongDual.exists_extension S (fi i)
   use f.range.subtypeL.comp <| e.symm.toContinuousLinearMap.comp (.pi gi)
   ext x
-  simp [fi, e, hgf]
+  simp [fi, e, hgf, -Submodule.finrank_coe]
 
 /-- A finite-dimensional submodule of a polynormable space over a field satisfying
 `IsRCLikeNormedField` is `Submodule.ClosedComplemented`. -/

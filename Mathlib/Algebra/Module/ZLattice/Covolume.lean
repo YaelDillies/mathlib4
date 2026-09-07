@@ -333,7 +333,8 @@ theorem tendsto_card_le_div {X : Set (ι → ℝ)} (hX : ∀ ⦃x⦄ ⦃r : ℝ�
         atTop (𝓝 (volume.real {x ∈ X | F x ≤ 1} / covolume L)) := by
   let e : Free.ChooseBasisIndex ℤ ↥L ≃ ι := by
     refine Fintype.equivOfCardEq ?_
-    rw [← finrank_eq_card_chooseBasisIndex, ZLattice.rank ℝ, finrank_fintype_fun_eq_card]
+    rw [← Submodule.finrank_eq_card_chooseBasisIndex, ZLattice.rank ℝ,
+      finrank_fintype_fun_eq_card]
   let b := (Module.Free.chooseBasis ℤ L).reindex e
   convert! tendsto_card_le_div'' b hX h₁ h₂ h₃ ?_
   · simp only [measureReal_def]
@@ -361,7 +362,7 @@ theorem tendsto_card_div_pow' {s : Set E} (hs₁ : IsBounded s) (hs₂ : Measura
       atTop (𝓝 (volume.real s / covolume L)) := by
   let b := Module.Free.chooseBasis ℤ L
   convert! tendsto_card_div_pow'' b hs₁ hs₂ ?_
-  · rw [← finrank_eq_card_chooseBasisIndex, ZLattice.rank ℝ L]
+  · rw [← Submodule.finrank_eq_card_chooseBasisIndex, ZLattice.rank ℝ L]
   · simp only [measureReal_def]
     rw [volume_image_eq_volume_div_covolume' L b hs₂.nullMeasurableSet, ENNReal.toReal_div,
       ENNReal.toReal_ofReal (covolume_pos L volume).le]
@@ -383,9 +384,10 @@ theorem tendsto_card_le_div' [Nontrivial E] {X : Set E} {F : E → ℝ}
   · simp only [measureReal_def]
     rw [volume_image_eq_volume_div_covolume' L b h₃.nullMeasurableSet, ENNReal.toReal_div,
       ENNReal.toReal_ofReal (covolume_pos L volume).le]
-  · have : Nontrivial L := nontrivial_of_finrank_pos <| (ZLattice.rank ℝ L).symm ▸ finrank_pos
+  · have : Nontrivial L :=
+      Module.nontrivial_of_finrank_pos <| (ZLattice.rank ℝ L).symm ▸ finrank_pos
     infer_instance
-  · rwa [← finrank_eq_card_chooseBasisIndex, ZLattice.rank ℝ L]
+  · rwa [← Submodule.finrank_eq_card_chooseBasisIndex, ZLattice.rank ℝ L]
   · rw [frontier_equivFun, volume_image_eq_volume_div_covolume', h₄, ENNReal.zero_div]
     exact NullMeasurableSet.of_null h₄
 

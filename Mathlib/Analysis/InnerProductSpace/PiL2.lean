@@ -1131,8 +1131,9 @@ theorem DirectSum.IsInternal.subordinateOrthonormalBasis_subordinate (a : Fin n)
 theorem DirectSum.IsInternal.exists_subordinateOrthonormalBasisIndex_eq
     (hV' : OrthogonalFamily 𝕜 (fun i => V i) fun i => (V i).subtypeₗᵢ) {i : ι} (hi : V i ≠ ⊥) :
     ∃ a : Fin n, hV.subordinateOrthonormalBasisIndex hn a hV' = i := by
-  use hV.sigmaOrthonormalBasisIndexEquiv hn hV' ⟨i, ⟨0, by grind [finrank_eq_zero (S := V i)]⟩⟩
-  simp [subordinateOrthonormalBasisIndex_def]
+  use hV.sigmaOrthonormalBasisIndexEquiv hn hV' ⟨i, ⟨0, by
+    grind [(V i).finrank_eq_zero, Submodule.finrank_coe]⟩⟩
+  simp [subordinateOrthonormalBasisIndex_def, -Submodule.finrank_coe]
 
 private def DirectSum.IsInternal.subordinateOrthonormalBasisIndexFiberEquiv
     (hV' : OrthogonalFamily 𝕜 (fun i => V i) fun i => (V i).subtypeₗᵢ) (i : ι) :
@@ -1140,13 +1141,13 @@ private def DirectSum.IsInternal.subordinateOrthonormalBasisIndexFiberEquiv
   toFun a := Fin.cast (by rw [← subordinateOrthonormalBasisIndex_def, a.property])
     ((hV.sigmaOrthonormalBasisIndexEquiv hn hV').symm a).snd
   invFun b := ⟨hV.sigmaOrthonormalBasisIndexEquiv hn hV' ⟨i, b⟩,
-    by simp [subordinateOrthonormalBasisIndex_def]⟩
+    by simp [subordinateOrthonormalBasisIndex_def, -Submodule.finrank_coe]⟩
   left_inv := by grind [subordinateOrthonormalBasisIndex_def, Fin.cast_eq_self]
   right_inv := by grind
 
 theorem DirectSum.IsInternal.card_filter_subordinateOrthonormalBasisIndex_eq
     (hV' : OrthogonalFamily 𝕜 (fun i => V i) fun i => (V i).subtypeₗᵢ) (i : ι) :
-    Finset.card {a | hV.subordinateOrthonormalBasisIndex hn a hV' = i} = finrank 𝕜 (V i) := by
+    Finset.card {a | hV.subordinateOrthonormalBasisIndex hn a hV' = i} = (V i).finrank := by
   apply Finset.card_eq_of_equiv_fin
   simpa using hV.subordinateOrthonormalBasisIndexFiberEquiv hn hV' i
 
@@ -1175,16 +1176,17 @@ isometry mapping `S` into `V` can be extended to a full isometry of `V`.
 TODO:  The case when `S` is a finite-dimensional subspace of an infinite-dimensional `V`. -/
 noncomputable def LinearIsometry.extend (L : S →ₗᵢ[𝕜] V) : V →ₗᵢ[𝕜] V := by
   -- Build an isometry from Sᗮ to L(S)ᗮ through `EuclideanSpace`
-  let d := finrank 𝕜 Sᗮ
+  let d := Sᗮ.finrank
   let LS := LinearMap.range L.toLinearMap
   have E : Sᗮ ≃ₗᵢ[𝕜] LSᗮ := by
-    have dim_LS_perp : finrank 𝕜 LSᗮ = d :=
+    have dim_LS_perp : LSᗮ.finrank = d :=
       calc
-        finrank 𝕜 LSᗮ = finrank 𝕜 V - finrank 𝕜 LS := by
+        LSᗮ.finrank = finrank 𝕜 V - LS.finrank := by
           simp only [← LS.finrank_add_finrank_orthogonal, add_tsub_cancel_left]
-        _ = finrank 𝕜 V - finrank 𝕜 S := by
-          simp only [LS, LinearMap.finrank_range_of_inj L.injective]
-        _ = finrank 𝕜 Sᗮ := by simp only [← S.finrank_add_finrank_orthogonal, add_tsub_cancel_left]
+        _ = finrank 𝕜 V - S.finrank := by
+          simp only [LS, ← Submodule.finrank_eq_of_linearEquiv
+            (.ofInjective L.toLinearMap L.injective)]
+        _ = Sᗮ.finrank := by simp only [← S.finrank_add_finrank_orthogonal, add_tsub_cancel_left]
     exact
       (stdOrthonormalBasis 𝕜 Sᗮ).repr.trans
         ((stdOrthonormalBasis 𝕜 LSᗮ).reindex <| finCongr dim_LS_perp).repr.symm

@@ -519,7 +519,7 @@ instance instModuleFree_of_discrete_submodule {E : Type*} [NormedAddCommGroup E]
   have : IsAddTorsionFree E := .of_module_rat _
   infer_instance
 
-theorem ZLattice.rank [hs : IsZLattice K L] : finrank ℤ L = finrank K E := by
+theorem ZLattice.rank [hs : IsZLattice K L] : L.finrank = finrank K E := by
   classical
   have : Module.Finite ℤ L := module_finite K L
   have : Module ℚ E := Module.compHom E (algebraMap ℚ K)
@@ -543,7 +543,7 @@ theorem ZLattice.rank [hs : IsZLattice K L] : finrank ℤ L = finrank K E := by
     rw [Set.toFinset_range, Finset.univ.card_image_of_injective]
     · rfl
     · exact Subtype.coe_injective.comp (Basis.injective _)
-  rw [finrank_eq_card_chooseBasisIndex]
+  rw [Submodule.finrank_eq_card_chooseBasisIndex]
     -- We prove that `finrank ℤ L ≤ finrank K E` and `finrank K E ≤ finrank ℤ L`
   refine le_antisymm ?_ ?_
   · -- To prove that `finrank ℤ L ≤ finrank K E`, we proceed by contradiction and prove that, in
@@ -561,7 +561,8 @@ theorem ZLattice.rank [hs : IsZLattice K L] : finrank ℤ L = finrank K E := by
       contrapose! h
       rw [Set.toFinset_sdiff, Finset.sdiff_eq_empty_iff_subset] at h
       replace h := Finset.card_le_card h
-      rwa [h_card, ← topEquiv.finrank_eq, ← h_spanE, ← ht_span, finrank_span_set_eq_card ht_lin]
+      rwa [h_card, ← topEquiv.finrank_eq, ← h_spanE, ← ht_span, Submodule.finrank_coe,
+        finrank_span_set_eq_card ht_lin]
     -- Assume that `e ∪ {v}` is not `ℤ`-linear independent then we get the contradiction
     suffices ¬ LinearIndepOn ℤ id (insert v (Set.range e)) by
       contrapose this
@@ -614,7 +615,7 @@ def ofZLatticeBasis : Basis ι K E := by
   refine basisOfTopLeSpanOfCardEqFinrank (L.subtype ∘ b) ?_ ?_
   · rw [← span_span_of_tower ℤ, Set.range_comp, ← map_span, Basis.span_eq, Submodule.map_top,
       range_subtype, top_le_iff, hs.span_top]
-  · rw [← Fintype.card_congr e, ← finrank_eq_card_chooseBasisIndex, ZLattice.rank K L]
+  · rw [← Fintype.card_congr e, ← Submodule.finrank_eq_card_chooseBasisIndex, ZLattice.rank K L]
 
 @[simp]
 theorem ofZLatticeBasis_apply (i : ι) : b.ofZLatticeBasis K L i = b i := by
@@ -668,7 +669,7 @@ theorem Real.finrank_eq_int_finrank_of_discrete {E : Type*} [NormedAddCommGroup 
     exact e.toHomeomorph.discreteTopology
   have : IsZLattice ℝ L := ⟨eq_top_iff.mpr <|
     span_span_coe_preimage.symm.le.trans (span_mono (Set.preimage_mono subset_span))⟩
-  rw [Set.finrank, Set.finrank, ← f.finrank_eq]
+  rw [Set.finrank, Set.finrank, ← Submodule.finrank_eq_of_linearEquiv f]
   exact (ZLattice.rank ℝ L).symm
 
 end NormedLinearOrderedField
@@ -682,7 +683,8 @@ Return an arbitrary `ℤ`-basis of a lattice `L` of `ι → ℝ` indexed by `ι`
 -/
 def IsZLattice.basis : Basis ι ℤ L :=
   (Free.chooseBasis ℤ L).reindex (Fintype.equivOfCardEq
-    (by rw [← finrank_eq_card_chooseBasisIndex, ZLattice.rank ℝ, finrank_fintype_fun_eq_card]))
+    (by rw [← Submodule.finrank_eq_card_chooseBasisIndex, ZLattice.rank ℝ,
+      finrank_fintype_fun_eq_card]))
 
 end Basis
 

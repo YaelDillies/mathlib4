@@ -70,6 +70,7 @@ private theorem FredholmPackage.eventually_nhds_isFredholm_and_index_eq [Complet
   rw [B.index_comp (C.comp A), C.index_comp A, toLinearMap_projectionOntoL, index_projectionOnto,
     toLinearMap_subtypeL, index_subtype,
     (Submodule.quotientEquivOfIsCompl _ _ pkg.decDom.isTopCompl.isCompl).finrank_eq] at key
+  simp only [Submodule.finrank_coe] at key ⊢
   lia
 
 /-- If `T₀` is a Fredholm operator between two Banach spaces, then every operator `T` close

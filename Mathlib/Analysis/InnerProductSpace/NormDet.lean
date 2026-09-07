@@ -83,8 +83,8 @@ theorem normDet_nonneg (f : U →ₗ[𝕜] V) : 0 ≤ f.normDet := by
 theorem normDet_eq_norm_det_toMatrix_rangeRestrict {ι : Type*} [Fintype ι] [DecidableEq ι]
     (f : U →ₗ[𝕜] V) (bu : OrthonormalBasis ι 𝕜 U) (bv : OrthonormalBasis ι 𝕜 f.range) :
     f.normDet = ‖(f.rangeRestrict.toMatrix bu.toBasis bv.toBasis).det‖ := by
-  have hrank : finrank 𝕜 U = finrank 𝕜 f.range := by
-    rw [finrank_eq_nat_card_basis bu.toBasis, finrank_eq_nat_card_basis bv.toBasis]
+  have hrank : finrank 𝕜 U = f.range.finrank := by
+    rw [finrank_eq_nat_card_basis bu.toBasis, Submodule.finrank_eq_nat_card_basis bv.toBasis]
   have h : Nonempty (OrthonormalBasis (Fin (finrank 𝕜 U)) 𝕜 f.range) := by
     rw [hrank]
     exact ⟨stdOrthonormalBasis 𝕜 f.range⟩
@@ -128,18 +128,18 @@ theorem normDet_eq_zero_iff_ker_ne_bot {f : U →ₗ[𝕜] V} :
       simp [normDet, this]
     contrapose h
     obtain ⟨b⟩ := h
-    have hrank : finrank 𝕜 f.range = finrank 𝕜 U := by
+    have hrank : f.range.finrank = finrank 𝕜 U := by
       simpa using finrank_eq_card_basis b.toBasis
     simpa [hrank] using f.finrank_range_add_finrank_ker
 
 theorem normDet_eq_zero_iff_rank_range_ne {f : U →ₗ[𝕜] V} :
-    f.normDet = 0 ↔ finrank 𝕜 f.range ≠ finrank 𝕜 U := by
+    f.normDet = 0 ↔ f.range.finrank ≠ finrank 𝕜 U := by
   simp [normDet_eq_zero_iff_ker_ne_bot, ← f.finrank_range_add_finrank_ker]
 
 theorem normDet_ne_zero_tfae (f : U →ₗ[𝕜] V) :
     List.TFAE [f.normDet ≠ 0,
       f.ker = ⊥,
-      finrank 𝕜 f.range = finrank 𝕜 U,
+      f.range.finrank = finrank 𝕜 U,
       Nonempty (OrthonormalBasis (Fin (finrank 𝕜 U)) 𝕜 f.range),
       Function.Injective f] := by
   tfae_have 1 ↔ 2 := f.normDet_eq_zero_iff_ker_ne_bot.not_left
@@ -163,8 +163,8 @@ private noncomputable def orthonormalBasis_range {ι : Type*} [Fintype ι] {f : 
 theorem normDet_eq_zero_tfae (f : U →ₗ[𝕜] V) :
     List.TFAE [f.normDet = 0,
       f.ker ≠ ⊥,
-      finrank 𝕜 f.range ≠ finrank 𝕜 U,
-      finrank 𝕜 f.range < finrank 𝕜 U,
+      f.range.finrank ≠ finrank 𝕜 U,
+      f.range.finrank < finrank 𝕜 U,
       IsEmpty (OrthonormalBasis (Fin (finrank 𝕜 U)) 𝕜 f.range),
       ¬Function.Injective f] := by
   tfae_have 1 ↔ 2 := f.normDet_eq_zero_iff_ker_ne_bot
@@ -184,7 +184,7 @@ theorem normDet_eq_norm_det_toMatrix {ι : Type*} [Fintype ι] [DecidableEq ι] 
     (bu : OrthonormalBasis ι 𝕜 U) (bv : OrthonormalBasis ι 𝕜 V) :
     f.normDet = ‖(f.toMatrix bu.toBasis bv.toBasis).det‖ := by
   have : FiniteDimensional 𝕜 V := bv.toBasis.finiteDimensional_of_finite
-  by_cases! hrank : finrank 𝕜 U = finrank 𝕜 f.range
+  by_cases! hrank : finrank 𝕜 U = f.range.finrank
   · have h : f.range = ⊤ := by
       apply Submodule.eq_of_le_of_finrank_le le_top
       simp [finrank_eq_card_basis bv.toBasis, ← hrank, finrank_eq_card_basis bu.toBasis]
@@ -398,7 +398,7 @@ theorem hausdorffMeasure_image [MeasurableSpace U] [BorelSpace U] [MeasurableSpa
     (f : U →ₗ[ℝ] V) (s : Set U) :
     μH[finrank ℝ U] (f '' s) = ENNReal.ofReal f.normDet * μH[finrank ℝ U] s := by
   by_cases h : f.ker = ⊥
-  · have hrank : finrank ℝ ↥f.range = finrank ℝ U := (f.normDet_ne_zero_tfae.out 2 3).mp h
+  · have hrank : f.range.finrank = finrank ℝ U := (f.normDet_ne_zero_tfae.out 2 3).mp h
     obtain ⟨bv⟩ := (f.normDet_ne_zero_tfae.out 2 4).mp h
     let g : U ≃ₗᵢ[ℝ] f.range := (stdOrthonormalBasis ℝ U).equiv bv (Equiv.refl _)
     suffices μH[finrank ℝ U] ((f.range.subtypeₗᵢ.comp g.toLinearIsometry) ''
@@ -412,7 +412,7 @@ theorem hausdorffMeasure_image [MeasurableSpace U] [BorelSpace U] [MeasurableSpa
   · suffices μH[finrank ℝ U] (f.range.subtypeₗᵢ '' (f.rangeRestrict '' s)) = 0 by
       simpa [(f.normDet_eq_zero_tfae.out 2 1).mp h, Set.image_image]
     rw [(LinearIsometry.isometry _).hausdorffMeasure_image (by simp)]
-    have h : (finrank ℝ f.range : ℝ) < finrank ℝ U := by
+    have h : (f.range.finrank : ℝ) < finrank ℝ U := by
       exact_mod_cast (f.normDet_eq_zero_tfae.out 2 4).mp h
     simp [Real.hausdorffMeasure_of_finrank_lt h]
 

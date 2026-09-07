@@ -75,7 +75,7 @@ lemma finrank_eq_of_finiteIndex [Module.Finite ℤ M] [IsTorsionFree ℤ M] (A :
     [A.FiniteIndex] :
     finrank ℤ A = finrank ℤ M := by
   refine le_antisymm A.toIntSubmodule.finrank_le ?_
-  have : finrank ℤ (DistribSMul.toLinearMap ℤ M A.index).range = finrank ℤ M :=
+  have : (DistribSMul.toLinearMap ℤ M A.index).range.finrank = finrank ℤ M :=
     (DistribSMul.toLinearMap ..).finrank_range_of_inj <|
       distribSMulToLinearMap_injective_of_isTorsionFree FiniteIndex.index_ne_zero
   rw [← this]

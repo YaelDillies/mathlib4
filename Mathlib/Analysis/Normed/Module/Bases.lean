@@ -199,7 +199,7 @@ theorem proj_comp (A B : Finset β) (x : X) : b.proj A (b.proj B x) = b.proj (A 
 
 /-- The dimension of the range of the projection `proj A` equals the cardinality of `A`. -/
 theorem finrank_range_proj (A : Finset β) :
-    Module.finrank 𝕜 (b.proj A).toLinearMap.range = A.card := by
+    (b.proj A).toLinearMap.range.finrank = A.card := by
   rw [range_proj_eq_span, Set.image_eq_range, finrank_span_eq_card]
   · exact Fintype.card_coe A
   · exact b.linearIndependent.comp (fun i : A ↦ i.val) Subtype.val_injective
@@ -299,7 +299,7 @@ theorem range_proj_eq_span (n : ℕ) :
 
 /-- The dimension of the range of the projection `P n` is `n`. -/
 theorem finrank_range_proj (n : ℕ) :
-    Module.finrank 𝕜 (b.proj n).toLinearMap.range = n := by
+    (b.proj n).toLinearMap.range.finrank = n := by
   rw [proj, GeneralSchauderBasis.finrank_range_proj, Finset.card_range]
 
 /-- The projections converge pointwise to the identity map. -/
@@ -394,9 +394,9 @@ lemma succSub_ortho {P : ℕ → X →L[𝕜] X} (hcomp : ∀ n m, ∀ x : X, P 
 /-- Assuming that the `finrank` of the range of `P n` is `n` then the `finrank` of the range of
     `succSub P n` is `1`. -/
 lemma finrank_range_succSub_eq_one {P : ℕ → X →L[𝕜] X}
-    (hrank : ∀ n, Module.finrank 𝕜 (P n).toLinearMap.range = n)
+    (hrank : ∀ n, (P n).toLinearMap.range.finrank = n)
     (hcomp : ∀ n m, ∀ x : X, P n (P m x) = P (min n m) x) (n : ℕ) :
-    Module.finrank 𝕜 (succSub P n).toLinearMap.range = 1 := by
+    (succSub P n).toLinearMap.range.finrank = 1 := by
   let U := (succSub P n).toLinearMap.range
   let V := (P n).toLinearMap.range
   let W := (P (n + 1)).toLinearMap.range
@@ -416,7 +416,8 @@ lemma finrank_range_succSub_eq_one {P : ℕ → X →L[𝕜] X}
     simp only [Submodule.mem_bot]
     calc x = (P n) x := by rw [← hz, ContinuousLinearMap.coe_coe, hcomp, min_self]
          _ = 0       := by rw [← hy, ContinuousLinearMap.coe_coe]; simp [succSub, map_sub, hcomp]
-  have : FiniteDimensional 𝕜 W := .of_finrank_pos (by rw [hrank]; exact Nat.succ_pos n)
+  have : FiniteDimensional 𝕜 W := .of_finrank_pos
+    (by rw [Submodule.finrank_coe, hrank]; exact Nat.succ_pos n)
   have : FiniteDimensional 𝕜 U := Submodule.finiteDimensional_of_le hUW
   have : FiniteDimensional 𝕜 V := Submodule.finiteDimensional_of_le hV
   have h_dim := Submodule.finrank_sup_add_finrank_inf_eq U V
@@ -444,7 +445,7 @@ structure RankOneDecomposition where
   /-- The projections start at `0`. -/
   proj_zero : P 0 = 0
   /-- The `n`-th projection has rank `n`. -/
-  finrank_range (n : ℕ) : Module.finrank 𝕜 (P n).toLinearMap.range = n
+  finrank_range (n : ℕ) : (P n).toLinearMap.range.finrank = n
   /-- The projections commute and are nested `P n (P m) = P (min n m)`. -/
   proj_comp (n m : ℕ) (x : X) : P n (P m x) = P (min n m) x
   /-- The projections converge pointwise to the identity. -/
@@ -462,9 +463,10 @@ variable (D : RankOneDecomposition 𝕜 X)
 lemma exists_coeff (n : ℕ) (x : X) :
     ∃ c : 𝕜, c • D.e n = (succSub D.P n) x := by
   let S := (succSub D.P n).toLinearMap
-  have hrank : Module.finrank 𝕜 S.range = 1 :=
+  have hrank : S.range.finrank = 1 :=
     finrank_range_succSub_eq_one D.finrank_range D.proj_comp n
-  have : FiniteDimensional 𝕜 S.range := .of_finrank_pos (hrank.symm ▸ zero_lt_one)
+  have : FiniteDimensional 𝕜 S.range := .of_finrank_pos
+    (by simp [hrank])
   have hspan : Submodule.span 𝕜 {D.e n} = S.range := by
     apply Submodule.eq_of_le_of_finrank_eq
     · exact (Submodule.span_singleton_le_iff_mem _ _).mpr (D.e_mem_range n)

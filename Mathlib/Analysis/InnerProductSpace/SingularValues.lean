@@ -170,7 +170,7 @@ theorem injective_iff_forall_lt_finrank_singularValues_pos :
 /--
 7.68(b) from [axler2024]. See also `LinearMap.support_singularValues` for a stronger statement.
 -/
-theorem card_support_singularValues : T.singularValues.support.card = finrank 𝕜 T.range := by
+theorem card_support_singularValues : T.singularValues.support.card = T.range.finrank := by
   have hS : ∀ m ∈ T.singularValues.support, m < finrank 𝕜 E := by
     grind [singularValues_of_finrank_le]
   have hT := T.isSymmetric_adjoint_comp_self
@@ -187,23 +187,23 @@ theorem isLowerSet_support_singularValues : IsLowerSet (T.singularValues.support
   order [T.singularValues_antitone hl]
 
 @[simp]
-theorem support_singularValues : T.singularValues.support = Finset.range (finrank 𝕜 T.range) := by
+theorem support_singularValues : T.singularValues.support = Finset.range T.range.finrank := by
   obtain ⟨n, hn⟩ := T.isLowerSet_support_singularValues.eq_univ_or_Iio.resolve_left
     (fun h ↦ Set.infinite_univ.not_finite (h ▸ Finset.finite_toSet _))
   rw [← Finset.coe_Iio, Finset.coe_inj, Nat.Iio_eq_range] at hn
   simp [← card_support_singularValues, hn]
 
 theorem singularValues_pos_iff_lt_finrank_range {n : ℕ} :
-    0 < T.singularValues n ↔ n < finrank 𝕜 T.range := by
+    0 < T.singularValues n ↔ n < T.range.finrank := by
   rw [singularValues_pos_iff_ne_zero, ← Finsupp.mem_support_iff, support_singularValues,
     Finset.mem_range]
 
-theorem singularValues_finrank_range_self : T.singularValues (finrank 𝕜 T.range) = 0 := by
+theorem singularValues_finrank_range_self : T.singularValues T.range.finrank = 0 := by
   rw [← Finsupp.notMem_support_iff, support_singularValues]
   exact Finset.notMem_range_self
 
 theorem singularValues_eq_zero_iff_le_finrank_range {n : ℕ} :
-    T.singularValues n = 0 ↔ finrank 𝕜 T.range ≤ n := by
+    T.singularValues n = 0 ↔ T.range.finrank ≤ n := by
   rw [← Finsupp.notMem_support_iff, support_singularValues, Finset.mem_range, not_lt]
 
 @[simp]

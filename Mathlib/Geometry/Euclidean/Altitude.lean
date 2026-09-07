@@ -121,7 +121,7 @@ instance finiteDimensional_direction_altitude {n : ℕ} (s : Simplex ℝ P n) (i
 /-- An altitude is one-dimensional (i.e., a line). -/
 @[simp]
 theorem finrank_direction_altitude {n : ℕ} [NeZero n] (s : Simplex ℝ P n) (i : Fin (n + 1)) :
-    finrank ℝ (s.altitude i).direction = 1 := by
+    (s.altitude i).direction.finrank = 1 := by
   rw [direction_altitude]
   have h := Submodule.finrank_add_inf_finrank_orthogonal
     (vectorSpan_mono ℝ (Set.image_subset_range s.points {i}ᶜ))
@@ -153,7 +153,7 @@ theorem affineSpan_pair_eq_altitude_iff {n : ℕ} [NeZero n] (s : Simplex ℝ P 
     constructor
     · intro heq
       rw [heq, Set.pair_eq_singleton, vectorSpan_singleton] at h
-      have hd : finrank ℝ (s.altitude i).direction = 0 := by rw [← h, finrank_bot]
+      have hd : (s.altitude i).direction.finrank = 0 := by rw [← h, finrank_bot]
       simp at hd
     · rw [← Submodule.mem_inf, _root_.inf_comm, ← direction_altitude, ← h]
       exact

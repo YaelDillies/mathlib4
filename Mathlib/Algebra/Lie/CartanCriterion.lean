@@ -91,7 +91,7 @@ theorem isNilpotent_derivedSeries_of_traceForm_eq_zero_aux {K : Type*}
   /- Decompose `M` as a direct sum of eigenspaces of `s`. -/
   let eigenDecomp := DirectSum.isInternal_submodule_of_iSupIndep_of_iSup_eq_top
     s.eigenspaces_iSupIndep hs_ss.iSup_eigenspace_eq_top
-  let I := (ν : K) × Fin (finrank K (s.eigenspace ν))
+  let I := (ν : K) × Fin (s.eigenspace ν).finrank
   let v : Basis I K M := eigenDecomp.collectedBasis fun μ ↦ finBasis K (s.eigenspace μ)
   have : Fintype I := FiniteDimensional.fintypeBasisIndex v
   let μ : I → K := Sigma.fst

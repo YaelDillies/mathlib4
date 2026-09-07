@@ -58,23 +58,26 @@ theorem topologicalClosure_eq_self : K.topologicalClosure = K :=
   K.closed_of_finiteDimensional.submodule_topologicalClosure_eq
 
 @[simp]
-theorem det_reflection : LinearMap.det K.reflection.toLinearMap = (-1) ^ finrank 𝕜 Kᗮ := by
+theorem det_reflection : LinearMap.det K.reflection.toLinearMap = (-1) ^ Kᗮ.finrank := by
   by_cases hK : FiniteDimensional 𝕜 Kᗮ
   swap
-  · rw [finrank_of_infinite_dimensional hK, pow_zero, LinearMap.det_eq_one_of_finrank_eq_zero]
-    exact finrank_of_infinite_dimensional fun h ↦ hK (h.finiteDimensional_submodule _)
+  · rw [Submodule.finrank_of_infinite_dimensional hK, pow_zero,
+      LinearMap.det_eq_one_of_finrank_eq_zero]
+    exact Module.finrank_of_infinite_dimensional fun h ↦ hK (h.finiteDimensional_submodule _)
   let e := K.prodEquivOfIsCompl _ K.isCompl_orthogonal
   let b := (finBasis 𝕜 K).prod (finBasis 𝕜 Kᗮ)
   have : LinearMap.toMatrix b b (e.symm ∘ₗ K.reflection.toLinearMap ∘ₗ e.symm.symm) =
       Matrix.fromBlocks 1 0 0 (-1) := by
     ext (_ | _) (_ | _) <;>
     simp [LinearMap.toMatrix_apply, b, Matrix.one_apply, Finsupp.single_apply, e, eq_comm,
-      reflection_mem_subspace_eq_self, reflection_mem_subspace_orthogonalComplement_eq_neg]
+      reflection_mem_subspace_eq_self, reflection_mem_subspace_orthogonalComplement_eq_neg,
+      -Submodule.finrank_coe]
   rw [← LinearMap.det_conj _ e.symm, ← LinearMap.det_toMatrix b, this, Matrix.det_fromBlocks_zero₂₁,
-    Matrix.det_one, one_mul, Matrix.det_neg, Fintype.card_fin, Matrix.det_one, mul_one]
+    Matrix.det_one, one_mul, Matrix.det_neg, Fintype.card_fin, Matrix.det_one, mul_one,
+    Submodule.finrank_coe]
 
 @[simp]
-theorem linearEquiv_det_reflection : K.reflection.det = (-1) ^ finrank 𝕜 Kᗮ := by
+theorem linearEquiv_det_reflection : K.reflection.det = (-1) ^ Kᗮ.finrank := by
   ext
   rw [LinearEquiv.coe_det, Units.val_pow_eq_pow_val]
   exact K.det_reflection
@@ -90,7 +93,7 @@ contained in it, the dimensions of `K₁` and the intersection of its
 orthogonal subspace with `K₂` add to that of `K₂`. -/
 theorem finrank_add_inf_finrank_orthogonal {K₁ K₂ : Submodule 𝕜 E}
     [FiniteDimensional 𝕜 K₂] (h : K₁ ≤ K₂) :
-    finrank 𝕜 K₁ + finrank 𝕜 (K₁ᗮ ⊓ K₂ : Submodule 𝕜 E) = finrank 𝕜 K₂ := by
+    K₁.finrank + (K₁ᗮ ⊓ K₂ : Submodule 𝕜 E).finrank = K₂.finrank := by
   have : FiniteDimensional 𝕜 K₁ := Submodule.finiteDimensional_of_le h
   have hd := Submodule.finrank_sup_add_finrank_inf_eq K₁ (K₁ᗮ ⊓ K₂)
   rw [← inf_assoc, (Submodule.orthogonal_disjoint K₁).eq_bot, bot_inf_eq, finrank_bot,
@@ -102,15 +105,15 @@ theorem finrank_add_inf_finrank_orthogonal {K₁ K₂ : Submodule 𝕜 E}
 contained in it, the dimensions of `K₁` and the intersection of its
 orthogonal subspace with `K₂` add to that of `K₂`. -/
 theorem finrank_add_inf_finrank_orthogonal' {K₁ K₂ : Submodule 𝕜 E}
-    [FiniteDimensional 𝕜 K₂] (h : K₁ ≤ K₂) {n : ℕ} (h_dim : finrank 𝕜 K₁ + n = finrank 𝕜 K₂) :
-    finrank 𝕜 (K₁ᗮ ⊓ K₂ : Submodule 𝕜 E) = n := by
-  rw [← add_right_inj (finrank 𝕜 K₁)]
+    [FiniteDimensional 𝕜 K₂] (h : K₁ ≤ K₂) {n : ℕ} (h_dim : K₁.finrank + n = K₂.finrank) :
+    (K₁ᗮ ⊓ K₂ : Submodule 𝕜 E).finrank = n := by
+  rw [← add_right_inj K₁.finrank]
   simp [Submodule.finrank_add_inf_finrank_orthogonal h, h_dim]
 
 /-- Given a finite-dimensional space `E` and subspace `K`, the dimensions of `K` and `Kᗮ` add to
 that of `E`. -/
 theorem finrank_add_finrank_orthogonal [FiniteDimensional 𝕜 E] (K : Submodule 𝕜 E) :
-    finrank 𝕜 K + finrank 𝕜 Kᗮ = finrank 𝕜 E := by
+    K.finrank + Kᗮ.finrank = finrank 𝕜 E := by
   convert! Submodule.finrank_add_inf_finrank_orthogonal (le_top : K ≤ ⊤) using 1
   · rw [inf_top_eq]
   · simp
@@ -118,14 +121,14 @@ theorem finrank_add_finrank_orthogonal [FiniteDimensional 𝕜 E] (K : Submodule
 /-- Given a finite-dimensional space `E` and subspace `K`, the dimensions of `K` and `Kᗮ` add to
 that of `E`. -/
 theorem finrank_add_finrank_orthogonal' [FiniteDimensional 𝕜 E] {K : Submodule 𝕜 E}
-    {n : ℕ} (h_dim : finrank 𝕜 K + n = finrank 𝕜 E) : finrank 𝕜 Kᗮ = n := by
-  rw [← add_right_inj (finrank 𝕜 K)]
+    {n : ℕ} (h_dim : K.finrank + n = finrank 𝕜 E) : Kᗮ.finrank = n := by
+  rw [← add_right_inj K.finrank]
   simp [Submodule.finrank_add_finrank_orthogonal, h_dim]
 
 /-- In a finite-dimensional inner product space, the dimension of the orthogonal complement of the
 span of a nonzero vector is one less than the dimension of the space. -/
 theorem finrank_orthogonal_span_singleton {n : ℕ} [_i : Fact (finrank 𝕜 E = n + 1)] {v : E}
-    (hv : v ≠ 0) : finrank 𝕜 (𝕜 ∙ v)ᗮ = n := by
+    (hv : v ≠ 0) : (𝕜 ∙ v)ᗮ.finrank = n := by
   have : FiniteDimensional 𝕜 E := .of_fact_finrank_eq_succ n
   exact finrank_add_finrank_orthogonal' <| by
     simp [finrank_span_singleton hv, _i.elim, add_comm]
@@ -150,7 +153,7 @@ open Module Submodule
 specifically at most as many reflections as the dimension of the complement of the fixed subspace
 of `φ`. -/
 theorem LinearIsometryEquiv.reflections_generate_dim_aux [FiniteDimensional ℝ F] {n : ℕ}
-    (φ : F ≃ₗᵢ[ℝ] F) (hn : finrank ℝ (ContinuousLinearMap.id ℝ F - φ).kerᗮ ≤ n) :
+    (φ : F ≃ₗᵢ[ℝ] F) (hn : (ContinuousLinearMap.id ℝ F - φ).kerᗮ.finrank ≤ n) :
     ∃ l : List F, l.length ≤ n ∧ φ = (l.map fun v => (ℝ ∙ v)ᗮ.reflection).prod := by
   -- We prove this by strong induction on `n`, the dimension of the orthogonal complement of the
   -- fixed subspace of the endomorphism `φ`
@@ -158,7 +161,7 @@ theorem LinearIsometryEquiv.reflections_generate_dim_aux [FiniteDimensional ℝ 
   | zero => -- Base case: `n = 0`, the fixed subspace is the whole space, so `φ = id`
     refine ⟨[], rfl.le, show φ = 1 from ?_⟩
     have : (ContinuousLinearMap.id ℝ F - φ).ker = ⊤ := by
-      rwa [le_zero_iff, finrank_eq_zero, orthogonal_eq_bot_iff] at hn
+      rwa [le_zero_iff, Submodule.finrank_eq_zero, orthogonal_eq_bot_iff] at hn
     symm
     ext x
     have := LinearMap.congr_fun (LinearMap.ker_eq_top.mp this) x
@@ -169,11 +172,11 @@ theorem LinearIsometryEquiv.reflections_generate_dim_aux [FiniteDimensional ℝ 
     -- dimension at most n + 1.
     let W := (ContinuousLinearMap.id ℝ F - φ).ker
     have hW : ∀ w ∈ W, φ w = w := fun w hw => (sub_eq_zero.mp hw).symm
-    by_cases hn' : finrank ℝ Wᗮ ≤ n
+    by_cases hn' : Wᗮ.finrank ≤ n
     · obtain ⟨V, hV₁, hV₂⟩ := IH φ hn'
       exact ⟨V, hV₁.trans n.le_succ, hV₂⟩
     -- Take a nonzero element `v` of the orthogonal complement of `W`.
-    have : Nontrivial Wᗮ := nontrivial_of_finrank_pos (by lia : 0 < finrank ℝ Wᗮ)
+    have : Nontrivial Wᗮ := Submodule.nontrivial_of_finrank_pos (by lia : 0 < Wᗮ.finrank)
     obtain ⟨v, hv⟩ := exists_ne (0 : Wᗮ)
     have hφv : φ v ∈ Wᗮ := by
       intro w hw
@@ -207,12 +210,12 @@ theorem LinearIsometryEquiv.reflections_generate_dim_aux [FiniteDimensional ℝ 
       exact reflection_reflection _ _
     -- By dimension-counting, the complement of the fixed subspace of `φ.trans ρ` has dimension at
     -- most `n`
-    have : finrank ℝ Vᗮ ≤ n := by
-      change finrank ℝ Wᗮ ≤ n + 1 at hn
-      have : finrank ℝ W + 1 ≤ finrank ℝ V :=
+    have : Vᗮ.finrank ≤ n := by
+      change Wᗮ.finrank ≤ n + 1 at hn
+      have : W.finrank + 1 ≤ V.finrank :=
         finrank_lt_finrank_of_lt ((SetLike.lt_iff_le_and_exists (B := F)).2 ⟨H₂V, v, H₁V, hv'⟩)
-      have : finrank ℝ V + finrank ℝ Vᗮ = finrank ℝ F := V.finrank_add_finrank_orthogonal
-      have : finrank ℝ W + finrank ℝ Wᗮ = finrank ℝ F := W.finrank_add_finrank_orthogonal
+      have : V.finrank + Vᗮ.finrank = finrank ℝ F := V.finrank_add_finrank_orthogonal
+      have : W.finrank + Wᗮ.finrank = finrank ℝ F := W.finrank_add_finrank_orthogonal
       lia
     -- So apply the inductive hypothesis to `φ.trans ρ`
     obtain ⟨l, hl, hφl⟩ := IH (ρ * φ) this

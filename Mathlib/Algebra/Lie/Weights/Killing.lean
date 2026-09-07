@@ -609,7 +609,7 @@ lemma finrank_rootSpace_eq_one (α : Weight K H L) (hα : α.IsNonZero) :
     finrank K (rootSpace H α) = 1 := by
   suffices ¬ 1 < finrank K (rootSpace H α) by
     have h₀ : finrank K (rootSpace H α) ≠ 0 := by
-      convert_to! finrank K (rootSpace H α).toSubmodule ≠ 0
+      convert_to! (rootSpace H α).toSubmodule.finrank ≠ 0
       simpa using! α.genWeightSpace_ne_bot
     lia
   intro contra

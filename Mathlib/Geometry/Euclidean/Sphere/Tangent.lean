@@ -136,7 +136,7 @@ lemma IsTangentAt.radius_lt_dist_center {s : Sphere P} {as : AffineSubspace ℝ 
 
 lemma IsTangentAt.eq_orthRadius_of_finrank_add_one_eq {s : Sphere P} {as : AffineSubspace ℝ P}
     {p : P} (ht : s.IsTangentAt p as) (hr : s.radius ≠ 0)
-    (hfr : Module.finrank ℝ as.direction + 1 = Module.finrank ℝ V) : as = s.orthRadius p := by
+    (hfr : as.direction.finrank + 1 = Module.finrank ℝ V) : as = s.orthRadius p := by
   have : FiniteDimensional ℝ V := Module.finite_of_finrank_eq_succ hfr.symm
   have hp : p ≠ s.center := fun h ↦ (h ▸ s.center_mem_iff).not.2 hr ht.mem_sphere
   rw [← finrank_orthRadius hp, Nat.add_right_cancel_iff] at hfr

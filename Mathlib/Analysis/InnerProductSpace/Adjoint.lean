@@ -681,8 +681,8 @@ lemma range_self_comp_adjoint (A : E →ₗ[𝕜] F) : (A ∘ₗ A.adjoint).rang
 
 /-- Part of 7.64(d) in [axler2024]. -/
 theorem finrank_range_adjoint (A : E →ₗ[𝕜] F) :
-    Module.finrank 𝕜 A.adjoint.range = Module.finrank 𝕜 A.range := calc
-  _ = Module.finrank 𝕜 F - Module.finrank 𝕜 A.adjoint.ker := by
+    A.adjoint.range.finrank = A.range.finrank := calc
+  _ = Module.finrank 𝕜 F - A.adjoint.ker.finrank := by
     simp [← A.adjoint.finrank_range_add_finrank_ker]
   _ = _ := by rw [← A.adjoint.ker.finrank_add_finrank_orthogonal,
     orthogonal_ker, adjoint_adjoint]; simp
