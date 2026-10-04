@@ -19,7 +19,6 @@ import Mathlib.Algebra.Module.BigOperators
 import Mathlib.Algebra.Order.Module.Defs
 import Mathlib.Data.Finset.Sort
 import Mathlib.LinearAlgebra.Prod
-import Mathlib.Tactic.Abel
 
 /-!
 # Modules are convex spaces
@@ -33,7 +32,7 @@ This file shows that every module over ordered coefficients is a convex space.
 * `IsModuleConvexSpace`: Predicate for a convex space and module structures to be compatible.
 
 We also show that a linearly ordered module is an ordered convex space
-(`IsOrderedConvexSpace.ofModule`), by Abel summation.
+(`IsOrderedConvexSpace.of_module`), by Abel summation.
 -/
 
 open scoped Pointwise
@@ -255,25 +254,28 @@ lemma IsStarConvexSet.sub (hs : IsStarConvexSet R x s) (ht : IsStarConvexSet R y
 end AddCommGroup
 
 section OrderedModule
-variable [AddCommGroup M] [Module R M]
+variable [AddCommMonoid M] [Module R M]
 
 omit [PartialOrder R] [IsStrictOrderedRing R] in
 open Finset in
 /-- **Abel summation**: a weighted sum `∑ k < n, c k • y k` is determined by the tail sums of `c`
-and the increments of `y`. -/
-private lemma sum_smul_eq_sum_tail_smul_sub (n : ℕ) (c : ℕ → R) (y : ℕ → M) :
+and the increments `d` of `y`. -/
+private lemma sum_smul_eq_sum_tail_smul (n : ℕ) (c : ℕ → R) (y d : ℕ → M)
+    (hd : ∀ i, y (i + 1) = y i + d i) :
     ∑ k ∈ range n, c k • y k =
-      (∑ k ∈ range n, c k) • y 0 +
-        ∑ i ∈ range n, (∑ k ∈ Ico (i + 1) n, c k) • (y (i + 1) - y i) := by
-  have step (k : ℕ) : c k • y k = c k • y 0 + ∑ i ∈ range k, c k • (y (i + 1) - y i) := by
-    rw [← Finset.smul_sum, sum_range_sub, smul_sub]
-    abel
+      (∑ k ∈ range n, c k) • y 0 + ∑ i ∈ range n, (∑ k ∈ Ico (i + 1) n, c k) • d i := by
+  have hy (k : ℕ) : y k = y 0 + ∑ i ∈ range k, d i := by
+    induction k with
+    | zero => simp
+    | succ k ih => rw [hd k, ih, sum_range_succ, add_assoc]
+  have step (k : ℕ) : c k • y k = c k • y 0 + ∑ i ∈ range k, c k • d i := by
+    rw [hy k, smul_add, Finset.smul_sum]
   rw [sum_congr rfl fun k _ ↦ step k, sum_add_distrib, ← Finset.sum_smul]
   congr 1
   rw [sum_comm' (t' := range n) (s' := fun i ↦ Ico (i + 1) n) (by intro k i; simp; omega)]
   exact sum_congr rfl fun i _ ↦ Finset.sum_smul.symm
 
-variable [LinearOrder M] [IsOrderedAddMonoid M] [SMulPosMono R M]
+variable [LinearOrder M] [IsOrderedCancelAddMonoid M] [ExistsAddOfLE M] [SMulPosMono R M]
 
 omit [IsStrictOrderedRing R] in
 open Finset in
@@ -284,9 +286,11 @@ private lemma sum_smul_le_sum_smul {n : ℕ} {a b : ℕ → R} {y : ℕ → M} (
     (hab : ∑ k ∈ range n, a k = ∑ k ∈ range n, b k)
     (h : ∀ i, ∑ k ∈ Ico i n, a k ≤ ∑ k ∈ Ico i n, b k) :
     ∑ k ∈ range n, a k • y k ≤ ∑ k ∈ range n, b k • y k := by
-  rw [sum_smul_eq_sum_tail_smul_sub n a y, sum_smul_eq_sum_tail_smul_sub n b y, hab]
+  choose d hd₀ hd using fun i : ℕ ↦ exists_nonneg_add_of_le (hy i.le_succ)
+  rw [sum_smul_eq_sum_tail_smul n a y d fun i ↦ (hd i).symm,
+    sum_smul_eq_sum_tail_smul n b y d fun i ↦ (hd i).symm, hab]
   gcongr with i hi
-  · exact sub_nonneg.2 (hy i.le_succ)
+  · exact hd₀ i
   · exact h (i + 1)
 
 variable [ConvexSpace R M] [IsModuleConvexSpace R M]
@@ -298,7 +302,7 @@ the combination.
 
 The proof is by Abel summation over the union of the two supports, enumerated in increasing
 order. -/
-instance (priority := low) IsOrderedConvexSpace.ofModule : IsOrderedConvexSpace R M where
+instance (priority := low) IsOrderedConvexSpace.of_module : IsOrderedConvexSpace R M where
   monotone_sConvexComb w₁ w₂ hw := by
     -- Enumerate the union `S` of the two supports in increasing order as `y 0 < … < y (n - 1)`.
     set S := w₁.weights.support ∪ w₂.weights.support with hSdef
