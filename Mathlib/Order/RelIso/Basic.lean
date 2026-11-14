@@ -660,7 +660,7 @@ theorem default_def (r : α → α → Prop) : default = RelIso.refl r :=
 @[simp] lemma symm_apply_apply (e : r ≃r s) (x : α) : e.symm (e x) = x := e.left_inv x
 
 /-- Build a relation isomorphism from a bijective map that preserves and reflects the relation. -/
-@[simps!, simps toEquiv]
+@[simps toEquiv]
 noncomputable def ofBijective (f : α → β) (hf : f.Bijective) (hf' : ∀ a b, s (f a) (f b) ↔ r a b) :
     r ≃r s where
   toEquiv := .ofBijective f hf

@@ -449,7 +449,7 @@ theorem ofBijective_apply [NonUnitalRingHomClass F R S] (f : F) (hf : Function.B
     (x : R) : ofBijective f hf x = f x :=
   rfl
 
-@[simp]
+-- TODO: Make simp once `toEquiv` is simp nf
 lemma toEquiv_ofBijective [NonUnitalRingHomClass F R S] (f : F) (hf : Function.Bijective f) :
     (ofBijective f hf).toEquiv = .ofBijective f hf := rfl
 

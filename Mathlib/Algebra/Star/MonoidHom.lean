@@ -336,10 +336,9 @@ def ofStarMonoidHom (f : A →⋆* B) (g : B →⋆* A) (h₁ : g.comp f = .id _
   map_star' := map_star f
 
 /-- Promote a bijective star monoid homomorphism to a star monoid equivalence. -/
-noncomputable def ofBijective (f : A →⋆* B) (hf : Function.Bijective f) : A ≃⋆* B :=
-  { MulEquiv.ofBijective f (hf : Function.Bijective (f : A → B)) with
-    toFun := f
-    map_star' := map_star f }
+noncomputable def ofBijective (f : A →⋆* B) (hf : Function.Bijective f) : A ≃⋆* B where
+  toMulEquiv := .ofBijective f hf
+  map_star' := map_star f
 
 @[simp]
 theorem coe_ofBijective {f : A →⋆* B} (hf : Function.Bijective f) :
@@ -351,8 +350,8 @@ theorem ofBijective_apply {f : A →⋆* B} (hf : Function.Bijective f) (a : A) 
   rfl
 
 @[simp]
-lemma toEquiv_ofBijective {f : A →⋆* B} (hf : Function.Bijective f) :
-    (StarMulEquiv.ofBijective f hf).toEquiv = .ofBijective f hf := rfl
+lemma toMulEquiv_ofBijective {f : A →⋆* B} (hf : Function.Bijective f) :
+    (ofBijective f hf).toMulEquiv = .ofBijective f hf := rfl
 
 end Bijective
 
