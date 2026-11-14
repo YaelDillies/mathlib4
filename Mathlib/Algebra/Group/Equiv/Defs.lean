@@ -505,9 +505,6 @@ noncomputable def ofBijective {M N F} [Mul M] [Mul N] [FunLike F M N] [MulHomCla
     (f : F) (hf : Bijective f) : M ≃* N :=
   { Equiv.ofBijective f hf with map_mul' := map_mul f }
 
-@[to_additive] -- TODO: Make simp once `MulEquiv.toMulHom` is simp nf.
-lemma ofBijective_toMulHom (e : M ≃* N) : ofBijective e.toMulHom e.bijective = e := by ext; rfl
-
 @[to_additive (attr := simp)]
 theorem ofBijective_apply_symm_apply {n : N} (f : M →* N) (hf : Bijective f) :
     f ((ofBijective f hf).symm n) = n := (ofBijective f hf).apply_symm_apply n

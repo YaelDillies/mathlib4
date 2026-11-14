@@ -190,11 +190,8 @@ theorem ofBijective_apply [RingHomInvPair σ₁₂ σ₂₁] [RingHomInvPair σ�
     ofBijective f hf x = f x :=
   rfl
 
-lemma ofBijective_toLinearMap [RingHomInvPair σ₁₂ σ₂₁] [RingHomInvPair σ₂₁ σ₁₂]
-    (e : M ≃ₛₗ[σ₁₂] M₂) : ofBijective e.toLinearMap e.bijective = e := by ext; rfl
-
 @[simp]
-lemma ofBijective_toEquiv [RingHomInvPair σ₁₂ σ₂₁] [RingHomInvPair σ₂₁ σ₁₂] {hf} :
+lemma toEquiv_ofBijective [RingHomInvPair σ₁₂ σ₂₁] [RingHomInvPair σ₂₁ σ₁₂] {hf} :
     (ofBijective f hf).toEquiv = .ofBijective f hf := by ext; rfl
 
 @[simp]

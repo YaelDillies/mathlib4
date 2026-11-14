@@ -211,12 +211,9 @@ theorem ofBijective.symm_eq {φ : P₁ →ᵃ[k] P₂} (hφ : Function.Bijective
     (ofBijective hφ).symm.toEquiv = (Equiv.ofBijective _ hφ).symm :=
   rfl
 
-lemma ofBijective_toAffineMap (e : P₁ ≃ᵃ[k] P₂) :
-    ofBijective (φ := e.toAffineMap) e.bijective = e := by ext; rfl
-
 @[simp]
-lemma ofBijective_toEquiv {φ : P₁ →ᵃ[k] P₂} (hφ : Function.Bijective φ) :
-    (ofBijective hφ).toEquiv = .ofBijective φ hφ := rfl
+lemma toEquiv_ofBijective (φ : P₁ →ᵃ[k] P₂) (hφ) :
+    (ofBijective (φ := φ) hφ).toEquiv = .ofBijective φ hφ := rfl
 
 theorem range_eq (e : P₁ ≃ᵃ[k] P₂) : range e = univ := by simp
 

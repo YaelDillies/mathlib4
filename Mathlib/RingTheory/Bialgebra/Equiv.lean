@@ -328,11 +328,8 @@ noncomputable def ofBijective (f : A →ₐc[R] B) (hf : Bijective f) : A ≃ₐ
 @[simp]
 lemma coe_ofBijective (f : A →ₐc[R] B) (hf : Bijective f) : (ofBijective f hf : A → B) = f := rfl
 
-lemma ofBijective_toBialgHom (e : A ≃ₐc[R] B) :
-    ofBijective e.toBialgHom e.bijective = e := by ext; rfl
-
 @[simp]
-lemma ofBijective_toEquiv (f : A →ₐc[R] B) (hf : Bijective f) :
-    (ofBijective f hf).toEquiv = .ofBijective f hf := rfl
+lemma toEquiv_ofBijective (f : A →ₐc[R] B) (hf) : (ofBijective f hf).toEquiv = .ofBijective f hf :=
+  rfl
 
 end BialgEquiv

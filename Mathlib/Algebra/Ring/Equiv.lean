@@ -450,7 +450,7 @@ theorem ofBijective_apply [NonUnitalRingHomClass F R S] (f : F) (hf : Function.B
   rfl
 
 @[simp]
-lemma ofBijective_toEquiv [NonUnitalRingHomClass F R S] (f : F) (hf : Function.Bijective f) :
+lemma toEquiv_ofBijective [NonUnitalRingHomClass F R S] (f : F) (hf : Function.Bijective f) :
     (ofBijective f hf).toEquiv = .ofBijective f hf := rfl
 
 @[simp]
@@ -710,9 +710,6 @@ theorem toNonUnitalRingHom_injective :
 
 theorem toNonUnitalRingHom_eq_coe (f : R ≃+* S) : f.toNonUnitalRingHom = ↑f :=
   rfl
-
-lemma ofBijective_toNonUnitalRingHom (e : R ≃+* S) :
-    ofBijective e.toNonUnitalRingHom e.bijective = e := by ext; rfl
 
 @[simp, norm_cast]
 theorem coe_toNonUnitalRingHom (f : R ≃+* S) : ⇑(f : R →ₙ+* S) = f :=

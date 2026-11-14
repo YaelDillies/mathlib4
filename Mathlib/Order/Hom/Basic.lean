@@ -801,9 +801,6 @@ noncomputable def ofBijective (f : α → β) (hf : f.Bijective) (hf' : ∀ a b,
     α ≃o β :=
   RelIso.ofBijective f hf hf'
 
-lemma ofBijective_orderIso (f : α → β) (hf hf') :
-    ofBijective f hf hf' = RelIso.ofBijective (r := (· ≤ ·)) (s := (· ≤ ·)) f hf hf' := rfl
-
 @[simp] lemma toEquiv_ofBijective (f : α → β) (hf hf') :
     (ofBijective f hf hf').toEquiv = .ofBijective f hf := rfl
 

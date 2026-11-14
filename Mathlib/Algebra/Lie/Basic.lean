@@ -659,9 +659,6 @@ noncomputable def ofBijective (f : L₁ →ₗ⁅R⁆ L₂) (h : Function.Biject
   __ := LinearEquiv.ofBijective (f : L₁ →ₗ[R] L₂) h
 
 @[simp]
-lemma ofBijective_toLieHom (e : L₁ ≃ₗ⁅R⁆ L₂) : ofBijective e.toLieHom e.bijective = e := by ext; rfl
-
-@[simp]
 lemma toLinearEquiv_ofBijective (f : L₁ →ₗ⁅R⁆ L₂) (h : Function.Bijective f) :
     (ofBijective f h).toLinearEquiv = .ofBijective (f : L₁ →ₗ[R] L₂) h := rfl
 
