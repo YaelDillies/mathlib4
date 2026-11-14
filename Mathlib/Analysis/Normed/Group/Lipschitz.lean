@@ -21,9 +21,7 @@ variable {E : Type*} [SeminormedCommGroup E]
 lemma lipschitzWith_uncurry_mul : LipschitzWith 2 (fun p : E × E ↦ p.1 * p.2) := by
   refine .of_dist_le_mul fun p q ↦ ?_
   norm_cast
-  grw [dist_eq_norm_div, mul_div_mul_comm, norm_mul_le', two_mul, Prod.dist_eq, dist_eq_norm_div,
-    dist_eq_norm_div]
-  gcongr <;> [exact le_max_left ..; exact le_max_right ..]
+  grind [dist_eq_norm_div, mul_div_mul_comm, norm_mul_le', Prod.dist_eq]
 
 @[to_additive]
 lemma lipschitzWith_pow (n : ℕ) : LipschitzWith n (fun x : E ↦ x ^ n) :=

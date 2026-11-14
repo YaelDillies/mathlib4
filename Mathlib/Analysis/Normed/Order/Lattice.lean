@@ -173,10 +173,10 @@ theorem lipschitzWith_sup_right (z : α) : LipschitzWith 1 fun x => x ⊔ z :=
 /-- Supremum as a function `⊔ : α × α → α` on a solid normed lattice is 2-Lipschitz. -/
 @[to_dual
 /-- Infimum as a function `⊓ : α × α → α` on a solid normed lattice is 2-Lipschitz. -/]
-lemma lipschitzWith_uncurry_sup : LipschitzWith 2 (fun p : α × α ↦ p.1 ⊔ p.2) := by
+lemma lipschitzWith_uncurry_sup : LipschitzWith 2 fun p : α × α ↦ p.1 ⊔ p.2 := by
   refine .of_dist_le_mul fun p q ↦ ?_
-  grw [dist_eq_norm, norm_sup_sub_sup_le_add_norm, NNReal.coe_ofNat, two_mul, Prod.dist_eq]
-  grind [dist_eq_norm]
+  norm_cast
+  grind [dist_eq_norm, norm_sup_sub_sup_le_add_norm, Prod.dist_eq]
 
 @[to_dual]
 lemma norm_finsetSup'_sub_finsetSup'_le {ι : Type*} {s : Finset ι} (hs : s.Nonempty) (a b : ι → α) :
