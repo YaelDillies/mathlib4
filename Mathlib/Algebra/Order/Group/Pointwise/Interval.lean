@@ -925,7 +925,7 @@ theorem inv_Ioo_0_right {a : α} (ha : a < 0) : (Ioo a 0)⁻¹ = Iio a⁻¹ := b
   exact ⟨(lt_inv_of_neg ha h').2 h, by simpa⟩
 
 theorem inv_Iio₀ {a : α} (ha : a < 0) : (Iio a)⁻¹ = Ioo a⁻¹ 0 := by
-  rw [inv_eq_iff_eq_inv, inv_Ioo_0_right (inv_neg'.2 ha), inv_inv]
+  rw [inv_eq_iff_eq_inv, inv_Ioo_0_right (inv_neg_iff.2 ha), inv_inv]
 
 end LinearOrderedField
 
