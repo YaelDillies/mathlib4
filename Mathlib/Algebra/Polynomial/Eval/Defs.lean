@@ -71,10 +71,10 @@ theorem eval₂_congr {R S : Type*} [Semiring R] [Semiring S] {f g : R →+* S} 
 theorem eval₂_zero : (0 : R[X]).eval₂ f x = 0 := by simp [eval₂_eq_sum_coeff]
 
 @[simp]
-theorem eval₂_C : (C a).eval₂ f x = f a := by simp [eval₂_eq_sum_coeff, ← monomial_zero_left]
+theorem eval₂_C : (C a).eval₂ f x = f a := by simp [eval₂_eq_sum_coeff]
 
 @[simp]
-theorem eval₂_X : X.eval₂ f x = x := by simp [eval₂_eq_sum_coeff, ← monomial_one_one_eq_X]
+theorem eval₂_X : X.eval₂ f x = x := by simp [eval₂_eq_sum_coeff]
 
 @[simp]
 theorem eval₂_monomial {n : ℕ} {r : R} : (monomial n r).eval₂ f x = f r * x ^ n := by

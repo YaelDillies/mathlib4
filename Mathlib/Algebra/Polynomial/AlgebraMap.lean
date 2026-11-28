@@ -605,15 +605,15 @@ variable [CommRing S] {f : R →+* S}
 
 theorem dvd_term_of_dvd_eval_of_dvd_terms {z p : S} {f : S[X]} (i : ℕ) (dvd_eval : p ∣ f.eval z)
     (dvd_terms : ∀ j ≠ i, p ∣ f.coeff j * z ^ j) : p ∣ f.coeff i * z ^ i := by
-  by_cases hi : i ∈ f.support
-  · rw [eval, eval₂_eq_sum_coeff, Finsupp.sum, ← Finset.insert_erase (s := f.coeff.support) hi,
+  by_cases hi : i ∈ f.coeff.support
+  · rw [eval, eval₂_eq_sum_coeff, Finsupp.sum, ← Finset.insert_erase hi,
       Finset.sum_insert (Finset.notMem_erase _ _)] at dvd_eval
     refine (dvd_add_left ?_).mp dvd_eval
     apply Finset.dvd_sum
     intro j hj
     exact dvd_terms j (Finset.ne_of_mem_erase hj)
   · convert dvd_zero p
-    rw [notMem_support_iff] at hi
+    rw [Finsupp.notMem_support_iff] at hi
     simp [hi]
 
 theorem dvd_term_of_isRoot_of_dvd_terms {r p : S} {f : S[X]} (i : ℕ) (hr : f.IsRoot r)

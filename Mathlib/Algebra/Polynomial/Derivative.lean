@@ -59,9 +59,8 @@ theorem derivative_apply (p : R[X]) :
 
 theorem coeff_derivative (p : R[X]) (n : ℕ) :
     coeff (derivative p) n = coeff p (n + 1) * (n + 1) := by
-  simp only [derivative_apply, Finsupp.sum, map_mul, map_natCast, mul_assoc,
-    AddMonoidAlgebra.coeff_sum, Finsupp.coe_finsetSum, Finset.sum_apply, coeff_C_mul,
-    coeff_natCast_mul, ↓coeff_X_pow_apply, mul_ite, mul_one, mul_zero]
+  simp only [derivative_apply, Finsupp.sum, AddMonoidAlgebra.coeff_sum, Finsupp.coe_finsetSum,
+    Finset.sum_apply, coeff_C_mul]
   rw [Finset.sum_eq_single (n + 1)]
   · simp
   · rintro (_ | b) <;> simp +contextual [eq_comm]
@@ -76,8 +75,7 @@ theorem iterate_derivative_zero {k : ℕ} : derivative^[k] (0 : R[X]) = 0 :=
 
 theorem derivative_monomial (a : R) (n : ℕ) :
     derivative (monomial n a) = monomial (n - 1) (a * n) := by
-  rw [derivative_apply, ← single_eq_monomial, AddMonoidAlgebra.coeff_single,
-    Finsupp.sum_single_index, C_mul_X_pow_eq_monomial]
+  rw [derivative_apply, coeff_monomial, Finsupp.sum_single_index, C_mul_X_pow_eq_monomial]
   simp
 
 @[simp]
@@ -107,8 +105,7 @@ theorem derivative_X_sq : derivative (X ^ 2 : R[X]) = C 2 * X := by
   rw [derivative_X_pow, Nat.cast_two, pow_one]
 
 @[simp]
-theorem derivative_C {a : R} : derivative (C a) = 0 := by
-  simp [derivative_apply, ← monomial_zero_left]
+theorem derivative_C {a : R} : derivative (C a) = 0 := by simp [derivative_apply]
 
 theorem derivative_of_natDegree_zero {p : R[X]} (hp : p.natDegree = 0) : derivative p = 0 := by
   rw [eq_C_of_natDegree_eq_zero hp, derivative_C]
