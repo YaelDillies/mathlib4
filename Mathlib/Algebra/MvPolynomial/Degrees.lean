@@ -191,7 +191,7 @@ theorem degrees_rename (f : σ → τ) (φ : MvPolynomial σ R) :
   intro j hj
   simp only [mem_degrees] at hi
   specialize hi j ⟨x, hx, hj⟩
-  rw [Finsupp.single_apply, ite_eq_right hi]
+  rw [Finsupp.single_apply, ite_eq_right hi.symm]
 
 theorem degrees_map_of_injective [CommSemiring S] (p : MvPolynomial σ R) {f : R →+* S}
     (hf : Injective f) : (map f p).degrees = p.degrees := by

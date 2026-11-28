@@ -158,7 +158,7 @@ For these reasons, the definition of `T` is as a sequence. -/
 def T (n : ℤ) : R[T;T⁻¹] := .single n 1
 
 @[simp] lemma T_apply (m n : ℤ) : (T n : R[T;T⁻¹]).coeff m = if n = m then 1 else 0 :=
-  Finsupp.single_apply
+  Finsupp.single_apply.trans (if_congr eq_comm rfl rfl)
 
 @[simp]
 theorem T_zero : (T 0 : R[T;T⁻¹]) = 1 :=

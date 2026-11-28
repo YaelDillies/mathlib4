@@ -204,7 +204,7 @@ lemma supDegree_esymm [Nontrivial R] (him : i < m) :
   rw [(supDegree_monic_esymm him).1, ofLex_toLex]
   ext j
   simp_rw [Finsupp.indicator_apply, dite_eq_ite, mem_Iic, accumulate_apply, Finsupp.single_apply,
-    sum_ite_eq, mem_filter_univ, Fin.le_def]
+    sum_ite_eq', mem_filter_univ, Fin.le_def]
 
 lemma monic_esymm {i : ℕ} (him : i ≤ m) : Monic toLex (esymm (Fin m) R i) := by
   cases i with

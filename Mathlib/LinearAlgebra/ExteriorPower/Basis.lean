@@ -60,7 +60,7 @@ lemma ιMultiDual_apply_diag (s : powersetCard I n) :
     (b (powersetCard.ofFinEmbEquiv.symm s i))) = 1 by
     simp_rw [Function.comp_apply, this, Matrix.det_one]
   ext
-  simp [Matrix.one_apply, Finsupp.single_apply]
+  simp [Matrix.one_apply, Finsupp.single_apply, eq_comm]
 
 /-- Let `b` be a basis of `M` indexed by a linearly ordered type `I` and `s` be a finset of `I`
 of cardinality `n`. Let `t` be a finset of `I` of cardinality `n` such that `s ≠ t`. If we apply

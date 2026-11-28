@@ -210,7 +210,7 @@ noncomputable def basisKaehlerOfIsCompl {κ : Type*} {f : κ → ι}
     ext i j
     simp only [Function.comp_apply, Basis.repr_self, Finsupp.linearEquivFunOnFinite_apply,
       Pi.basisFun_apply]
-    simp [Finsupp.single_eq_pi_single]
+    simp [Finsupp.coe_single]
   · exact hcompl.codisjoint
 
 @[simp]

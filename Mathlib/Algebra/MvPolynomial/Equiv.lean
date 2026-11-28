@@ -102,7 +102,7 @@ theorem coeff_uniqueAlgEquiv [Unique σ] (P : MvPolynomial σ R) (n : ℕ) :
   induction P using induction_on' with
   | monomial d r =>
       rw [uniqueAlgEquiv_monomial, Finsupp.unique_single d]
-      simp [Finsupp.single_apply, MvPolynomial.coeff_monomial]
+      simp [Finsupp.single_apply, MvPolynomial.coeff_monomial, eq_comm]
   | add P Q hP hQ =>
       simpa using congrArg₂ (· + ·) hP hQ
 

@@ -424,7 +424,7 @@ theorem linearIndependent_pow [Algebra K S] (x : S) :
     exact (degree_eq_natDegree <| minpoly.ne_zero h).symm ▸ degree_sum_fin_lt _
   · apply_fun lcoeff K i at h0
     simp_rw [map_sum, lcoeff_apply, coeff_monomial, Finsupp.single_apply, Fin.val_eq_val,
-      Finset.sum_ite_eq'] at h0
+      Finset.sum_ite_eq] at h0
     exact (ite_eq_left <| Finset.mem_univ _).symm.trans h0
 
 theorem IsIntegral.mem_span_pow [Nontrivial R] {x y : S} (hx : IsIntegral R x)

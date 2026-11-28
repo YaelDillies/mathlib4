@@ -499,7 +499,7 @@ theorem finite_range_coeff (f : R[X]) : (Set.range f.coeff).Finite :=
   Finsupp.finite_range _
 
 theorem coeff_monomial_apply : coeff (monomial n a) m = if n = m then a else 0 := by
-  simp [Finsupp.single_apply]
+  simp [Finsupp.single_apply, eq_comm]
 
 theorem coeff_monomial_same (n : ℕ) (c : R) : (monomial n c).coeff n = c :=
   Finsupp.single_eq_same
@@ -512,7 +512,7 @@ theorem coeff_zero (n : ℕ) : coeff (0 : R[X]) n = 0 :=
 
 @[aesop simp]
 theorem coeff_one {n : ℕ} : coeff (1 : R[X]) n = if n = 0 then 1 else 0 := by
-  simp [eq_comm, one_def, Finsupp.single_apply]
+  simp [one_def, Finsupp.single_apply]
 
 @[deprecated coeff_one_zero +typeChanged (since := "2026-10-25")]
 protected theorem coeff_one_zero : coeff (1 : R[X]) 0 = 1 := by simp
@@ -523,7 +523,8 @@ protected theorem coeff_one_zero : coeff (1 : R[X]) 0 = 1 := by simp
 theorem coeff_monomial_succ : coeff (monomial (n + 1) a) 0 = 0 := by simp
 
 @[aesop simp]
-theorem coeff_X : coeff (X : R[X]) n = if 1 = n then 1 else 0 := by simp [X, Finsupp.single_apply]
+theorem coeff_X : coeff (X : R[X]) n = if 1 = n then 1 else 0 := by
+  simp [X, Finsupp.single_apply, eq_comm]
 
 theorem coeff_X_of_ne_one {n : ℕ} (hn : n ≠ 1) : coeff (X : R[X]) n = 0 := by
   rw [coeff_X, ite_eq_right hn.symm]
@@ -537,7 +538,7 @@ theorem notMem_support_iff : n ∉ p.support ↔ p.coeff n = 0 := by simp
 
 @[aesop simp]
 theorem coeff_C : coeff (C a) n = ite (n = 0) a 0 := by
-  simp [C, monomial, Finsupp.single_apply, eq_comm]
+  simp [C, monomial, Finsupp.single_apply]
 
 @[simp]
 theorem coeff_C_zero : coeff (C a) 0 = a := by simp [C, monomial]

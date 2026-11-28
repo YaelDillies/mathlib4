@@ -126,13 +126,13 @@ theorem exists_mem_center_apply_eq_smul_of_forall_notLinearIndependent_of_basis
     · simp [hj]
     · have : t = 0 ∨ b.repr (f (b i)) j = 0 := by
         rw [b.ext_elem_iff] at h
-        simpa [single_eq_of_ne' hj] using h j
+        simpa [single_eq_of_ne hj] using h j
       apply Or.resolve_left this
       contrapose h'
       refine ⟨?_, h'⟩
       simp only [h', zero_smul, add_zero] at h
       contrapose hj
-      apply b.linearIndependent.eq_of_smul_apply_eq_smul_apply s 0 i j hj
+      refine (b.linearIndependent.eq_of_smul_apply_eq_smul_apply s 0 i j hj ?_).symm
       simpa using h
   have h' (i j) (hij : i ≠ j) (r : R) : b.coord i (f (b i)) * r = r * b.coord j (f (b j)) := by
     -- we use that `f (b i + r • b j)` is a multiple of `b i + r • b j`

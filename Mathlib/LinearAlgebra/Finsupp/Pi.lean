@@ -90,7 +90,7 @@ def lcoeFun : (α →₀ M) →ₗ[R] α → M where
 
 @[simp] theorem lcoeFun_comp_lsingle [DecidableEq α] (x : α) :
     lcoeFun ∘ₗ lsingle x = .single R (fun _ ↦ M) x := by
-  ext; simp [single_eq_pi_single]
+  ext; simp [coe_single]
 
 end Finsupp
 
@@ -177,7 +177,7 @@ theorem splittingOfFunOnFintypeSurjective_splits [Finite α] (f : M →ₗ[R] α
   ext x y
   dsimp [splittingOfFunOnFintypeSurjective]
   rw [linearEquivFunOnFinite_symm_single, Finsupp.sum_single_index, one_smul,
-    (s (Finsupp.single x 1)).choose_spec, Finsupp.single_eq_pi_single]
+    (s (Finsupp.single x 1)).choose_spec, Finsupp.coe_single]
   rw [zero_smul]
 
 theorem leftInverse_splittingOfFunOnFintypeSurjective [Finite α] (f : M →ₗ[R] α → R)

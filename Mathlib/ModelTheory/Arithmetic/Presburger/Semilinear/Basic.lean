@@ -505,7 +505,7 @@ private theorem floor_add_of_mem_closure {x y i t} (ht : t ⊆ hs.basisSet) (hi 
   induction hy using AddSubmonoid.closure_induction with
   | mem y hy =>
     rw [← hs.basis_apply ⟨y, ht hy⟩]
-    simpa [Finsupp.single_apply, ← Subtype.val_inj] using ne_of_mem_of_not_mem hy hi
+    simpa [Finsupp.single_apply, ← Subtype.val_inj] using (ne_of_mem_of_not_mem hy hi).symm
   | zero => simp
   | add _ _ _ _ ih₁ ih₂ => simp [ih₁, ih₂]
 

@@ -389,6 +389,7 @@ theorem apply_dualBasis_left (hB : B.Nondegenerate) (b : Basis ι K V) (i j) :
   have := b.finiteDimensional_of_finite
   rw [dualBasis, Basis.map_apply, Basis.coe_dualBasis, ← toDual_def hB,
     LinearEquiv.apply_symm_apply, Basis.coord_apply, Basis.repr_self, Finsupp.single_apply]
+  exact if_congr eq_comm rfl rfl
 
 theorem apply_dualBasis_right (hB : B.Nondegenerate) (sym : B.IsSymm)
     (b : Basis ι K V) (i j) : B (b i) (B.dualBasis hB b j) = if i = j then 1 else 0 := by

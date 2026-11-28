@@ -162,7 +162,7 @@ lemma lcomapDomain_eq_linearProjOfIsCompl {α β : Type*}
       simp only [coe_basisSingleOne, lcomapDomain_apply, comapDomain_apply, single_apply,
         coe_zero, Pi.zero_apply, ite_eq_right_iff]
       intro hij
-      exact (Set.disjoint_range_iff.mp h.disjoint j i hij.symm).elim
+      exact (Set.disjoint_range_iff.mp h.disjoint j i hij).elim
     · exact Submodule.subset_span ⟨i, rfl⟩
 
 end Ring

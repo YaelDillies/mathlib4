@@ -273,7 +273,7 @@ theorem submodule_closure_single :
     rintro i _ ⟨m, hm, rfl⟩ j
     rw [coeff_single, Finsupp.single_apply]
     split_ifs with h
-    · rwa [← h]
+    · rwa [h]
     · exact (F.N j).zero_mem
   · intro f hf
     rw [← f.ofCoeff_coeff, ← f.coeff.sum_single, ofCoeff_finsuppSum]

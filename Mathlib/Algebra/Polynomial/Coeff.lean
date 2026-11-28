@@ -312,7 +312,7 @@ theorem C_dvd_iff_dvd_coeff (r : R) (φ : R[X]) : C r ∣ φ ↔ ∀ i, r ∣ φ
       use ψ
       ext i
       simp only [c', ψ, coeff_C_mul, mem_support_iff, coeff_monomial, finsetSum_coeff,
-        Finsupp.single_apply, Finset.sum_ite_eq']
+        Finsupp.single_apply, Finset.sum_ite_eq]
       split_ifs with hi
       · rw [hc]
       · rw [Classical.not_not] at hi

@@ -79,7 +79,7 @@ theorem eq_pow_of_factorization_eq_single {n p k : ℕ} (hn : n ≠ 0)
 
 /-- The only prime factor of prime `p` is `p` itself. -/
 theorem Prime.eq_of_factorization_pos {p q : ℕ} (hp : Prime p) (h : p.factorization q ≠ 0) :
-    p = q := by simpa [hp.factorization, single_apply] using h
+    p = q := by simpa [hp.factorization, single_apply, eq_comm] using h
 
 /-! ### Equivalence between `ℕ+` and `ℕ →₀ ℕ` with support in the primes. -/
 

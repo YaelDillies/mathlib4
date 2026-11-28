@@ -158,7 +158,7 @@ def lsingle (i : ℕ) : M →ₗ[R] PolynomialModule R M :=
   (coeffLinearEquiv R R).symm.comp <| Finsupp.lsingle i
 
 theorem lsingle_apply (i : ℕ) (m : M) (n : ℕ) : (lsingle R i m).coeff n = ite (i = n) m 0 :=
-  Finsupp.single_apply
+  Finsupp.single_apply.trans (if_congr eq_comm rfl rfl)
 
 theorem single_smul (i : ℕ) (r : R) (m : M) : single R i (r • m) = r • single R i m :=
   (lsingle R i).map_smul r m

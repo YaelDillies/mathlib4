@@ -163,6 +163,7 @@ theorem toDual_toDual : b.dualBasis.toDual.comp b.toDual = Dual.eval R M := by
   refine b.ext fun i => b.dualBasis.ext fun j => ?_
   rw [LinearMap.comp_apply, toDual_apply_left, coe_toDual_self, ← coe_dualBasis,
     Dual.eval_apply, Basis.repr_self, Finsupp.single_apply, dualBasis_apply_self]
+  exact if_congr eq_comm rfl rfl
 
 end Finite
 

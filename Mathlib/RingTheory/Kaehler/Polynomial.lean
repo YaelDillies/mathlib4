@@ -87,7 +87,7 @@ lemma KaehlerDifferential.mvPolynomialBasis_repr_apply (σ) (x) (i) :
     (mvPolynomialBasis R σ).repr.toLinearMap).compDer (D _ _) = MvPolynomial.pderiv i by
     rw [← this]; rfl
   apply MvPolynomial.derivation_ext
-  simp [Finsupp.single_apply, Pi.single_apply]
+  simp [Finsupp.single_apply, Pi.single_apply, eq_comm]
 
 lemma KaehlerDifferential.mvPolynomialBasis_repr_symm_single (σ) (i) (x) :
     (mvPolynomialBasis R σ).repr.symm (Finsupp.single i x) = x • D R (MvPolynomial σ R) (.X i) := by

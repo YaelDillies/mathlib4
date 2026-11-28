@@ -423,8 +423,8 @@ alias sum_single := sum_coeff_single
 
 @[to_additive (attr := deprecated Finsupp.single_apply +typeChanged (since := "2026-06-18"))]
 theorem coeff_single_apply {a a' : M} {b : R} [Decidable (a = a')] :
-    (single a b).coeff a' = if a = a' then b else 0 :=
-  Finsupp.single_apply
+    (single a b).coeff a' = if a = a' then b else 0 := by
+  classical exact Finsupp.single_apply.trans (if_congr eq_comm rfl rfl)
 
 set_option linter.deprecated.deprecatedTarget false in
 @[deprecated (since := "2026-06-18")] protected alias single_apply := coeff_single_apply
@@ -512,7 +512,7 @@ instance nonUnitalNonAssocSemiring : NonUnitalNonAssocSemiring R[M] where
 lemma coeff_mul [DecidableEq M] (x y : R[M]) (m : M) :
     (x * y).coeff m =
       x.coeff.sum fun m₁ r₁ ↦ y.coeff.sum fun m₂ r₂ ↦ if m₁ * m₂ = m then r₁ * r₂ else 0 := by
-  simp [mul_def, Finsupp.single_apply]
+  simp [mul_def, Finsupp.single_apply, eq_comm]
 
 @[to_additive (attr := deprecated coeff_mul (since := "2026-06-18")) (dont_translate := R)
   mul_apply]

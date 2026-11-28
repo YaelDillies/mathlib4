@@ -247,7 +247,7 @@ theorem ofCoeff_single (a : G) (b : k) : ⟨Finsupp.single a b⟩ = single a b :
 
 theorem coeff_single_apply {a a' : G} {b : k} [Decidable (a = a')] :
     coeff (single a b) a' = if a = a' then b else 0 := by
-  simp [Finsupp.single_apply]
+  classical exact Finsupp.single_apply.trans (if_congr eq_comm rfl rfl)
 
 theorem single_zero_right (a : G) : single a (0 : k) = 0 := by
   simp [← coeff_inj]
@@ -884,7 +884,7 @@ variable [Mul G] [SMulZeroClass G k]
 theorem coeff_mul [DecidableEq G] (f g : SkewMonoidAlgebra k G) (x : G) :
     (f * g).coeff x = f.coeff.sum fun a₁ b₁ ↦ g.coeff.sum fun a₂ b₂ ↦
       if a₁ * a₂ = x then b₁ * a₁ • b₂ else 0 := by
-  simp [mul_def, coeff_finsuppSum, Finsupp.single_apply]
+  simp [mul_def, coeff_finsuppSum, Finsupp.single_apply, eq_comm]
 
 theorem coeff_mul_antidiagonal_of_finset (f g : SkewMonoidAlgebra k G) (x : G)
     (s : Finset (G × G)) (hs : ∀ {p : G × G}, p ∈ s ↔ p.1 * p.2 = x) :

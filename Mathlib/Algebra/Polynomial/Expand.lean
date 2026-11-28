@@ -100,14 +100,14 @@ theorem coeff_expand {p : ℕ} (hp : 0 < p) (f : R[X]) (n : ℕ) :
       rw [ite_eq_right]
       intro hb3
       apply hb2
-      rw [← hb3, Nat.mul_div_cancel_left b hp]
+      rw [hb3, Nat.mul_div_cancel_left b hp]
     · intro hn
       rw [notMem_support_iff.1 hn]
       split_ifs <;> rfl
   · rw [Finset.sum_eq_zero]
     intro k _
     rw [ite_eq_right]
-    exact fun hkn => h ⟨k, hkn.symm⟩
+    exact fun hkn => h ⟨k, hkn⟩
 
 @[simp]
 theorem coeff_expand_mul {p : ℕ} (hp : 0 < p) (f : R[X]) (n : ℕ) :
@@ -188,7 +188,7 @@ noncomputable def contract (p : ℕ) (f : R[X]) : R[X] :=
 
 theorem coeff_contract {p : ℕ} (hp : p ≠ 0) (f : R[X]) (n : ℕ) :
     (contract p f).coeff n = f.coeff (n * p) := by
-  simp only [contract, coeff_monomial, Finsupp.single_apply, sum_ite_eq', finsetSum_coeff,
+  simp only [contract, coeff_monomial, Finsupp.single_apply, sum_ite_eq, finsetSum_coeff,
     mem_range, not_lt, ite_eq_left_iff]
   intro hn
   apply (coeff_eq_zero_of_natDegree_lt _).symm

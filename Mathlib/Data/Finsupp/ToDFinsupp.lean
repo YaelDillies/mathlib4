@@ -88,7 +88,7 @@ variable [DecidableEq ι] [Zero M]
 theorem Finsupp.toDFinsupp_single (i : ι) (m : M) :
     (Finsupp.single i m).toDFinsupp = DFinsupp.single i m := by
   ext
-  simp [Finsupp.single_apply, DFinsupp.single_apply]
+  simp [Finsupp.single_apply, DFinsupp.single_apply, eq_comm]
 
 variable [∀ m : M, Decidable (m ≠ 0)]
 
@@ -118,7 +118,7 @@ theorem DFinsupp.toFinsupp_support (f : Π₀ _ : ι, M) : f.toFinsupp.support =
 theorem DFinsupp.toFinsupp_single (i : ι) (m : M) :
     (DFinsupp.single i m : Π₀ _ : ι, M).toFinsupp = Finsupp.single i m := by
   ext
-  simp [Finsupp.single_apply, DFinsupp.single_apply]
+  simp [Finsupp.single_apply, DFinsupp.single_apply, eq_comm]
 
 @[simp]
 theorem Finsupp.toDFinsupp_toFinsupp (f : ι →₀ M) : f.toDFinsupp.toFinsupp = f :=
@@ -301,7 +301,7 @@ theorem sigmaFinsuppEquivDFinsupp_single [DecidableEq ι] [Zero N] (a : Σ i, η
   suffices Finsupp.single (⟨i, a⟩ : Σ i, η i) n ⟨j, b⟩ = 0 by
     simp [split_apply, dite_eq_right h, this]
   have H : (⟨i, a⟩ : Σ i, η i) ≠ ⟨j, b⟩ := by simp [h]
-  classical rw [Finsupp.single_apply, ite_eq_right H]
+  classical rw [Finsupp.single_apply, ite_eq_right H.symm]
 
 -- Without this Lean fails to find the `AddZeroClass` instance on `Π₀ i, (η i →₀ N)`.
 attribute [-instance] Finsupp.instZero

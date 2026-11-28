@@ -541,7 +541,7 @@ theorem coeff_root_pow {n} (hn : n < natDegree f) : h.coeff (h.root ^ n) = Pi.si
         rw [h.basis_apply, Fin.val_mk]
       _ = Pi.single (M := fun _ => R) ((⟨n, hn⟩ : Fin _) : ℕ) (1 : (fun _ => R) n)
         ↑(⟨i, _⟩ : Fin _) := by
-        rw [h.basis.repr_self, ← Finsupp.single_eq_pi_single,
+        rw [h.basis.repr_self, ← Finsupp.coe_single,
           Finsupp.single_apply_left Fin.val_injective]
       _ = Pi.single (M := fun _ => R) n 1 i := by rw [Fin.val_mk, Fin.val_mk]
   · rw [Pi.single_eq_of_ne]

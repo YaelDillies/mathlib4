@@ -50,7 +50,7 @@ variable (hp : (↑p.coeffs : Set R) ⊆ T)
 theorem coeff_toSubring {n : ℕ} : ↑(coeff (toSubring p T hp) n) = coeff p n := by
   classical
   simp only [toSubring, coeff_monomial, Finsupp.single_apply, finsetSum_coeff,
-    mem_support_iff, Finset.sum_ite_eq', Ne, ite_not]
+    mem_support_iff, Finset.sum_ite_eq, Ne, ite_not]
   split_ifs with h
   · rw [h]
     rfl
@@ -106,7 +106,7 @@ noncomputable def ofSubring (p : T[X]) : R[X] :=
 
 theorem coeff_ofSubring (p : T[X]) (n : ℕ) : coeff (ofSubring T p) n = (coeff p n : T) := by
   simp only [ofSubring, coeff_monomial, Finsupp.single_apply, finsetSum_coeff,
-    mem_support_iff, Finset.sum_ite_eq', Ne, Classical.not_not, ite_eq_left_iff]
+    mem_support_iff, Finset.sum_ite_eq, Ne, Classical.not_not, ite_eq_left_iff]
   intro h
   rw [h, ZeroMemClass.coe_zero]
 

@@ -223,7 +223,7 @@ instance {α} [IsLocalizedModule S f] :
   apply (finsuppRight R R (Localization S) M α).injective
   ext b
   apply e.injective
-  suffices (if a = b then f m else 0) = e (1 ⊗ₜ[R] if a = b then m else 0) by
+  suffices (if b = a then f m else 0) = e (1 ⊗ₜ[R] if b = a then m else 0) by
     simpa [e', Finsupp.single_apply, -EmbeddingLike.apply_eq_iff_eq, apply_ite]
   split_ifs with h
   · simp [e]

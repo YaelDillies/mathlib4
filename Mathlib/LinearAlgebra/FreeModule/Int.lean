@@ -42,7 +42,7 @@ lemma toAddSubgroup_index_eq_pow_mul_prod [Module R M] {N : Submodule R M}
     intro i
     simp only [map_apply, bN']
     rw [LinearEquiv.submoduleMap_apply]
-    simp only [equivFun_apply, snf, map_smul, repr_self, Finsupp.single_eq_pi_single]
+    simp only [equivFun_apply, snf, map_smul, repr_self, Finsupp.coe_single]
     ext j
     simp [Pi.single_apply]
   have hNN' : N.toAddSubgroup.index = N'.toAddSubgroup.index := by

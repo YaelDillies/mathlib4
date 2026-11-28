@@ -283,7 +283,7 @@ def restriction (p : R[X]) : Polynomial (Subring.closure (↑p.coeffs : Set R)) 
 theorem coeff_restriction {p : R[X]} {n : ℕ} : ↑((restriction p).coeff n) = p.coeff n := by
   classical
   simp only [restriction, coeff_monomial, Finsupp.single_apply, finsetSum_coeff, mem_support_iff,
-    Finset.sum_ite_eq', Ne, ite_not]
+    Finset.sum_ite_eq, Ne, ite_not]
   split_ifs with h
   · rw [h]
     rfl

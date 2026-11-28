@@ -578,7 +578,7 @@ theorem monic_monomial_eq (m) :
 @[simp]
 theorem coeff_monomial [DecidableEq σ] (m n) (a) :
     coeff (monomial n a : MvPolynomial σ R) m = if n = m then a else 0 :=
-  Finsupp.single_apply
+  Finsupp.single_apply.trans (if_congr eq_comm rfl rfl)
 
 /-- A polynomial all of whose support degrees equal a fixed `d₀` is the single monomial
 `monomial d₀ (coeff d₀ φ)`. -/
@@ -594,7 +594,7 @@ theorem eq_monomial_of_support_subset_singleton {φ : MvPolynomial σ R} {d₀ :
 @[simp]
 theorem coeff_C [DecidableEq σ] (m) (a) :
     coeff (C a : MvPolynomial σ R) m = if 0 = m then a else 0 :=
-  Finsupp.single_apply
+  Finsupp.single_apply.trans (if_congr eq_comm rfl rfl)
 
 theorem coeff_C_of_ne_zero {m : σ →₀ ℕ} (h : m ≠ 0) (a : R) : coeff (C a) m = 0 := by
   classical rw [coeff_C, ite_eq_right h.symm]

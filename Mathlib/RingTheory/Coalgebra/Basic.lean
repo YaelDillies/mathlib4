@@ -497,7 +497,7 @@ theorem counit_comp_finsuppLcoeFun :
     counit (R := R) (A := n → M) ∘ₗ Finsupp.lcoeFun = counit := by
   apply LinearMap.ext fun x ↦ ?_
   rw [← Finsupp.univ_sum_single x]
-  simp [-Finsupp.univ_sum_single, Finsupp.lcoeFun, Finsupp.single_eq_pi_single]
+  simp [-Finsupp.univ_sum_single, Finsupp.lcoeFun, Finsupp.coe_single]
 
 @[simp] theorem counit_coe_finsupp (x : n →₀ M) :
     counit (R := R) ⇑x = counit x := congr($counit_comp_finsuppLcoeFun x)
@@ -507,7 +507,7 @@ theorem comul_comp_finsuppLcoeFun :
     comul (R := R) (A := n → M) ∘ₗ lcoeFun = map lcoeFun lcoeFun ∘ₗ comul := by
   apply LinearMap.ext fun x ↦ ?_
   rw [← Finsupp.univ_sum_single x]
-  simp [-univ_sum_single, single_eq_pi_single, map_map]
+  simp [-univ_sum_single, Finsupp.coe_single, map_map]
 
 open Finsupp in
 @[simp] theorem comul_coe_finsupp (x : n →₀ M) :

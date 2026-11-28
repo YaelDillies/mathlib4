@@ -169,7 +169,7 @@ theorem equivMapDomain_single (f : α ≃ β) (a : α) (b : M) :
     equivMapDomain f (single a b) = single (f a) b := by
   classical
     ext x
-    simp only [single_apply, ← Equiv.eq_symm_apply, equivMapDomain_apply]
+    simp only [single_apply, Equiv.symm_apply_eq, equivMapDomain_apply]
 
 @[simp]
 theorem equivMapDomain_zero {f : α ≃ β} : equivMapDomain f (0 : α →₀ M) = (0 : β →₀ M) := by
@@ -379,10 +379,10 @@ theorem mapDomain_apply' (S : Set α) {f : α → β} (x : α →₀ M) (hS : (x
     · rw [← Finset.add_sum_erase _ _ hax, ite_eq_left rfl]
       convert add_zero (x a)
       refine Finset.sum_eq_zero fun i hi => ite_eq_right ?_
-      exact (hf.mono hS).ne (Finset.mem_of_mem_erase hi) hax (Finset.ne_of_mem_erase hi)
+      exact (hf.mono hS).ne hax (Finset.mem_of_mem_erase hi) (Finset.ne_of_mem_erase hi).symm
     · rw [notMem_support_iff.1 hax]
       refine Finset.sum_eq_zero fun i hi => ite_eq_right ?_
-      exact hf.ne (hS hi) ha (ne_of_mem_of_not_mem hi hax)
+      exact hf.ne ha (hS hi) (ne_of_mem_of_not_mem hi hax).symm
 
 theorem mapDomain_support_of_injOn [DecidableEq β] {f : α → β} (s : α →₀ M)
     (hf : Set.InjOn f s.support) : (mapDomain f s).support = Finset.image f s.support :=
@@ -670,7 +670,8 @@ def filter (p : α → Prop) [DecidablePred p] (f : α →₀ M) : α →₀ M w
 theorem filter_apply (a : α) : f.filter p a = if p a then f a else 0 := rfl
 
 @[simp] lemma filter_eq [DecidableEq α] (f : α →₀ M) (a : α) :
-    f.filter (a = ·) = single a (f a) := by ext; rw [filter_apply, single_apply]; congr!; simp_all
+    f.filter (a = ·) = single a (f a) := by
+  ext; simp only [filter_apply, single_apply]; split_ifs <;> simp_all [eq_comm]
 
 @[simp] lemma filter_eq' [DecidableEq α] (f : α →₀ M) (a : α) :
     f.filter (· = a) = single a (f a) := by simp [eq_comm]
@@ -1432,12 +1433,12 @@ theorem mapDomain_support_of_subsingletonAddUnits [DecidableEq β] [AddCommMonoi
   ext t
   rw [mem_support_iff, ne_eq, Finset.mem_image]
   refine ⟨?_, fun ⟨i, i_in, hi⟩ ↦ ?_⟩
-  · simpa [mapDomain, sum, single_apply] using fun i h h' _ ↦ ⟨i, h, h'⟩
+  · simpa [mapDomain, sum, single_apply] using fun i h h' _ ↦ ⟨i, h, h'.symm⟩
   simpa [mapDomain, sum, ← hi, single_apply] using ⟨i, by simp [mem_support_iff.mp i_in]⟩
 
 theorem mapDomain_apply_eq_sum [DecidableEq β] [AddCommMonoid M] (f : α → β)
     (x : α →₀ M) {a : α} : (x.mapDomain f) (f a) = ∑ i ∈ x.support with f i = f a, x i := by
-  simp [mapDomain, sum, single_apply, Finset.sum_ite]
+  simp [mapDomain, sum, single_apply, Finset.sum_ite, eq_comm]
 
 theorem mapDomain_apply_eq_zero_iff_of_subsingletonAddUnits [AddCommMonoid M] (f : α → β)
     [Subsingleton (AddUnits M)] (x : α →₀ M) : mapDomain (M := M) f x = 0 ↔ x = 0 := by

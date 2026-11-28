@@ -227,7 +227,7 @@ private theorem fixed_of_fixed1_aux1 :
   have hr : r.map (algebraMap B (B ⧸ Q)) = q := by
     ext n
     rw [Polynomial.coeff_map, Polynomial.finsetSum_coeff]
-    simp only [Polynomial.coeff_monomial, Finsupp.single_apply, Finset.sum_ite_eq',
+    simp only [Polynomial.coeff_monomial, Finsupp.single_apply, Finset.sum_ite_eq,
       Finset.mem_range_succ_iff]
     split_ifs with hn
     · rw [← Polynomial.coeff_map, hq, Polynomial.coeff_X_pow_mul]

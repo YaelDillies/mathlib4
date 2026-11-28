@@ -62,7 +62,7 @@ lemma indicator_singleton (a : ι) (f : ∀ j ∈ ({a} : Finset ι), α) :
     indicator {a} f = single a (f a (mem_singleton_self a)) := by
   classical
   ext j
-  simp only [single_apply, indicator_apply, mem_singleton, @eq_comm _ a j]
+  simp only [single_apply, indicator_apply, mem_singleton]
   split_ifs with h <;> simp [h]
 
 theorem indicator_eq_set_indicator (s : Finset ι) (g : ι → α) :

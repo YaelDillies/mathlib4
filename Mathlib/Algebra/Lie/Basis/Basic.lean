@@ -268,7 +268,7 @@ def baseSupp (i : ι) : Dual R H :=
   let e := LinearEquiv.ofEq _ _ b.coe_cartan_eq_span
   let f (k : ι) : R := b.A i k • (Basis.span b.linInd).repr (e <| b.h' j) k
   change ∑ k, f k = _
-  have : f = fun k ↦ if j = k then (b.A i k : R) else 0 := by
+  have : f = fun k ↦ if k = j then (b.A i k : R) else 0 := by
     have : (Basis.span b.linInd).repr (e <| b.h' j) = .single j 1 := Basis.span_repr_eq_single _ _
     ext k
     simp [f, this, Finsupp.single_apply]

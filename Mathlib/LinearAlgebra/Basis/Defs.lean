@@ -132,7 +132,7 @@ theorem repr_self : b.repr (b i) = Finsupp.single i 1 :=
   LinearEquiv.apply_symm_apply _ _
 
 theorem repr_self_apply (j) [Decidable (i = j)] : b.repr (b i) j = if i = j then 1 else 0 := by
-  rw [repr_self, Finsupp.single_apply]
+  classical rw [repr_self, Finsupp.single_apply]; exact if_congr eq_comm rfl rfl
 
 @[simp]
 theorem repr_symm_apply (v) : b.repr.symm v = Finsupp.linearCombination R b v :=
@@ -281,7 +281,7 @@ theorem Basis.coe_ofEquivFun [Finite ι] [DecidableEq ι] (e : M ≃ₗ[R] ι �
   funext fun i =>
     e.injective <|
       funext fun j => by
-        simp [Basis.ofEquivFun, ← Finsupp.single_eq_pi_single]
+        simp [Basis.ofEquivFun, ← Finsupp.coe_single]
 
 @[simp]
 theorem Basis.ofEquivFun_equivFun [Finite ι] (v : Basis ι R M) :

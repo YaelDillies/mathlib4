@@ -61,9 +61,9 @@ theorem TensorProduct.toMatrix_comm :
       (1 : Matrix (ι × κ) (ι × κ) R).submatrix Prod.swap _root_.id := by
   ext ⟨i, j⟩ ⟨i', j'⟩
   simp only [toMatrix_apply, Basis.tensorProduct_apply, LinearEquiv.coe_toLinearMap, comm_tmul,
-    Basis.tensorProduct_repr_tmul_apply, Basis.repr_self, Finsupp.single_apply, @eq_comm _ i',
-    @eq_comm _ j', smul_eq_mul, mul_ite, mul_one, mul_zero, ← ite_and, and_comm, submatrix_apply,
-    Matrix.one_apply, Prod.swap_prod_mk, id_eq, Prod.mk.injEq]
+    Basis.tensorProduct_repr_tmul_apply, Basis.repr_self, Finsupp.single_apply, smul_eq_mul,
+    mul_ite, mul_one, mul_zero, ← ite_and, and_comm, submatrix_apply, Matrix.one_apply,
+    Prod.swap_prod_mk, id_eq, Prod.mk.injEq]
 
 /-- `TensorProduct.assoc` corresponds to a permutation of the identity matrix. -/
 theorem TensorProduct.toMatrix_assoc :
@@ -72,6 +72,6 @@ theorem TensorProduct.toMatrix_assoc :
       (1 : Matrix (ι × κ × τ) (ι × κ × τ) R).submatrix _root_.id (Equiv.prodAssoc _ _ _) := by
   ext ⟨i, j, k⟩ ⟨⟨i', j'⟩, k'⟩
   simp only [toMatrix_apply, Basis.tensorProduct_apply, LinearEquiv.coe_toLinearMap, assoc_tmul,
-    Basis.tensorProduct_repr_tmul_apply, Basis.repr_self, Finsupp.single_apply, @eq_comm _ k',
-    @eq_comm _ j', smul_eq_mul, mul_ite, mul_one, mul_zero, ← ite_and, @eq_comm _ i',
-    submatrix_apply, Matrix.one_apply, id_eq, Equiv.prodAssoc_apply, Prod.mk.injEq]
+    Basis.tensorProduct_repr_tmul_apply, Basis.repr_self, Finsupp.single_apply, smul_eq_mul,
+    mul_ite, mul_one, mul_zero, ← ite_and, submatrix_apply, Matrix.one_apply, id_eq,
+    Equiv.prodAssoc_apply, Prod.mk.injEq]

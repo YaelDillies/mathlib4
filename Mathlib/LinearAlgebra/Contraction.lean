@@ -134,7 +134,7 @@ theorem toMatrix_dualTensorHom {m : Type*} {n : Type*} [Fintype m] [Finite n] [D
   by_cases hij : i = i' ∧ j = j'
   · simp [LinearMap.toMatrix_apply, hij]
   · rw [and_iff_not_or_not, Classical.not_not] at hij
-    rcases hij with hij | hij <;> simp [LinearMap.toMatrix_apply, Finsupp.single_eq_pi_single, hij]
+    rcases hij with hij | hij <;> simp [LinearMap.toMatrix_apply, Finsupp.coe_single, hij]
 
 section
 

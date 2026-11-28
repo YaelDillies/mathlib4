@@ -677,7 +677,7 @@ theorem LinearMap.toMatrix_transpose_apply' (f : M₁ →ₗ[R] M₂) (j : n) :
 /-- This will be a special case of `LinearMap.toMatrix_id_eq_basis_toMatrix`. -/
 theorem LinearMap.toMatrix_id : LinearMap.toMatrix v₁ v₁ id = 1 := by
   ext i j
-  simp [LinearMap.toMatrix_apply, Matrix.one_apply, Finsupp.single_apply, eq_comm]
+  simp [LinearMap.toMatrix_apply, Matrix.one_apply, Finsupp.single_apply]
 
 @[simp]
 theorem LinearMap.toMatrix_one : LinearMap.toMatrix v₁ v₁ 1 = 1 :=
@@ -724,7 +724,7 @@ theorem LinearMap.toMatrix_basis_equiv [Fintype l] [DecidableEq l] (b : Basis l 
     (b' : Basis l R M₂) :
     LinearMap.toMatrix b' b (b'.equiv b (Equiv.refl l) : M₂ →ₗ[R] M₁) = 1 := by
   ext i j
-  simp [LinearMap.toMatrix_apply, Matrix.one_apply, Finsupp.single_apply, eq_comm]
+  simp [LinearMap.toMatrix_apply, Matrix.one_apply, Finsupp.single_apply]
 
 theorem LinearMap.toMatrix_smulBasis_left {G} [Group G] [DistribMulAction G M₁]
     [SMulCommClass G R M₁] (g : G) (f : M₁ →ₗ[R] M₂) :
@@ -953,7 +953,7 @@ theorem toMatrix_distrib_mul_action_toLinearMap (x : R) :
     Matrix.diagonal fun _ ↦ x := by
   ext
   rw [LinearMap.toMatrix_apply, DistribSMul.toLinearMap_apply, map_smul,
-    Basis.repr_self, Finsupp.smul_single_one, Finsupp.single_eq_pi_single, Matrix.diagonal_apply,
+    Basis.repr_self, Finsupp.smul_single_one, Finsupp.coe_single, Matrix.diagonal_apply,
     Pi.single_apply]
 
 variable {m' n' M₁' M₂' : Type*} [Finite n'] [Finite m'] [AddCommMonoid M₁'] [AddCommMonoid M₂']

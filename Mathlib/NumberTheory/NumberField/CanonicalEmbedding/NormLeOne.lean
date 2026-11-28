@@ -550,7 +550,7 @@ theorem logMap_expMapBasis (x : realSpace K) :
     ← logEmbedding_component, logEmbedding_fundSystem, Finsupp.coe_finsetSum, Finsupp.coe_smul,
     Finset.sum_apply, Pi.smul_apply, Basis.ofZLatticeBasis_repr_apply, Basis.repr_self,
     Finsupp.single_apply, EmbeddingLike.apply_eq_iff_eq, Int.cast_ite, Int.cast_one, Int.cast_zero,
-    smul_ite, smul_eq_mul, mul_one, mul_zero, Fintype.sum_ite_eq']
+    smul_ite, smul_eq_mul, mul_one, mul_zero, Fintype.sum_ite_eq]
 
 theorem normAtAllPlaces_image_preimage_expMapBasis (s : Set (realSpace K)) :
     normAtAllPlaces '' normAtAllPlaces ⁻¹' expMapBasis '' s = expMapBasis '' s := by

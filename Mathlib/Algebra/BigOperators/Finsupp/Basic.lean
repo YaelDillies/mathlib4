@@ -419,7 +419,7 @@ theorem univ_sum_single [Fintype α] [AddCommMonoid M] (f : α →₀ M) :
     ∑ a : α, single a (f a) = f := by
   classical
   refine DFunLike.coe_injective ?_
-  simp_rw [coe_finsetSum, single_eq_pi_single, Finset.univ_sum_single]
+  simp_rw [coe_finsetSum, coe_single, Finset.univ_sum_single]
 
 @[simp]
 theorem univ_sum_single_apply [AddCommMonoid M] [Fintype α] (i : α) (m : M) :

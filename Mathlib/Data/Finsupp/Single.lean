@@ -54,19 +54,20 @@ def single (a : α) (b : M) : α →₀ M where
   mem_support_toFun a' := by grind
 
 @[grind =]
-theorem single_apply [Decidable (a = a')] : single a b a' = if a = a' then b else 0 := by
-  classical
-  simp_rw [@eq_comm _ a a', single, coe_mk, Pi.single_apply]
+theorem single_apply [Decidable (a' = a)] : single a b a' = if a' = a then b else 0 := by
+  classical simp [single, Pi.single_apply]
 
 theorem single_apply_left {f : α → β} (hf : Function.Injective f) (x z : α) (y : M) :
     single (f x) y (f z) = single x y z := by classical simp only [single_apply, hf.eq_iff]
 
-theorem single_eq_pi_single [DecidableEq α] (a : α) (b : M) : ⇑(single a b) = Pi.single a b := by
-  ext; simp [single_apply, Pi.single_apply, eq_comm]
+theorem coe_single [DecidableEq α] (a : α) (b : M) : ⇑(single a b) = Pi.single a b := by
+  ext; simp [single_apply, Pi.single_apply]
+
+@[deprecated (since := "2026-11-28")] alias single_eq_pi_single := coe_single
 
 theorem set_indicator_singleton (a : α) (f : α → M) :
     Set.indicator {a} f = ⇑(single a (f a)) := by
-  classical rw [Set.indicator_singleton, single_eq_pi_single]
+  classical rw [Set.indicator_singleton, coe_single]
 
 @[simp]
 theorem single_eq_same : (single a b : α →₀ M) a = b := by
@@ -82,7 +83,7 @@ theorem single_eq_of_ne' (h : a ≠ a') : (single a b : α →₀ M) a' = 0 := b
 
 theorem single_eq_update [DecidableEq α] (a : α) (b : M) :
     ⇑(single a b) = Function.update (0 : _) a b :=
-  single_eq_pi_single a b
+  coe_single a b
 
 @[simp, grind =]
 theorem single_zero (a : α) : (single a 0 : α →₀ M) = 0 :=
@@ -260,7 +261,7 @@ noncomputable def _root_.Equiv.finsuppUnique {ι : Type*} [Unique ι] : (ι →�
 @[simp]
 theorem equivFunOnFinite_single [DecidableEq α] [Finite α] (x : α) (m : M) :
     Finsupp.equivFunOnFinite (Finsupp.single x m) = Pi.single x m := by
-  simp [Finsupp.single_eq_pi_single, equivFunOnFinite]
+  simp [Finsupp.coe_single, equivFunOnFinite]
 
 @[simp]
 theorem equivFunOnFinite_symm_single [DecidableEq α] [Finite α] (x : α) (m : M) :

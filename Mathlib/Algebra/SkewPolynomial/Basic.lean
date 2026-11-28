@@ -238,7 +238,8 @@ lemma monomial_mul_monomial [MulSemiringAction (Multiplicative ℕ) R] (n m : �
 lemma mul_def {f g : SkewPolynomial R} [MulSemiringAction (Multiplicative ℕ) R] : f * g =
     f.sum fun (a₁ : ℕ) b₁ ↦ g.sum fun (a₂ : ℕ) b₂ ↦ monomial (a₁ + a₂) (b₁ * φ^[a₁] b₂) := by
   ext
-  simp [φ_iterate_apply, sum_def', coeff_mul, monomial, lsingle_apply, Finsupp.single_apply]
+  simp [φ_iterate_apply, sum_def', coeff_mul, monomial, lsingle_apply, Finsupp.single_apply,
+    eq_comm]
 
 section Constant
 
